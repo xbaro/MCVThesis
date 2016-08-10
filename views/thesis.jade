@@ -1,0 +1,59 @@
+﻿extends layout
+
+block content
+    .container
+        header 
+            h1 Video Statistics
+            .logout 
+                a(href="/") Instructions
+                a(href="/video") Video Labeling
+                a(href="/auth/signout") Logout #{username}                 
+        .body
+            h2 Video Distribution
+            div.thesisTable
+                table                         
+                    tbody        
+                        tr
+                            td Title
+                            td Unlabeled
+                            td Valid
+                            td Not-Valid
+                            td Valid-Cuts
+                            td Exported
+                            td Total    
+                        tr
+                            td= videoData.TL
+                            td= videoData.TNL
+                            td= videoData.TAccepted
+                            td= videoData.TRejected
+                            td= videoData.TMicroCuts
+                            td= videoData.TEXP
+                            td 
+                                b #{videoData.total}
+            h2 User Activity
+            div.statsTable
+                table
+                    tbody
+                        tr
+                            td Ranking
+                            td User
+                            td Labeled Videos
+                            td Valid
+                            td Not-Valid
+                            td Valid-Cuts
+                            td Exported                            
+                            td Pending                                       
+                        each row, i in userData                    
+                            tr
+                                if row.labeler == username
+                                    td: b #{i+1}
+                                    td: b #{row.labeler}
+                                else 
+                                    td= i+1
+                                    td= row.labeler
+                                td= row.TL
+                                td= row.TAccepted
+                                td= row.TRejected
+                                td= row.TMicroCuts
+                                td= row.TEXP
+                                td= row.TNL

@@ -1,0 +1,59 @@
+﻿extends auth_layout
+
+block content
+    .top-content
+        .inner-bg
+            .container
+                .row
+                    .col-sm-8.col-sm-offset-2.text
+                        h1
+                            strong Master on Computer Vision
+                        .description
+                            p
+                                Application Management of final master thesis
+                .row
+                    .col-sm-6.col-sm-offset-3.form-box
+                        .form-top
+                            .form-top-left
+                                h3 Registration
+                                p This information is necessary to properly manage the thesis:
+                            .form-top-right
+                                i.fa.fa-user
+                        .form-bottom
+                            form(role='form', action="/auth/signup", method="post")
+                                .form-group
+                                    label.sr-only(for="username") Username
+                                    input#username.form-control(type='text', name="username", placeholder='Enter the desired username', required=true)
+                                .form-group
+                                    label.sr-only(for="name") Name
+                                    input#name.form-control(type='text', name="name", placeholder='Enter your name', required=true)
+                                .form-group
+                                    label.sr-only(for="surname") Surname
+                                    input#surname.form-control(type='text', name="surname", placeholder='Enter your surname', required=true)
+                                .form-group
+                                    label.sr-only(for="organization") Username
+                                    input#organization.form-control(type='text', name="organization", placeholder='Enter your organization/affiliation', required=true)
+                                .form-group
+                                    label.sr-only(for="password") Password
+                                    input#password.form-password.form-control(type='password', name="password", placeholder='Password', required=true)
+                                    label.sr-only(for="password_repeat") Password (repeat)
+                                    input#password_repeat.form-password.form-control(type='password', name="password_repeat", placeholder='Password (verification)', required=true)
+                                .form-group
+                                    label.sr-only(for="email") email
+                                    input#email.form-control(type='text', name="email", placeholder='Enter your email', required=true)
+                                .form-group
+                                    label.sr-only(for="webpage") Username
+                                    input#webpage.form-control(type='text', name="webpage", placeholder='Enter your webpage')
+                                .btn-group
+                                    button.btn.btn-default(type='submit') Register
+                                .btn-group
+                                    a(href='/')
+                                        button.btn.btn-danger(type="button") Cancel
+    script(src="/js/auth/jquery-1.11.1.min.js")
+    script(src="/bootstrap/js/bootstrap.min.js")
+    script(src="/js/auth/jquery.backstretch.min.js")
+    script(src="/js/auth/scripts.js")
+
+    <!--[if lt IE 10]>
+    script(src="/js/auth/placeholder.js")
+    <![endif]-->
