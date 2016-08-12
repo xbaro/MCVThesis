@@ -122,4 +122,49 @@ router.get('/signout', function (req, res, next) {
     }
 });
 
+router.post('/lti',  function (req, res, next) {
+    if (req.secure) {
+        passport.authenticate('lti', {
+            successRedirect: '/',
+            failureRedirect: '/auth/signin'
+        }, function (err, user, info) {
+            if (err) {
+                return res.render('signin', { title: 'Sign In', errorMessage: err.message });
+            }
+
+            if (!user) {
+                return res.render('signin', { title: 'Sign In', errorMessage: info.message });
+            }
+            return req.logIn(user, function (err) {
+                if (err) {
+                    return res.render('signin', { title: 'Sign In', errorMessage: err.message });
+                } else {
+                    return res.redirect('/');
+                }
+            });
+        })(req, res, next);
+    } else {
+        // request was via http, so redirect to https
+        res.redirect('https://' + get_host_https(req) + req.originalUrl);
+    }
+});
+
+router.get('/lti', function (req, res, next) {
+    if (!req.isAuthenticated()) {
+        res.redirect('/');
+    } else {
+        req.logout();
+        res.redirect('/');
+    }
+});
+
+router.put('/signout', function (req, res, next) {
+    if (!req.isAuthenticated()) {
+        res.redirect('/');
+    } else {
+        req.logout();
+        res.redirect('/');
+    }
+});
+
 module.exports = router;

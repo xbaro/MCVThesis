@@ -18,7 +18,10 @@ var Store = require('express-sequelize-session') (session.Store);
 var bcrypt = require('bcrypt-nodejs');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var Model = require('./models')
+var LTIStrategy = require('passport-lti');
+var Model = require('./models');
+
+var ltiMiddleware = require("express-ims-lti");
 /* END */
 
 var app = express();
@@ -59,6 +62,53 @@ passport.use(new LocalStrategy(function (username, password, done) {
     })
 }));
 
+passport.use(new LTIStrategy({
+        consumerKey: 'mcv_thesis_key',
+        consumerSecret: 'secret'
+    }, function(lti, done) {
+        // Create a username for this lti user
+        username = '';
+        if (lti.ext_user_username ) {
+            username = lti.ext_user_username;
+        }
+        if (username.length == 0) {
+            username = lti.lis_person_contact_email_primary.split('@')[0] ;
+        }
+        username = 'lti-' + lti.user_id + '-' + username;
+
+        Model.User.findOne({
+        where: {username: username}})
+        .then(function(data) {
+            var user = data;
+            if (user === null) {
+                // Create the user object
+                new_user = {};
+                new_user.password = 'XXXXDDDDXXXX';
+                new_user.name = lti.lis_person_name_given;
+                new_user.surname = lti.lis_person_name_family;
+                new_user.email = lti.lis_person_contact_email_primary;
+                new_user.teacher = false;
+                for(var i =0; i<lti.roles.length; i++) {
+                    if (lti.roles[i] =="Instructor") {
+                        new_user.teacher = true;
+                    }
+                }
+
+                Model.User
+                .findOrCreate({where: {username: username, password: new_user.password, name: new_user.name, surname: new_user.surname, email: new_user.email, teacher: new_user.teacher}})
+                .spread(function(user, created) {
+                    return done(null, user);
+                    console.log(user.get({plain: true}))
+                    console.log(created)
+                })
+
+
+            } else {
+                return done(null, user);
+            }
+        })
+}));
+
 passport.serializeUser(function (user, done) {
     done(null, user.username);
 });
@@ -90,6 +140,23 @@ app.use('/auth', auth);
 app.use('/profile', profile);
 app.use('/thesis', thesis);
 app.use('/committees', committees);
+
+
+app.use(ltiMiddleware({
+  // You must use either the credentials option or the consumer_key and
+  // consumer_secret. The credentials option a function that accepts a key and
+  // a callback to perform an asynchronous operation to fetch the secret.
+  credentials: function (key, callback) {
+    // `this` is a reference to the request object.
+    var consumer = this.consumer = fetchLtiConsumer(key);
+    // The first parameter is an error (null if there is none).
+    callback(null, key, consumer.secret);
+  },
+
+  consumer_key: "mcv_thesis_key",       // Required if not using credentials.
+  consumer_secret: "secret", // Required if not using credentials.
+
+}));
 
 
 // catch 404 and forward to error handler
