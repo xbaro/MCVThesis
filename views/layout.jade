@@ -1,8 +1,35 @@
-﻿doctype html
+﻿include mixins/mixins
+include mixins/nav_mixins
+doctype html
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet')
-  body
-    block content
+    head
+        title= title
+        +bootswatch("flatly")
+        link(rel='stylesheet', href='/lib/font-awesome/css/font-awesome.min.css')
+        link(rel='stylesheet', href='/lib/bootstrap/dist/css/bootstrap.min.css')
+        link(rel="stylesheet" href="/lib/bootstrap-table/dist/bootstrap-table.min.css")
+        link(rel="stylesheet" href="/lib/jquery.tagsinput/dist/jquery.tagsinput.min.css")
+        link(rel="stylesheet" href="/lib/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.min.css")
+        link(rel="stylesheet" href="/lib/bootstrap-tokenfield/dist/css/tokenfield-typeahead.min.css")
+    body
+        +nav("MCV Thesis", "dropdown_menu")
+            +nav_item("/", "index" ) Home
+            if(user)
+                if(user.teacher)
+                    +nav_item("/thesis", "thesis") Thesis
+                    +nav_item("/committees", "committees") Committees
+                if(user.admin)
+                    +nav_item("/admin", "admin") Admin
+                +nav_item("/profile", "profile") My Profile
+                +nav_item("/auth/signout", "logout") Logout #{user.username}
+            else
+                +nav_item("/auth/signin", "login") Login
+                +nav_item("/auth/signup", "register") Register
+        block content
+        script( src='/lib/jquery/dist/jquery.min.js' )
+        script( src='/lib/jquery-ui/jquery-ui.min.js' )
+        script( src='/lib/bootstrap/dist/js/bootstrap.min.js' )
+        script( src='/lib/bootstrap-table/dist/bootstrap-table.min.js' )
+        script( src='/lib/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js' )
+        script( src='/lib/typeahead.js/dist/bloodhound.min.js' )
+        block scripts

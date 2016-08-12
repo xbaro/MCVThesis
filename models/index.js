@@ -24,8 +24,8 @@ Object.keys(db).forEach(function(modelName) {
   }
 });
 
-db.User.belongsToMany(db.Thesis, { as: 'Advisors', through: 'thesis_advisors'})
-db.User.belongsToMany(db.Thesis, { as: 'Committee', through: 'thesis_committee'})
+db.User.belongsToMany(db.Thesis, { through: 'Advisors'})
+db.User.belongsToMany(db.Thesis, { through: 'Committee'})
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

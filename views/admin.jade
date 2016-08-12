@@ -1,0 +1,105 @@
+﻿extends layout
+
+block content
+
+    if (message_ok)
+        +alert("success") #{message_ok}
+
+    if (message_error)
+        +alert("danger") #{message_error}
+
+    +panel("User management", "primary")
+        p Allow to create new users, or assign the roles to existing users:
+        ul
+            li <strong>Teacher:</strong> Can create new theses and require to be in the committee of an existing thesis
+            li <strong>Admin:</strong> Can create new user, change the roles of the users.
+        .panel.panel-default.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-user #{' '} Create new user
+            .panel-body
+                form.form-inline(role="form", action="/admin/user/new", method="post")
+                    .form-group
+                        label.sr-only(for="username") Username
+                        input#username.form-control(type='text', name="username", placeholder='Username', required=true)
+                    .form-group
+                        label.sr-only(for="name") Name
+                        input#name.form-control(type='text', name="name", placeholder='Name', required=true)
+                    .form-group
+                        label.sr-only(for="surname") Surname
+                        input#surname.form-control(type='text', name="surname", placeholder='Surname', required=true)
+                    .form-group
+                        label.sr-only(for="organization") Organization
+                        input#organization.form-control(type='text', name="organization", placeholder='Organization/affiliation', required=true)
+                    .form-group
+                        label.sr-only(for="password") Password
+                        input#password.form-password.form-control(type='password', name="password", placeholder='Password', required=true)
+                    .form-group
+                        label.sr-only(for="email") email
+                        input#email.form-control(type='email', name="email", placeholder='eMail', required=true)
+                    .form-group
+                        label.sr-only(for="roles") roles
+                        input#roles.form-control(type="text", name='roles', placeholder="Roles")
+                    .btn-group
+                        button.btn.btn-default(type='submit', style = "margin-left:10px;") Create
+
+        .panel.panel-default.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-users #{' '} Modify existing users
+            .panel-body
+                p Select a user from the table with doble click to edit the details or remove.
+
+                #user_edt.panel.panel-default.margin-bottom-40(style="display: none;")
+                    .panel-heading
+                        .panel-title
+                            i.fa.fa-edit
+                    .panel-body
+                        form#user_edt_form(role="form", action="/admin/user/update", method="post")
+                            .form-group
+                                label(for="username_edt") Username
+                                input#username_edt.form-control(type='text', name="username", placeholder='Username', readonly=true)
+                            .form-group
+                                label(for="name_edt") Name
+                                input#name_edt.form-control(type='text', name="name", placeholder='Name', required=true)
+                            .form-group
+                                label(for="surname_edt") Surname
+                                input#surname_edt.form-control(type='text', name="surname", placeholder='Surname', required=true)
+                            .form-group
+                                label(for="organization_edt") Organization
+                                input#organization_edt.form-control(type='text', name="organization", placeholder='Organization/affiliation', required=true)
+                            .form-group
+                                label(for="email_edt") email
+                                input#email_edt.form-control(type='email', name="email", placeholder='eMail', required=true)
+                            .form-group
+                                label(for="roles_edt") roles
+                                input#roles_edt.form-control(type="text", name='roles', placeholder="Roles")
+                            .btn-group
+                                button.btn.btn-default(type='submit', style = "margin-left:10px;") Update
+                                button#cancel_user.btn(type='button', style = "margin-left:10px;") Cancel
+                                button#delete_user.btn.btn-danger(type='button', style = "margin-left:10px;") Delete
+
+                table#usersTable(data-toggle="table", data-url="/admin/users", data-sort-name="username"
+                data-sort-order="asc")
+                    thead
+                        tr
+                            th(data-field="username", data-sortable="true") Username
+                            th(data-field="name", data-sortable="true") Name
+                            th(data-field="surname", data-sortable="true") Surname
+                            th(data-field="email") Email
+                            th(data-field="organization", data-sortable="true") Organization
+                            th(data-field="roles") Roles
+
+
+    +panel("Schedule management", "primary")
+        p Test
+        .panel.panel-default.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-user #{' '} Create new user
+        .panel-body
+
+
+block scripts
+    script
+        include ../public/js/admin/scripts.js

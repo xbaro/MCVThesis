@@ -4,6 +4,40 @@ var bcrypt = require('bcrypt-nodejs');
 var passport = require('passport');
 var Model = require('../models');
 
+function get_host_http(req) {
+    var port = req.app.get('port')
+    var host = req.headers.host;
+
+    var host_parts = host.split(':');
+
+    if (host_parts.length > 1) {
+        host = host_parts[0];
+    }
+
+    if (port == 80) {
+        return host;
+    }
+
+    return host + ':' + port;
+}
+
+function get_host_https(req) {
+    var port = req.app.get('port-ssl')
+    var host = req.headers.host;
+
+    var host_parts = host.split(':');
+
+    if (host_parts.length > 1) {
+        host = host_parts[0];
+    }
+
+    if (port == 443) {
+        return host;
+    }
+
+    return host + ':' + port;
+}
+
 /* Methods for authentication */
 router.get('/signin', function (req, res, next) {
     if (req.isAuthenticated())
@@ -12,7 +46,7 @@ router.get('/signin', function (req, res, next) {
         res.render('signin', { title: 'Sign In' });
     } else {
         // request was via http, so redirect to https
-        res.redirect('https://' + req.headers.host + req.originalUrl);
+        res.redirect('https://' + get_host_https(req) + req.originalUrl);
     }
 });
 
@@ -39,7 +73,7 @@ router.post('/signin', function (req, res, next) {
         })(req, res, next);
     } else {
         // request was via http, so redirect to https
-        res.redirect('https://' + req.headers.host + req.originalUrl);
+        res.redirect('https://' + get_host_https(req) + req.originalUrl);
     }
 });
 
@@ -51,7 +85,7 @@ router.get('/signup', function (req, res, next) {
             res.render('signup', { title: 'Sign Up' });
         } else {
             // request was via http, so redirect to https
-            res.redirect('https://' + req.headers.host + req.originalUrl);
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
         }
     }
 });

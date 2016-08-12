@@ -31,7 +31,7 @@ block content
                                     label.sr-only(for="surname") Surname
                                     input#surname.form-control(type='text', name="surname", placeholder='Enter your surname', required=true)
                                 .form-group
-                                    label.sr-only(for="organization") Username
+                                    label.sr-only(for="organization") Organization
                                     input#organization.form-control(type='text', name="organization", placeholder='Enter your organization/affiliation', required=true)
                                 .form-group
                                     label.sr-only(for="password") Password
@@ -40,20 +40,12 @@ block content
                                     input#password_repeat.form-password.form-control(type='password', name="password_repeat", placeholder='Password (verification)', required=true)
                                 .form-group
                                     label.sr-only(for="email") email
-                                    input#email.form-control(type='text', name="email", placeholder='Enter your email', required=true)
+                                    input#email.form-control(type='email', name="email", placeholder='Enter your email', required=true)
                                 .form-group
-                                    label.sr-only(for="webpage") Username
-                                    input#webpage.form-control(type='text', name="webpage", placeholder='Enter your webpage')
+                                    label.sr-only(for="webpage") Webpage
+                                    input#webpage.form-control(type='url', name="webpage", placeholder='Enter your webpage')
                                 .btn-group
                                     button.btn.btn-default(type='submit') Register
                                 .btn-group
                                     a(href='/')
                                         button.btn.btn-danger(type="button") Cancel
-    script(src="/js/auth/jquery-1.11.1.min.js")
-    script(src="/bootstrap/js/bootstrap.min.js")
-    script(src="/js/auth/jquery.backstretch.min.js")
-    script(src="/js/auth/scripts.js")
-
-    <!--[if lt IE 10]>
-    script(src="/js/auth/placeholder.js")
-    <![endif]-->

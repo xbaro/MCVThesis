@@ -1,155 +1,212 @@
 ﻿var express = require('express');
-var sync = require('synchronize')
 var router = express.Router();
-
-var fs = require('fs-extra'),    
-    url = require('url'),
-    path = require('path');
+var bcrypt = require('bcrypt-nodejs');
 var Model = require('../models');
 
-/* GET not labeled video. */
-router.get('/', function (req, res) {    
-    if (!req.isAuthenticated()) {
-        res.redirect('/auth/signin');
-    } else {
-        if (!req.user.attributes.admin) {
-            res.status(401);
-            res.render('error', { message: 'Unauthorized access', error: {}});
-        } else {
-            res.render('admin', { user: req.user});
-        }        
+function get_host_http(req) {
+    var port = req.app.get('port')
+    var host = req.headers.host;
+
+    var host_parts = host.split(':');
+
+    if (host_parts.length > 1) {
+        host = host_parts[0];
     }
-});
 
-/* POST key value. */
-router.post('/set/:key', function (req, res) {
+    if (port == 80) {
+        return host;
+    }
+
+    return host + ':' + port;
+}
+
+function get_host_https(req) {
+    var port = req.app.get('port-ssl')
+    var host = req.headers.host;
+
+    var host_parts = host.split(':');
+
+    if (host_parts.length > 1) {
+        host = host_parts[0];
+    }
+
+    if (port == 443) {
+        return host;
+    }
+
+    return host + ':' + port;
+}
+
+router.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
+
         res.redirect('/auth/signin');
     } else {
-        if (!req.user.attributes.admin) {
-            res.status(401);
-            res.render('error', { message: 'Unauthorized access', error: {} });
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.status(401);
+                res.render('error', { message: 'Unauthorized access', error: {}});
+            } else {
+                res.render('admin', {page_name: 'admin', user: req.user});
+            }
         } else {
-            var key = req.params.key;
-            var value = req.body.value;
-            var confModel = new Model.Config({ key: key, value: value });
-            
-            var confModelPromise = new Model.Config({ key: key}).fetch();
-            return confModelPromise.then(function (model) {
-                if (model) {
-                    // Update an existing parameter
-                   
-                    confModel.save().then(function (model) {
-                        if (!model) {
-                            res.render('error', { message: 'Error modifying key ' + key + ' with value ' + value, error: {} });
-                        } else {
-                            res.render('admin', { user: req.user, message: "Value changed" });
-                        }
-                    });                    
-                } else {
-                    // Create a new register                    
-                    confModel.save(null, { method: 'insert' }).then(function (model) {
-                        if (!model) {
-                            res.render('error', { message: 'Error modifying key ' + key + ' with value ' + value, error: {} });
-                        } else {
-                            res.render('admin', { user: req.user, message: "Value changed" });
-                        }
-                    });                    
-                }
-            });            
-        }
-    }    
-});
-
-/* GET . */
-router.post('/resetDB', function (req, res) {
-    if (!req.isAuthenticated()) {
-        res.redirect('/auth/signin');
-    } else {
-        if (!req.user.attributes.admin) {
-            res.status(401);
-            res.render('error', { message: 'Unauthorized access', error: {} });
-        } else {
-            var knex = DB.DB.knex;
-            knex('tblVideos').del().then(function (numRows) {
-                res.render('admin', { user: req.user, message: "Reset performed. " + numRows + " rows deleted." });
-            });
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
         }
     }
 });
 
-/* GET . */
-router.post('/load', function (req, res) {
+router.get('/users', function (req, res) {
     if (!req.isAuthenticated()) {
-        res.redirect('/auth/signin');
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (!req.user.attributes.admin) {
-            res.status(401);
-            res.render('error', { message: 'Unauthorized access', error: {} });
-        } else {
-            var videoPathReq = new Model.Config({ key: 'videoPath' }).fetch();                    
-            return videoPathReq.then(function (model) {
-                if (model) {                    
-                    // Add the new videos
-                    var videoPath = model.attributes.value;
-                    fs.lstat(videoPath, function (err, stats) {
-                        if (!err && stats.isDirectory()) {
-                            var videos = fs.readdirSync(videoPath);
-                            insertVideos(videos);
-                            res.render('admin', { user: req.user, message: videos.length + " videos loaded" });
-                        } else {
-                            res.render('error', { message: 'videoPath configuration value is incorrect', error: {} });
-                        }
-                        return;
-                    });                                     
-                } else {
-                    res.render('error', { message: 'videoPath configuration value not found', error: {} });
-                }
-                return;
-            });
-        }
-    }
-});
-
-/* GET . */
-router.post('/backup', function (req, res) {
-    if (!req.isAuthenticated()) {
-        res.redirect('/auth/signin');
-    } else {
-        if (!req.user.attributes.admin) {
-            res.status(401);
-            res.render('error', { message: 'Unauthorized access', error: {} });
-        } else {
-            var backupPathReq = new Model.Config({ key: 'backupPath' }).fetch();
-            return backupPathReq.then(function (model) {
-                if (model) {
-                    var backupPath = model.attributes.value;
-                    try {
-                        fs.ensureDirSync(backupPath);
-                    } catch (err) {
-                        res.render('admin', { user: req.user, message: 'Cannot create backup dir' });
-                    }
-                    var moment = require('moment');
-                    var filename = path.resolve(backupPath, moment().format('YYYYMMDD_HHmmss') + '.sql'); 
-                        var mysqlDump = require('mysqldump');                        
-                        var dbconfig = DB.Config;                        
-                        mysqlDump({
-                            host: dbconfig.host,
-                            user: dbconfig.user,
-                            password: dbconfig.password,
-                            database: dbconfig.database,
-                            dest: filename
-                        }, function (err) {
-                            if (err) {
-                                res.render('error', { message: err, error: {} });
-                            } else {
-                                res.render('admin', { user: req.user, message: 'backup file created at ' + filename });
-                            }                        
-                        })
-                    }
-                    return;
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+            } else {
+                Model.User.findAll({
+                    attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles']
+                })
+                .then(function(data) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(data));
                 });
-         }
+            }
+        } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+        }
+    }
+});
+
+router.post('/user/new', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+            } else {
+                var user = req.body
+                var password = user.password;
+                var hash = bcrypt.hashSync(password);
+                var teacher = user.roles.indexOf('teacher') !== -1
+                var admin = user.roles.indexOf('admin') !== -1
+                Model.User
+                    .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, organization: user.organization, teacher: teacher, admin: admin}})
+                    .spread(function(new_user, created) {
+                        if (created) {
+                            res.render('admin', {page_name: 'admin', user: req.user, message_ok: "The new user has been created"});
+                        } else {
+                            res.render('admin', {page_name: 'admin', user: req.user, message_error: "The user cannot be created. Does the username exists?"});
+                        }
+                    })
+                    .catch(function (err) {
+                        res.render('admin', {page_name: 'admin', user: req.user, message_error: "The user cannot be created. Does the username exists?"});
+                    });
+
+            }
+        } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+        }
+    }
+});
+
+router.post('/user/update', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+            } else {
+                var user = req.body
+                var teacher = user.roles.indexOf('teacher') !== -1;
+                var admin = user.roles.indexOf('admin') !== -1;
+
+                Model.User.update({
+                    name: user.name,
+                    surname: user.surname,
+                    email: user.email,
+                    organization: user.organization,
+                    teacher: teacher,
+                    admin: admin
+                },
+                {
+                    where: { username: user.username }
+                })
+                .then(function (result) {
+                    if (result[0] == 1) {
+                        res.render('admin', {
+                            page_name: 'admin',
+                            user: req.user,
+                            message_ok: "User " + user.username + " updated."
+                        });
+                    } else {
+                        res.render('admin', {
+                            page_name: 'admin',
+                            user: req.user,
+                            message_error: "Error on the update.."
+                        });
+                    }
+                });
+            }
+        } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+        }
+    }
+});
+
+router.post('/user/delete', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+            } else {
+                var user = req.body
+                Model.User.destroy({
+                    where: { username: user.username }
+                })
+                .then(function (result) {
+                    if (result[0] == 1) {
+                        res.render('admin', {
+                            page_name: 'admin',
+                            user: req.user,
+                            message_ok: "User " + user.username + " removed."
+                        });
+                    } else {
+                        res.render('admin', {
+                            page_name: 'admin',
+                            user: req.user,
+                            message_error: "Error on the removal."
+                        });
+                    }
+                });
+            }
+        } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+        }
     }
 });
 

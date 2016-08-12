@@ -1,5 +1,5 @@
 {
-  "name": "chalearn-video-selector",
+  "name": "mvc-thesis",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -36,6 +36,15 @@
     "stylus": "0.42.3",
     "synchronize": "^0.9.15",
     "sequelize": "3.23.6",
-    "express-sequelize-session": "0.4.0"
+    "express-sequelize-session": "0.4.0",
+    "sqlite3": "3.1.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-bower": "0.0.13",
+    "gulp-notify": "^2.2.0",
+    "gulp-ruby-sass": "^2.0.6",
+    "gulp-sass": "^2.3.2",
+    "main-bower-files": "^2.13.1"
   }
 }

@@ -5,8 +5,9 @@ html
 
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,500')
 
-    link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/auth/font-awesome/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/lib/css/font-awesome/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/lib/bootstrap/css/bootstrap.min.css')
+    link(rel="stylesheet" href="/lib/bootstrap-table/dist/bootstrap-table.min.css")
     link(rel='stylesheet', href='/stylesheets/auth/css/form-elements.css')
     link(rel='stylesheet', href='/stylesheets/auth/css/style.css')
 
@@ -27,3 +28,14 @@ html
 
   body
     block content
+
+    script( src='/lib/jquery/dist/jquery.min.js' )
+    script( src='/lib/bootstrap/dist/js/bootstrap.min.js' )
+    script( src='/lib/bootstrap-table/dist/bootstrap-table.min.js' )
+    script( src="/lib/jquery-backstretch/jquery.backstretch.min.js")
+
+    script( src="/js/auth/scripts.js")
+
+    <!--[if lt IE 10]>
+    script(src="/js/auth/placeholder.js")
+    <![endif]-->

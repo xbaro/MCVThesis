@@ -8,8 +8,8 @@ var debug = require('debug')('ChalearnVideoSelector');
 var app = require('../app');
 var certPath = "./ssl";
 
-app.set('port', process.env.PORT || 80);
-app.set('port-ssl', process.env.PORT_SSL || 443);
+app.set('port', process.env.PORT || 8080);
+app.set('port-ssl', process.env.PORT_SSL || 8443);
 
 app.set('forceSSLOptions', {
     httpsPort: app.get('port-ssl')
