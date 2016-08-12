@@ -6,22 +6,28 @@ html
         title= title
         +bootswatch("flatly")
         link(rel='stylesheet', href='/lib/font-awesome/css/font-awesome.min.css')
+        link(rel='stylesheet', href='/lib/jquery-ui/themes/base/jquery-ui.min.css')
+        link(rel='stylesheet', href='/lib/jquery-ui/themes/base/autocomplete.css')
         link(rel='stylesheet', href='/lib/bootstrap/dist/css/bootstrap.min.css')
         link(rel="stylesheet" href="/lib/bootstrap-table/dist/bootstrap-table.min.css")
+        link(rel="stylesheet" href="/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.css")
+        link(rel="stylesheet" href="/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css")
         link(rel="stylesheet" href="/lib/jquery.tagsinput/dist/jquery.tagsinput.min.css")
         link(rel="stylesheet" href="/lib/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.min.css")
         link(rel="stylesheet" href="/lib/bootstrap-tokenfield/dist/css/tokenfield-typeahead.min.css")
+        link(rel="stylesheet" href="/stylesheets/footer.css")
     body
         +nav("MCV Thesis", "dropdown_menu")
             +nav_item("/", "index" ) Home
             if(user)
+                +nav_item("/thesis", "thesis") Thesis
                 if(user.teacher)
-                    +nav_item("/thesis", "thesis") Thesis
                     +nav_item("/committees", "committees") Committees
                 if(user.admin)
                     +nav_item("/admin", "admin") Admin
                 +nav_item("/profile", "profile") My Profile
-                +nav_item("/auth/signout", "logout") Logout #{user.username}
+                +nav_item("/auth/signout", "logout") <i class="fa fa-signout"> Logout #{user.username}</i>
+
             else
                 +nav_item("/auth/signin", "login") Login
                 +nav_item("/auth/signup", "register") Register
@@ -30,6 +36,11 @@ html
         script( src='/lib/jquery-ui/jquery-ui.min.js' )
         script( src='/lib/bootstrap/dist/js/bootstrap.min.js' )
         script( src='/lib/bootstrap-table/dist/bootstrap-table.min.js' )
+        script( src='/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js' )
         script( src='/lib/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js' )
         script( src='/lib/typeahead.js/dist/bloodhound.min.js' )
         block scripts
+        footer.footer
+            .container
+                .row
+                    p.muted.pullright.text-muted &copy; 2016 Xavier Baró. Code available at <a href='https://github.com/xbaro/MCVThesis'>GitHub</a> under <a href="https://github.com/xbaro/MCVThesis/blob/master/LICENSE">MIT License<a/>

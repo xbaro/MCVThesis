@@ -40,6 +40,9 @@ block content
                     .form-group
                         label.sr-only(for="roles") roles
                         input#roles.form-control(type="text", name='roles', placeholder="Roles")
+                    .form-group
+                        label.sr-only(for="keywords") keywords
+                        input#keywords.form-control(type="text", name='keywords', placeholder="Keywords")
                     .btn-group
                         button.btn.btn-default(type='submit', style = "margin-left:10px;") Create
 
@@ -74,6 +77,9 @@ block content
                             .form-group
                                 label(for="roles_edt") roles
                                 input#roles_edt.form-control(type="text", name='roles', placeholder="Roles")
+                            .form-group
+                                label(for="keywords_edt") keywords
+                                input#keywords_edt.form-control(type="text", name='keywords', placeholder="Keywords")
                             .btn-group
                                 button.btn.btn-default(type='submit', style = "margin-left:10px;") Update
                                 button#cancel_user.btn(type='button', style = "margin-left:10px;") Cancel

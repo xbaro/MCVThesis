@@ -106,8 +106,7 @@ router.post('/signup',  function (req, res, next) {
             Model.User
                 .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, webpage: user.webpage, organization: user.organization}})
                 .spread(function(user, created) {
-                        console.log(user.get({plain: true}))
-                    console.log(created)
+                    res.render('signin', { title: 'Sign In' });
                 })
         }
     });
@@ -149,22 +148,5 @@ router.post('/lti',  function (req, res, next) {
     }
 });
 
-router.get('/lti', function (req, res, next) {
-    if (!req.isAuthenticated()) {
-        res.redirect('/');
-    } else {
-        req.logout();
-        res.redirect('/');
-    }
-});
-
-router.put('/signout', function (req, res, next) {
-    if (!req.isAuthenticated()) {
-        res.redirect('/');
-    } else {
-        req.logout();
-        res.redirect('/');
-    }
-});
 
 module.exports = router;

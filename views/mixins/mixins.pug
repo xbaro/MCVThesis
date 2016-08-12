@@ -14,4 +14,51 @@ mixin alert(style)
         button.close( type="button", data-dismiss="alert" ) ×
         block
 
+//- Button mixin
+mixin button(style, href, size)
+    - var style = (typeof style === 'undefined') ? "default" : style
+    - var href = (typeof href === 'undefined') ? "#" : href
+    case size
+        when "large"
+            - size = "btn-lg"
+        when "small"
+            - size = "btn-sm"
+        when "mini"
+            - size = "btn-xs"
+
+    a( class=["btn", "btn-" + style, size], href=href )
+        block
+
+//- List group mixins
+- var groupType
+
+mixin listGroup(type)
+    - groupType = type
+    case groupType
+        when 'list'
+            ul.list-group
+                block
+        default
+            .list-group
+                block
+
+mixin listItem(arg1, arg2)
+    case groupType
+        when 'list'
+            li( class=["list-group-item", arg1] )
+                block
+        when 'links'
+            a( href=arg1, class=["list-group-item", arg2] )
+                block
+        default
+            .list-group-item( class=["list-group-item", arg1] )
+                block
+
+mixin listHeading
+    h4.list-group-item-heading
+        block
+
+mixin listText
+    .list-group-item-text
+        block
 //- End generic mixins

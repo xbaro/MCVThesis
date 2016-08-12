@@ -45,7 +45,7 @@ router.get('/', function (req, res) {
             // request was via https, so redirect to http
             res.redirect('http://' + get_host_http(req) + req.originalUrl);
         } else {
-            res.render('profile', { page_name: 'committees', user : req.user });
+            res.render('committees', { page_name: 'committees', user : req.user });
         }
     }
 });

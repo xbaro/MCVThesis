@@ -1,6 +1,9 @@
 jQuery(document).ready(function() {
     var roles = ['admin','teacher'];
 
+    $('#keywords').tokenfield();
+    $('#keywords_edt').tokenfield();
+
 	$('#roles').tokenfield({
 		  autocomplete: {
 			source: roles,
@@ -66,6 +69,7 @@ jQuery(document).ready(function() {
         $('#email_edt').val(row.email);
         $('#organization_edt').val(row.organization);
         $('#roles_edt').tokenfield('setTokens', row.roles);
+        $('#keywords_edt').tokenfield('setTokens', row.keywords);
 
         $('#user_edt').show();
         $('html, body').animate({

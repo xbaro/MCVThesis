@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var bcrypt = require('bcrypt-nodejs');
 var Model = require('../models');
 
 function get_host_http(req) {
@@ -43,6 +43,106 @@ router.get('/', function (req, res) {
     } else {
         if (req.secure) {
             res.render('profile', { page_name: 'profile', user : req.user });
+        } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+        }
+    }
+});
+
+router.post('/update', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+            } else {
+                var user = req.body
+
+                Model.User.update({
+                    name: user.name,
+                    surname: user.surname,
+                    email: user.email,
+                    organization: user.organization,
+                    keywords: user.keywords,
+                    webpage: user.webpage
+                },
+                {
+                    where: { username: req.user.username }
+                })
+                .then(function (result) {
+                    if (result[0] == 1) {
+                        res.render('profile', {
+                            page_name: 'profile',
+                            user: req.user,
+                            message_ok: "Profile updated."
+                        });
+                    } else {
+                        res.render('profile', {
+                            page_name: 'profile',
+                            user: req.user,
+                            message_error: "Error on the update.."
+                        });
+                    }
+                });
+            }
+        } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+        }
+    }
+});
+
+router.post('/password', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+            } else {
+                var user = req.body
+                var hash = bcrypt.hashSync(user.password);
+
+                if (user.password === user.password_repeat) {
+                    Model.User.update({
+                            password: hash
+                        },
+                        {
+                            where: {username: req.user.username}
+                        })
+                        .then(function (result) {
+                            if (result[0] == 1) {
+                                res.render('profile', {
+                                    page_name: 'profile',
+                                    user: req.user,
+                                    message_ok: "Profile updated."
+                                });
+                            } else {
+                                res.render('profile', {
+                                    page_name: 'profile',
+                                    user: req.user,
+                                    message_error: "Error on the update."
+                                });
+                            }
+                        });
+                } else {
+                    res.render('profile', {
+                        page_name: 'profile',
+                        user: req.user,
+                        message_error: "Passwords do not match."
+                    });
+                }
+            }
         } else {
             // request was via http, so redirect to https
             res.redirect('https://' + get_host_https(req) + req.originalUrl);

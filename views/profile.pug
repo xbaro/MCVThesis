@@ -1,5 +1,54 @@
 ﻿extends layout
 
 block content
+    if (message_ok)
+        +alert("success") #{message_ok}
 
+    if (message_error)
+        +alert("danger") #{message_error}
 
+    +panel("Profile", "primary")
+
+        .panel.panel-default.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-user #{' '} Update the profile data
+            .panel-body
+                form(role="form", action="/profile/update", method="post")
+                    .form-group
+                        label(for="name") Name
+                        input#name.form-control(type='text', name="name", placeholder='Name', value=user.name, required=true)
+                    .form-group
+                        label(for="surname") Surname
+                        input#surname.form-control(type='text', name="surname", placeholder='Surname', value=user.surname, required=true)
+                    .form-group
+                        label(for="organization") Organization
+                        input#organization.form-control(type='text', name="organization", placeholder='Organization/affiliation', value=user.organization, required=true)
+                    .form-group
+                        label(for="email") eMail
+                        input#email.form-control(type='email', name="email", placeholder='eMail', value=user.email, required=true)
+                    .form-group
+                        label(for="keywords") Keywords
+                        input#keywords.form-control(type="text", name='keywords', placeholder="Keywords", value=user.keywords)
+                    .btn-group
+                        button.btn.btn-default(type='submit', style = "margin-left:10px;") Update
+
+        .panel.panel-default.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-lock #{' '} Change password
+            .panel-body
+                form(role="form", action="/profile/password", method="post")
+                    .form-group
+                        label(for="pswd") Password
+                        input#pswd.form-control(type='password', name="password", placeholder='Password', required=true)
+                    .form-group
+                        label(for="pswd2") Repeat Password
+                        input#pswd2.form-control(type='password', name="password_repeat", placeholder='Password Repeat', required=true)
+                    .btn-group
+                        button.btn.btn-default(type='submit', style = "margin-left:10px;") Update
+
+block scripts
+    script
+        - var user_val = user;
+        include ../public/js/profile/scripts.js

@@ -15,7 +15,8 @@ module.exports = function(sequelize, DataTypes) {
         organization: DataTypes.STRING,
         webpage: DataTypes.STRING,
         keywords: DataTypes.TEXT,
-        roles: DataTypes.VIRTUAL
+        roles: DataTypes.VIRTUAL,
+        full_name: DataTypes.VIRTUAL
     },
     {
         getterMethods: {
@@ -30,6 +31,9 @@ module.exports = function(sequelize, DataTypes) {
                     roles += 'teacher'
                 }
                 return roles;
+            },
+            full_name: function() {
+                return this.getDataValue('name') + ' ' + this.getDataValue('surname');
             }
         }
     });

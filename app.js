@@ -98,10 +98,7 @@ passport.use(new LTIStrategy({
                 .findOrCreate({where: {username: username, password: new_user.password, name: new_user.name, surname: new_user.surname, email: new_user.email, teacher: new_user.teacher}})
                 .spread(function(user, created) {
                     return done(null, user);
-                    console.log(user.get({plain: true}))
-                    console.log(created)
                 })
-
 
             } else {
                 return done(null, user);

@@ -5,7 +5,9 @@ var models = require('./index')
 module.exports = function(sequelize, DataTypes) {
     var Thesis = sequelize.define("Thesis", {
         title: DataTypes.STRING,
-        abstract: DataTypes.TEXT
+        abstract: DataTypes.TEXT,
+        keywords: DataTypes.STRING,
+        approved: DataTypes.BOOLEAN
     });
 
     //Thesis.hasMany(models.User, {as: 'Advisors'})

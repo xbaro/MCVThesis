@@ -69,7 +69,7 @@ router.get('/users', function (req, res) {
                 res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
             } else {
                 Model.User.findAll({
-                    attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles']
+                    attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords']
                 })
                 .then(function(data) {
                     res.setHeader('Content-Type', 'application/json');
@@ -101,7 +101,7 @@ router.post('/user/new', function (req, res) {
                 var teacher = user.roles.indexOf('teacher') !== -1
                 var admin = user.roles.indexOf('admin') !== -1
                 Model.User
-                    .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, organization: user.organization, teacher: teacher, admin: admin}})
+                    .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, organization: user.organization, keywords: user.keywords, teacher: teacher, admin: admin}})
                     .spread(function(new_user, created) {
                         if (created) {
                             res.render('admin', {page_name: 'admin', user: req.user, message_ok: "The new user has been created"});
@@ -142,6 +142,7 @@ router.post('/user/update', function (req, res) {
                     surname: user.surname,
                     email: user.email,
                     organization: user.organization,
+                    keywords: user.keywords,
                     teacher: teacher,
                     admin: admin
                 },
