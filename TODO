@@ -1,6 +1,6 @@
 # TODO list
 
 - Configuration for LTI as part of Administration tab
-- Solve bug with autocomplete
+- Configure bower and gulp for correct exportation of libraries
 - Keywords as tokens to facilitate assignation of committees
 - Institutions as tokens to facilitate the assignation of committees

@@ -6,7 +6,8 @@ var models = require("../models");
 //require('monitor-dashboard');
 var debug = require('debug')('ChalearnVideoSelector');
 var app = require('../app');
-var certPath = "./ssl";
+var env       = process.env.NODE_ENV || "development";
+var config    = require(path.join(__dirname, '..', 'config', 'ssl.json'))[env];
 
 app.set('port', process.env.PORT || 8080);
 app.set('port-ssl', process.env.PORT_SSL || 8443);
@@ -21,8 +22,8 @@ models.sequelize.sync().then(function () {
     });
 
     var httpsOptions = {
-        key: fs.readFileSync(path.join(certPath, "hupba-lab.cvc.uab.es.key")),
-        cert: fs.readFileSync(path.join(certPath, "hupba-lab.cvc.uab.es.crt"))
+        key: fs.readFileSync(path.join(config.path, config.key)),
+        cert: fs.readFileSync(path.join(config.path, config.crt))
     };
 
     https.createServer(httpsOptions, app).listen(app.get('port-ssl'), function() {
