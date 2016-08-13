@@ -4,3 +4,4 @@
 - Configure bower and gulp for correct exportation of libraries
 - Keywords as tokens to facilitate assignation of committees
 - Institutions as tokens to facilitate the assignation of committees
+- Add a link between LTI users and normal users

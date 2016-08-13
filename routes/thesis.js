@@ -54,17 +54,12 @@ router.get('/user_data', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            // request was via https, so redirect to http
-            res.redirect('http://' + get_host_http(req) + req.originalUrl);
-        } else {
-            Model.User.findOne({attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name'],
-                where: {username: req.user.username}})
-            .then(function(data) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(data));
-            })
-        }
+        Model.User.findOne({attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name'],
+            where: {username: req.user.username}})
+        .then(function(data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(data));
+        })
     }
 });
 
@@ -89,16 +84,11 @@ router.get('/advised', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            // request was via https, so redirect to http
-            res.redirect('http://' + get_host_http(req) + req.originalUrl);
-        } else {
-            Model.Thesis.findAll({ where: {author: req.user.username} })
-            .then(function(data) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(data));
-            });
-        }
+        Model.Thesis.findAll({ where: {author: req.user.username} })
+        .then(function(data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(data));
+        });
     }
 });
 
@@ -106,25 +96,48 @@ router.get('/students', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            // request was via https, so redirect to http
-            res.redirect('http://' + get_host_http(req) + req.originalUrl);
+        if (req.query['term']) {
+            Model.User.findOne({
+                attributes: ['username', 'name', 'surname', 'full_name', 'roles'],
+                where: {teacher: false, admin: false,
+                    $or: [
+                        {
+                          name: {
+                            $like: '%' + req.query['term'] + '%'
+                          }
+                        },
+                        {
+                          surname: {
+                            $like: '%' + req.query['term'] + '%'
+                          }
+                        }
+                        ]}
+            }).then(function (data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            })
+
         } else {
-            res.render('thesis', { page_name: 'thesis', user : req.user });
+            Model.User.findOne({
+                attributes: ['username', 'name', 'surname', 'full_name', 'roles'],
+                where: {teacher: false, admin: false}
+            }).then(function (data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            })
         }
     }
 });
-
 router.get('/teachers', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            // request was via https, so redirect to http
-            res.redirect('http://' + get_host_http(req) + req.originalUrl);
-        } else {
-            res.render('thesis', { page_name: 'thesis', user : req.user });
-        }
+        Model.User.findOne({attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name'],
+            where: {teacher: true}})
+        .then(function(data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(data));
+        })
     }
 });
 
