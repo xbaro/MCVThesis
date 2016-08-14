@@ -1,6 +1,25 @@
 jQuery(document).ready(function() {
 
     var current_user;
+    var selected_advisors=[];
+
+    function split( val ) {
+      return val.split( /,\s*/);
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+    function get_advisors() {
+        var sel = split($('#advisors').val());
+        //TODO: Check that all advisors in selected_advisors are in sel. Discard the differences.
+        var ad_ids=[];
+        $.map(selected_advisors, function(n, i){
+            var ad = {};
+            ad.username = n['username'];
+            ad_ids.push(ad);
+        });
+        return ad_ids;
+    }
 
     $.get( "/thesis/user_data").done(function( data ) {
         current_user = data;
@@ -20,7 +39,7 @@ jQuery(document).ready(function() {
                         });
                     },
                     focus: function( event, ui ) {
-                                $( "#author" ).val( ui.item.full_name );
+                            $( "#author" ).val( ui.item.full_name );
                             return false;
                           },
                     select: function( event, ui ) {
@@ -35,7 +54,7 @@ jQuery(document).ready(function() {
                     };
             });
         } else {
-            $( "#author" ).autocomplete({
+            $( "#advisors" ).autocomplete({
                 source: [].concat(current_user),
                 appendTo: current_user,
                 disabled: true
@@ -48,11 +67,71 @@ jQuery(document).ready(function() {
         }
     });
 
+    $("#advisors").on( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).autocomplete( "instance" ).menu.active ) {
+                event.preventDefault();
+            }
+        }).autocomplete({
+            minLength: 0,
+            source: function(request, response){
+                var c = [];
+                var term = extractLast( request.term );
+                $.get( "/thesis/teachers?term=" + term).done(function( teachers ) {
+                    if (teachers) {
+                        teachers = [].concat(teachers);
+                    } else {
+                        teachers = [];
+                    }
+                    $.each(teachers, function (i, a) {
+                        a.label = a.full_name;
+                        c.push(a);
+                      });
+                    response(c);
+                });
+            },
+            focus: function( event, ui ) {
+                    return false;
+                },
+            select: function( event, ui ) {
+                var terms = split(this.value);
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push(ui.item.full_name);
+                // add placeholder to get the comma-and-space at the end
+                terms.push("");
+                selected_advisors.push(ui.item);
+                $( "#advisors" ).val(terms.join(", "));
+                return false;
+            }
+        }).autocomplete( "instance" )._renderItem = function( ul, item ) {
+            return $( "<li>" )
+                .append( "<div>" + item.full_name + "</div>" )
+                .appendTo( ul );
+        };
+
     $('#btnNewThesis').on('click', function(e) {
         $('#thesis_edt').show();
     });
     $('#btnCancelNew').on('click', function(e) {
         $('#thesis_edt').hide();
+    });
+    $('#thesis_edt').submit(function( event ) {
+        event.preventDefault();
+        var $form = $(event.target);
+        var data = {};
+        $.map($form.serializeArray(), function(n, i){
+            data[n['name']] = n['value'];
+        });
+
+        var author = $('#author').autocomplete('instance').selectedItem;
+        data['advisors'] = get_advisors();
+        data['author'] = author.username;
+
+        $.post($form.attr('action'), data);
+
+        //event.preventDefault();
     });
 
     $('#usersTable').on('dbl-click-row.bs.table', function (e, row, $element, field) {

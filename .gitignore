@@ -44,3 +44,6 @@ public/lib
 .DS_Store
 .idea
 *.sqlite
+
+# Ingore certificates folder
+ssl

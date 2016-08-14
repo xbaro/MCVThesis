@@ -132,12 +132,36 @@ router.get('/teachers', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        Model.User.findOne({attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name'],
-            where: {teacher: true}})
-        .then(function(data) {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(data));
-        })
+        if (req.query['term']) {
+            Model.User.findOne({
+                attributes: ['username', 'name', 'surname', 'full_name', 'roles'],
+                where: {teacher: true,
+                    $or: [
+                        {
+                          name: {
+                            $like: '%' + req.query['term'] + '%'
+                          }
+                        },
+                        {
+                          surname: {
+                            $like: '%' + req.query['term'] + '%'
+                          }
+                        }
+                        ]}
+            }).then(function (data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            })
+
+        } else {
+            Model.User.findOne({
+                attributes: ['username', 'name', 'surname', 'full_name', 'roles'],
+                where: {teacher: true}
+            }).then(function (data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            })
+        }
     }
 });
 
@@ -166,10 +190,13 @@ router.post('/new', function (req, res) {
             // request was via https, so redirect to http
             res.redirect('http://' + get_host_http(req) + req.originalUrl);
         } else {
-            Model.Thesis.findAll({ where: {author: req.user.username} })
-            .then(function(data) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(data));
+            var data = req.body;
+            Model.Thesis.create({
+                title: data.title,
+                abstract: data.abstract,
+                keywords: data.keywords,
+                approved: false,
+                authorUsername: data.author
             });
         }
     }
