@@ -7,76 +7,38 @@ block content
     if (message_error)
         +alert("danger") #{message_error}
 
+    #thesis_edt.panel.panel-info.margin-bottom-40(style="display: none;")
+        .panel-heading
+            .panel-title
+                i.fa.fa-edit
+        .panel-body
+            form#formNewThesis(role="form", action="/thesis/new", method="post")
+                .form-group
+                    label(for="author") Author
+                    input#author.form-control(type='text', name="author", placeholder='Author')
+                .form-group
+                    label(for="title") Title
+                    input#title.form-control(type='text', name="title", placeholder='Title')
+                .form-group
+                    label(for="abstract") Abstract
+                    input#abstract.form-control(type='textarea', name="abstract", placeholder='Abstract', required=true)
+                .form-group
+                    label(for="keywords") Keywords
+                    input#keywords.form-control(type='text', name="keywords", placeholder='Keywords')
+                .form-group
+                    label(for="advisors") Advisors
+                    input#advisors.form-control(type='text', name="advisors", placeholder='Advisors')
+                .btn-group
+                    button.btn.btn-default(type='submit', style = "margin-left:10px;") Create
+                    button#btnCancelNew.btn.btn-default(type='button', style = "margin-left:10px;") Cancel
 
-    - var thesis = {title: 'A great Master thesis', author: 'Jon Doe', abstract: 'Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.', keywords: ['key1', 'key2'], advisors: ['first advisor', 'second advisor'] };
     +panel("My Theses", "primary") <button id="btnNewThesis" class="btn btn-default">Create New</button>
-        #thesis_edt.panel.panel-info.margin-bottom-40(style="display: none;")
-            .panel-heading
-                .panel-title
-                    i.fa.fa-edit
-            .panel-body
-                form#formNewThesis(role="form", action="/thesis/new", method="post")
-                    .form-group
-                        label(for="author") Author
-                        input#author.form-control(type='text', name="author", placeholder='Author')
-                    .form-group
-                        label(for="title") Title
-                        input#title.form-control(type='text', name="title", placeholder='Title')
-                    .form-group
-                        label(for="abstract") Abstract
-                        input#abstract.form-control(type='textarea', name="abstract", placeholder='Abstract', required=true)
-                    .form-group
-                        label(for="keywords") Keywords
-                        input#keywords.form-control(type='text', name="keywords", placeholder='Keywords', required=true)
-                    .form-group
-                        label(for="advisors") Advisors
-                        input#advisors.form-control(type='text', name="advisors", placeholder='Advisors', required=true)
-                    .btn-group
-                        button.btn.btn-default(type='submit', style = "margin-left:10px;") Create
-                        button#btnCancelNew.btn.btn-default(type='button', style = "margin-left:10px;") Cancel
 
-        .panel-group
-            .panel.panel-default
-                .panel-heading
-                    .panel-title
-                        p <strong>#{thesis['title']}</strong>
-                        p <i>by #{thesis['author']}</i>
-                .panel-body
-                    p #{thesis['abstract']}
-                    p <strong>Advisors: </strong>
-                        each val, index in thesis['advisors']
-                            +button("info", '', "mini") #{val}
-                    p <strong>Keywords: </strong>
-                        each val, index in thesis['keywords']
-                            +button("success", '', "mini") #{val}
-                .panel-footer
-                    .button-group
-                        button.btn.btn-success Edit
-                        button.btn.btn-error Delete
-            .panel.panel-default
-                .panel-heading
-                    .panel-title
-                        p <strong>#{thesis['title']}</strong>
-                        p <i>by #{thesis['author']}</i>
-                .panel-body
-                    p #{thesis['abstract']}
-                    p <strong>Advisors: </strong>
-                        each val, index in thesis['advisors']
-                            +button("info", '', "mini") #{val}
-                    p <strong>Keywords: </strong>
-                        each val, index in thesis['keywords']
-                            +button("success", '', "mini") #{val}
-                .panel-footer
-                    .button-group
-                        button.btn.btn-success Edit
-                        button.btn.btn-error Delete
+        #panel_myThesis.panel-group
+
     +panel("Advised Theses", "primary")
 
-        .panel.panel-default.margin-bottom-40
-            .panel-heading
-                .panel-title
-                    i.fa.fa-user #{' '} Thesis list
-            .panel-body
+        #panel_advisedThesis.panel-group
 
 block scripts
     script

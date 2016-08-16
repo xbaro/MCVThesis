@@ -24,9 +24,19 @@ Object.keys(db).forEach(function(modelName) {
   }
 });
 
-db.User.belongsToMany(db.Thesis, { through: 'Advisors'});
-db.User.belongsToMany(db.Thesis, { through: 'Committee'});
-db.Thesis.belongsTo(db.User, { as: 'author'});
+db.User.belongsToMany(db.Thesis, { through: 'Advisors', as: 'Advisor'});
+db.Thesis.belongsToMany(db.User, { through: 'Advisors', as: 'Advised'});
+
+db.User.belongsToMany(db.Thesis, { through: 'Committee', as:'Committee'});
+db.Thesis.belongsToMany(db.User, { through: 'Committee', as:'Reviewed'});
+
+db.User.hasMany(db.Thesis, {as: 'Author'});
+db.Thesis.belongsTo(db.User);
+
+//db.User.hasMany(db.Thesis, {as: 'Author'});
+//db.User.belongsTo(db.Thesis, { as: 'Author', constraints: false, foreignKey: 'username' });
+
+
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
