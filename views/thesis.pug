@@ -21,7 +21,8 @@ block content
                     input#title.form-control(type='text', name="title", placeholder='Title')
                 .form-group
                     label(for="abstract") Abstract
-                    input#abstract.form-control(type='textarea', name="abstract", placeholder='Abstract', required=true)
+                    //input#abstract.form-control(type='textarea', name="abstract", placeholder='Abstract', required=true)
+                    textarea#abstract.form-control(rows="10", name="abstract", placeholder='Abstract', required=true)
                 .form-group
                     label(for="keywords") Keywords
                     input#keywords.form-control(type='text', name="keywords", placeholder='Keywords')

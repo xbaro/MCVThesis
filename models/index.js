@@ -33,12 +33,36 @@ db.Thesis.belongsToMany(db.User, { through: 'Committee', as:'Reviewed'});
 db.User.hasMany(db.Thesis, {as: 'Author'});
 db.Thesis.belongsTo(db.User);
 
-//db.User.hasMany(db.Thesis, {as: 'Author'});
-//db.User.belongsTo(db.Thesis, { as: 'Author', constraints: false, foreignKey: 'username' });
+db.Period.hasMany(db.Track);
+db.Track.belongsTo(db.Period);
 
+db.Track.hasMany(db.Slot);
+db.Slot.belongsTo(db.Track);
 
+db.Slot.hasMany(db.Thesis);
+db.Thesis.belongsTo(db.Slot);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+db.getConfigSync = function() {
+  var ret_val = null;
+  db.Config.findAll().then(function(data) {
+    if(data) {
+      ret_val = data[0];
+    } else {
+      db.Config.create().then(function (data) {
+        if (data) {
+          ret_val = data;
+        } else {
+          ret_val = {};
+        }
+      });
+    }
+  });
+  while(!ret_val);
+
+  return ret_val;
+};
 
 module.exports = db;

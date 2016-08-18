@@ -48,4 +48,27 @@ router.get('/', function (req, res) {
     }    
 });
 
+/* GET configuration */
+router.get('/config', function (req, res) {
+    Model.Config.findAll().then(function(data) {
+        if(data) {
+            if (data.length > 0) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data[0]));
+            } else {
+                Model.Config.create().then(function (data) {
+                    if (data) {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify(data));
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify({}));
+                    }
+                });
+            }
+        }
+    });
+});
+
+
 module.exports = router;

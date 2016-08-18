@@ -8,104 +8,176 @@ block content
     if (message_error)
         +alert("danger") #{message_error}
 
+    #userFormModal.modal(tabindex="-1", role="dialog", aria-labelledby="userModalLabel" aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4#userModalLabel.modal-title User data
+                #user_modalBody.modal-body
+                    .row#userFormBox
+                        col-md-12
+                            form#userForm.form-horizontal
+                                .form-group
+                                    label.col-md-4.control-label(for="user_username") Username
+                                    .col-md-6
+                                        input#user_username.form-control(type='text', name="username", placeholder='Username', readonly=true)
+                                .form-group
+                                    label.col-md-4.control-label(for="user_name") Name
+                                    .col-md-6
+                                        input#user_name.form-control(type='text', name="name", placeholder='Name', required=true)
+                                .form-group
+                                    label.col-md-4.control-label(for="user_surname") Surname
+                                    .col-md-6
+                                        input#user_surname.form-control(type='text', name="surname", placeholder='Surname', required=true)
+                                .form-group
+                                    label.col-md-4.control-label(for="user_organization") Organization
+                                    .col-md-6
+                                        input#user_organization.form-control(type='text', name="organization", placeholder='Organization/affiliation')
+                                .form-group
+                                    label.col-md-4.control-label(for="user_email") eMail
+                                    .col-md-6
+                                        input#user_email.form-control(type='email', name="email", placeholder='eMail')
+                                .form-group
+                                    label.col-md-4.control-label(for="user_roles") Roles
+                                    .col-md-6
+                                        //input#user_roles.form-control(type="text", name='roles', placeholder="Roles")
+                                        select#user_roles.form-control(name="roles", data-btn-class="", data-size="auto")
+                                            option(value="student", selected) student
+                                            option(value="teacher") teacher
+                                            option(value="admin, teacher") admin, teacher
+                                            option(value="admin") admin
+                                .form-group
+                                    label.col-md-4.control-label(for="user_keywords") Keywords
+                                    .col-md-6
+                                        input#user_keywords.form-control(type="text", name='keywords', placeholder="Keywords")
+                                .form-group
+                                    label.col-md-4.control-label(for="user_password_group") Password
+                                    .col-lg-6
+                                        .input-group#user_password_group
+                                            span.input-group-addon
+                                                input#user_change_psw(type="checkbox" value="")
+                                            input#user_password.form-control(type="password", name='keywords', placeholder="Password", disabled)
+                                        p#user_passwordHelpBlock.form-text.text-muted
+                                            | If no password is provided, the user will be created with the default password <strong>mcv_2016</strong>
+
+
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-dismiss="modal") Close
+                    button#btnAcceptUser.btn.btn-primary(type="button" data-action="none") Save changes
+
+    #periodFormModal.modal(tabindex="-1", role="dialog", aria-labelledby="periodModalLabel" aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4#periodModalLabel.modal-title Period data
+                .modal-body
+                    #period_modalBody.modal-body
+                        .row#periodFormBox
+                            col-md-12
+                                form#periodForm.form-horizontal
+                                    input#period_id(type="hidden" name="id")
+                                    .form-group
+                                        label.col-md-4.control-label(for="period_title") Title
+                                        .col-md-6
+                                            input#period_title.form-control(type='text', name="title", placeholder='Title', required=true)
+                                    .form-group
+                                        label.col-md-4.control-label(for="period_start") Start date
+                                        .col-md-6
+                                            input#period_start.form-control(name="start", type="date", placeholder="Start date")
+                                    .form-group
+                                        label.col-md-4.control-label(for="period_end") End Date
+                                        .col-md-6
+                                            input#period_end.form-control(name="end", type="date", placeholder="End date")
+
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-dismiss="modal") Close
+                    button#btnAcceptPeriod.btn.btn-primary(type="button") Save changes
+
     +panel("User management", "primary")
+        #userForm_messages
         p Allow to create new users, or assign the roles to existing users:
         ul
             li <strong>Teacher:</strong> Can create new theses and require to be in the committee of an existing thesis
-            li <strong>Admin:</strong> Can create new user, change the roles of the users.
-        .panel.panel-default.margin-bottom-40
-            .panel-heading
-                .panel-title
-                    i.fa.fa-user #{' '} Create new user
-            .panel-body
-                form.form-inline(role="form", action="/admin/user/new", method="post")
-                    .form-group
-                        label.sr-only(for="username") Username
-                        input#username.form-control(type='text', name="username", placeholder='Username', required=true)
-                    .form-group
-                        label.sr-only(for="name") Name
-                        input#name.form-control(type='text', name="name", placeholder='Name', required=true)
-                    .form-group
-                        label.sr-only(for="surname") Surname
-                        input#surname.form-control(type='text', name="surname", placeholder='Surname', required=true)
-                    .form-group
-                        label.sr-only(for="organization") Organization
-                        input#organization.form-control(type='text', name="organization", placeholder='Organization/affiliation', required=true)
-                    .form-group
-                        label.sr-only(for="password") Password
-                        input#password.form-password.form-control(type='password', name="password", placeholder='Password', required=true)
-                    .form-group
-                        label.sr-only(for="email") email
-                        input#email.form-control(type='email', name="email", placeholder='eMail', required=true)
-                    .form-group
-                        label.sr-only(for="roles") roles
-                        input#roles.form-control(type="text", name='roles', placeholder="Roles")
-                    .form-group
-                        label.sr-only(for="keywords") keywords
-                        input#keywords.form-control(type="text", name='keywords', placeholder="Keywords")
-                    .btn-group
-                        button.btn.btn-default(type='submit', style = "margin-left:10px;") Create
+            li <strong>Admin:</strong> Can create new user, change the roles of the users. Can create periods, tracks and slots.
+
+        #usersTable-toolbar
+            .form-inline(role="form")
+                .btn-group
+                    button#btnAddUser.btn.btn-default.btn-lg(type="button", data-action="add")
+                        span.glyphicon.glyphicon-plus-sign(aria-hidden="true")
+                    button#btnEditUser.btn.btn-default.btn-lg.disabled(type="button", data-action="edit")
+                        span.glyphicon.glyphicon-pencil(aria-hidden="true")
+                    button#btnDelUser.btn.btn-danger.btn-lg.disabled(type="button")
+                        span.glyphicon.glyphicon-trash(aria-hidden="true")
+
+        table#usersTable(data-toggle="table", data-url="/admin/users", data-sort-name="surname",
+                data-sort-order="asc", data-pagination="true", data-search="true", data-page-list="[5, 10, 20, 50, 100, 200]",
+                data-toolbar="#usersTable-toolbar", data-show-refresh="true", data-show-toggle="false", data-show-columns="true",
+                data-click-to-select="true", data-select-item-name="selUser", data-page-size="5")
+            thead
+                tr
+                    th(data-field="state" data-radio="true" data-switchable="false")
+                    th(data-field="username", data-sortable="true" data-switchable="false") Username
+                    th(data-field="name", data-sortable="true") Name
+                    th(data-field="surname", data-sortable="true") Surname
+                    th(data-field="email") Email
+                    th(data-field="organization", data-sortable="true") Organization
+                    th(data-field="roles") Roles
+                    th(data-field="keywords") Keywords
+
+
+    +panel("Schedule management", "primary")
+        #periodForm_messages
+        p Allow to create and organize the evaluation slots:
+            ul
+                li <strong>Period:</strong> Evaluation period, when theses can be defended. Each period have different thematic tracks.
+                li <strong>Track:</strong> Logic aggregation of theses with similar topics. Each track have different defense slots.
+                li <strong>Track:</strong> Place and moment when a thesis can be defended.
 
         .panel.panel-default.margin-bottom-40
             .panel-heading
                 .panel-title
-                    i.fa.fa-users #{' '} Modify existing users
+                    i.fa.fa-calendar #{' '} Periods
             .panel-body
-                p Select a user from the table with doble click to edit the details or remove.
+                #periodTable-toolbar
+                    .form-inline(role="form")
+                        .btn-group
+                            button#btnAddPeriod.btn.btn-default.btn-lg(type="button")
+                                span.glyphicon.glyphicon-plus-sign(aria-hidden="true")
+                            button#btnEditPeriod.btn.btn-default.btn-lg.disabled(type="button")
+                                span.glyphicon.glyphicon-pencil(aria-hidden="true")
+                            button#btnDelPeriod.btn.btn-danger.btn-lg.disabled(type="button")
+                                span.glyphicon.glyphicon-trash(aria-hidden="true")
 
-                #user_edt.panel.panel-default.margin-bottom-40(style="display: none;")
+                table#periodsTable(data-toggle="table", data-url="/admin/periods", data-sort-name="start",
+                            data-page-list="[5, 10, 20, 50, 100, 200]", data-page-size="5",
+                            data-sort-order="desc", data-click-to-select="true", data-select-item-name="selPeriod",
+                            data-pagination="true", data-search="true", data-toolbar="#periodTable-toolbar",
+                            data-show-refresh="true", data-show-toggle="false", data-show-columns="true")
+                    thead
+                        tr
+                            th(data-field="state" data-radio="true")
+                            th(data-field="id", data-sortable="true", data-visible="false") Id
+                            th(data-field="title", data-sortable="true") Period
+                            th(data-field="start", data-sortable="true", data-formatter="dateFormatter") Start Date
+                            th(data-field="end", data-sortable="true", data-formatter="dateFormatter") End Date
+                            th(data-field="active", data-sortable="true") Active
+                            th(data-field="closed", data-sortable="true") Closed
+
+                #track_panel.panel.panel-info.margin-bottom-40(style="display: none;")
                     .panel-heading
                         .panel-title
                             i.fa.fa-edit
                     .panel-body
-                        form#user_edt_form(role="form", action="/admin/user/update", method="post")
-                            .form-group
-                                label(for="username_edt") Username
-                                input#username_edt.form-control(type='text', name="username", placeholder='Username', readonly=true)
-                            .form-group
-                                label(for="name_edt") Name
-                                input#name_edt.form-control(type='text', name="name", placeholder='Name', required=true)
-                            .form-group
-                                label(for="surname_edt") Surname
-                                input#surname_edt.form-control(type='text', name="surname", placeholder='Surname', required=true)
-                            .form-group
-                                label(for="organization_edt") Organization
-                                input#organization_edt.form-control(type='text', name="organization", placeholder='Organization/affiliation', required=true)
-                            .form-group
-                                label(for="email_edt") email
-                                input#email_edt.form-control(type='email', name="email", placeholder='eMail', required=true)
-                            .form-group
-                                label(for="roles_edt") roles
-                                input#roles_edt.form-control(type="text", name='roles', placeholder="Roles")
-                            .form-group
-                                label(for="keywords_edt") keywords
-                                input#keywords_edt.form-control(type="text", name='keywords', placeholder="Keywords")
-                            .btn-group
-                                button.btn.btn-default(type='submit', style = "margin-left:10px;") Update
-                                button#cancel_user.btn(type='button', style = "margin-left:10px;") Cancel
-                                button#delete_user.btn.btn-danger(type='button', style = "margin-left:10px;") Delete
-
-                table#usersTable(data-toggle="table", data-url="/admin/users", data-sort-name="username"
-                data-sort-order="asc")
-                    thead
-                        tr
-                            th(data-field="username", data-sortable="true") Username
-                            th(data-field="name", data-sortable="true") Name
-                            th(data-field="surname", data-sortable="true") Surname
-                            th(data-field="email") Email
-                            th(data-field="organization", data-sortable="true") Organization
-                            th(data-field="roles") Roles
-
-
-    +panel("Schedule management", "primary")
-        p Test
-        .panel.panel-default.margin-bottom-40
-            .panel-heading
-                .panel-title
-                    i.fa.fa-user #{' '} Create new user
-        .panel-body
 
 
 block scripts
     script
         include ../public/js/admin/scripts.js
+        include ../public/js/admin/users.js
+        include ../public/js/admin/periods.js
+        include ../public/js/admin/tracks.js

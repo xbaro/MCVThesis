@@ -4,10 +4,10 @@ jQuery(document).ready(function() {
     var selected_advisors=[];
 
     function split( val ) {
-      return val.split( /,\s*/);
+        return val.split( /,\s*/);
     }
     function extractLast( term ) {
-      return split( term ).pop();
+        return split( term ).pop();
     }
     function addThesis(thesis, suffix , parent) {
 
@@ -71,8 +71,13 @@ jQuery(document).ready(function() {
             }
         } else {
             var footer_btn = $('<div>').addClass('button-group').appendTo(footer);
-            $('<button>').addClass('btn').addClass('btn-success').addClass('edit-thesis').append("Edit").appendTo(footer_btn);
-            $('<button>').addClass('btn').addClass('btn-danger').addClass('del-thesis').append("Delete").appendTo(footer_btn);
+
+            if (current_user.teacher || current_user.admin || current_user.config.students_edit) {
+                $('<button>').addClass('btn').addClass('btn-success').addClass('edit-thesis').append("Edit").appendTo(footer_btn);
+            }
+            if (current_user.teacher || current_user.admin || current_user.config.students_delete) {
+                $('<button>').addClass('btn').addClass('btn-danger').addClass('del-thesis').append("Delete").appendTo(footer_btn);
+            }
 
             if ((current_user.teacher || current_user.admin)) {
                 $('<button>').addClass('btn').addClass('btn-info').addClass('approve-thesis').append("Approve").appendTo(footer_btn);
@@ -83,6 +88,12 @@ jQuery(document).ready(function() {
     function getThesisId(event) {
         var div_id=event.target.closest('.panel').attributes['id'].value;
         return parseInt(div_id.split('_')[1]);
+    }
+
+    function setAutocompletCurrentValue(id, value) {
+       $(id).val(value);
+       var textToShow = $(id).find(":selected").text();
+       $(id).parent().find("span").find("input").val(textToShow);
     }
 
     function showTheses() {
@@ -103,12 +114,13 @@ jQuery(document).ready(function() {
                 });
 
                 $('.del-thesis').on('click', function(e) {
-                    var r = confirm("You will remove the thesis and all its related information.");
-                    if (r == true) {
-                        $.post("/thesis/" + getThesisId(e) + "/delete", 'json').done(function (data) {
-                            showTheses();
-                        });
-                    }
+                    bootbox.confirm("You will remove the thesis and all its related information.", function(result) {
+                        if(result) {
+                            $.post("/thesis/" + getThesisId(e) + "/delete", 'json').done(function (data) {
+                                showTheses();
+                            });
+                        }
+                    });
                 });
 
                 $('.approve-thesis').on('click', function(e) {
@@ -167,14 +179,27 @@ jQuery(document).ready(function() {
 
     $.get( "/thesis/user_data").done(function( data ) {
         current_user = data;
-        showTheses();
-        if (data.teacher || data.admin) {
+        $.get( "/config").done(function( conf ) {
+            current_user.conf = conf;
+            showTheses();
+            if (data.teacher || data.admin) {
+                $('#btnNewThesis').show();
+                if (!data.admin) {
+                    $("#advisors").val(current_user.full_name + ', ');
+                    var item = current_user;
+                    item.label = item.full_name;
+                    selected_advisors.push(item);
+                }
+            } else {
+                $("#author").val(current_user.full_name);
+                $("#author").autocomplete('disable');
+                $('#author').prop('readonly', true);
 
-        } else {
-            $("#author").val(current_user.full_name);
-            $("#author").autocomplete('disable');
-            $('#author').prop('readonly', true);
-        }
+                if (!conf.students_create) {
+                    $('#btnNewThesis').hide();
+                }
+            }
+        });
     });
 
     $("#advisors").on( "keydown", function( event ) {
@@ -204,14 +229,20 @@ jQuery(document).ready(function() {
                     return false;
                 },
             select: function( event, ui ) {
-                var terms = split(this.value);
-                // remove the current input
-                terms.pop();
-                // add the selected item
-                terms.push(ui.item.full_name);
-                // add placeholder to get the comma-and-space at the end
-                terms.push("");
                 selected_advisors.push(ui.item);
+                var terms = [];
+                $.each(selected_advisors, function (i,u){
+                    terms.push(u.full_name);
+                });
+
+                //var terms = split(this.value);
+                // remove the current input
+                //terms.pop();
+                // add the selected item
+                //terms.push(ui.item.full_name);
+                // add placeholder to get the comma-and-space at the end
+                //terms.push("");
+                //selected_advisors.push(ui.item);
                 $( "#advisors" ).val(terms.join(", "));
                 return false;
             }
@@ -220,6 +251,16 @@ jQuery(document).ready(function() {
                 .append( "<div>" + item.full_name + "</div>" )
                 .appendTo( ul );
         };
+
+    $('#abstract').wysihtml5({
+        "events":      {
+            "load": function () {
+                jQuery('.wysihtml5').addClass('nicehide');
+            }
+        }
+    });
+
+    $('#abstract').val('');
 
     $('#btnNewThesis').on('click', function(e) {
         $('#thesis_edt').show();
@@ -252,7 +293,8 @@ jQuery(document).ready(function() {
             dataType: "json"
         }).done(function(data) {
             $('#btnNewThesis').show();
-            showThesis();
+            $('#thesis_edt').hide();
+            showTheses();
         });
     });
 });

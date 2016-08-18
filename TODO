@@ -5,3 +5,6 @@
 - Keywords as tokens to facilitate assignation of committees
 - Institutions as tokens to facilitate the assignation of committees
 - Add a link between LTI users and normal users
+- Enable mail support
+- Send e-mail on user creation with random password
+- Change login/registration bg image with one related to the master

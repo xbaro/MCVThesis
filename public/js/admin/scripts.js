@@ -1,103 +1,138 @@
+/*******************************
+* Util functions
+*******************************/
+function dateFormatter(value, row) {
+    if(value) {
+        return new Date(value).toLocaleDateString();
+    }
+    return '';
+}
+
+// Serrialize a form to a JSON object
+$.fn.serializeFormJSON = function () {
+
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function () {
+        if (o[this.name]) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
+// Get a date value in the allowed format for date inputs
+$.fn.getFormatedDate = function () {
+    var date = new Date(this.val());
+
+    var day = ("0" + date.getDate()).slice(-2);
+    var month = ("0" + (date.getMonth() + 1)).slice(-2);
+
+    return date.getFullYear() + "-" + (month) + "-" + (day);
+}
+
+// Assign a date to a date input
+$.fn.setFormatedDate = function (date) {
+    if(date) {
+        var date = new Date(date);
+
+        var day = ("0" + date.getDate()).slice(-2);
+        var month = ("0" + (date.getMonth() + 1)).slice(-2);
+
+        this.val(date.getFullYear() + "-" + (month) + "-" + (day));
+    } else {
+        this.val('');
+    }
+}
+
+/*
 jQuery(document).ready(function() {
-    var roles = ['admin','teacher'];
 
-    $('#keywords').tokenfield();
-    $('#keywords_edt').tokenfield();
+    $('#periodsTable').on('check.bs.table', function (e, row, $element) {
+        var start = new Date(row.start);
+        var end = new Date(row.end);
 
-	$('#roles').tokenfield({
-		  autocomplete: {
-			source: roles,
-			delay: 100
-		  },
-		  showAutocompleteOnFocus: true
-	});
+        var s_day = ("0" + start.getDate()).slice(-2);
+        var s_month = ("0" + (start.getMonth() + 1)).slice(-2);
+        var s_value = start.getFullYear()+"-"+(s_month)+"-"+(s_day) ;
 
-    $('#roles_edt').tokenfield({
-		  autocomplete: {
-			source: roles,
-			delay: 100
-		  },
-		  showAutocompleteOnFocus: true
-	});
+        var e_day = ("0" + end.getDate()).slice(-2);
+        var e_month = ("0" + (end.getMonth() + 1)).slice(-2);
+        var e_value = end.getFullYear()+"-"+(e_month)+"-"+(e_day) ;
 
-    $('#roles').on('tokenfield:createtoken', function (event) {
-        var exists = true;
-        $.each(roles, function(index, token) {
-            if (token === event.attrs.value)
-                exists = false;
-        });
-        if(exists === true) {
-            event.preventDefault();
-        } else {
-            exists = false;
-            var selected = [].concat($(event.currentTarget).tokenfield('getTokensList'));
-            $.each(selected, function (index, token) {
-                if (token === event.attrs.value)
-                    exists = true;
+        $('#periodTitle').val(row.title);
+        $('#start').val(s_value);
+        $('#end').val(e_value);
+
+        $('#btnEditPeriod').removeClass('disabled');
+        $('#btnDelPeriod').removeClass('disabled');
+    });
+
+    $(function () {
+        var periodForm = $('#periodFormBox');
+
+        var periodWindow = bootbox.dialog({
+                title: "Add new Period",
+                message: periodForm,
+                show: false,
+                buttons: {
+                    success: {
+                        label: "Create",
+                        className: "btn-success",
+                        callback: function () {
+                            var  title= $('#periodTitle').val();
+                            var start = $('#start').val();
+                            var end = $('#end').val();
+                            alert('default');
+                        }
+                    }
+                }
             });
-            if (exists === true)
-                event.preventDefault();
-        }
-    });
 
-    $('#roles_edt').on('tokenfield:createtoken', function (event) {
-        var exists = true;
-        $.each(roles, function (index, token) {
-            if (token === event.attrs.value)
-                exists = false;
-        });
-        if (exists === true) {
-            event.preventDefault();
-        } else {
-            exists = false;
-            var selected = [].concat($(event.currentTarget).tokenfield('getTokensList'));
-            $.each(selected, function (index, token) {
-                if (token === event.attrs.value)
-                    exists = true;
+        $('#btnAddPeriod').on('click', function(e) {
+            bootbox.dialog({
+                title: "Add new Period",
+                message: periodForm,
+                buttons: {
+                    success: {
+                        label: "Create",
+                        className: "btn-success",
+                        callback: function () {
+                            var  title= $('#periodTitle').val();
+                            var start = $('#start').val();
+                            var end = $('#end').val();
+                            alert('created');
+                        }
+                    }
+                }
             });
-            if (exists === true)
-                event.preventDefault();
-        }
-    });
+        });
 
-
-
-    $('#usersTable').on('dbl-click-row.bs.table', function (e, row, $element, field) {
-        $('#username_edt').val(row.username);
-        $('#name_edt').val(row.name);
-        $('#surname_edt').val(row.surname);
-        $('#email_edt').val(row.email);
-        $('#organization_edt').val(row.organization);
-        $('#roles_edt').tokenfield('setTokens', row.roles);
-        $('#keywords_edt').tokenfield('setTokens', row.keywords);
-
-        $('#user_edt').show();
-        $('html, body').animate({
-            scrollTop: $("#user_edt").offset().top
-        }, 2000);
-    });
-
-    $('#delete_user').on('click', function(e) {
-        var r = confirm("You will remove the user " + $('#username_edt').val() + " and all related assignations.");
-        if (r == true) {
-            var username = $('#username_edt').val();
-            $.post( "/admin/user/delete", { username:  username} )
-                .done(function( data ) {
-                    $('#user_edt').hide();
-                    $('#usersTable').bootstrapTable('refresh');
-                    $('html, body').animate({
-                        scrollTop: $("#usersTable").offset().top
-                    }, 2000);
-
-                });
-        }
-    });
-
-    $('#cancel_user').on('click', function(e) {
-        $('#user_edt').hide();
-        $('html, body').animate({
-            scrollTop: $("#usersTable").offset().top
-        }, 2000);
+        $('#btnEditPeriod').on('click', function(e) {
+            bootbox.dialog({
+                title: "Edit Period",
+                message: periodForm,
+                buttons: {
+                    success: {
+                        label: "Update",
+                        className: "btn-success",
+                        callback: function () {
+                            var  title= $('#periodTitle').val();
+                            var start = $('#start').val();
+                            var end = $('#end').val();
+                            alert('created');
+                        }
+                    }
+                }
+            });
+        });
     });
 
 });
+
+*/

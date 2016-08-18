@@ -9,12 +9,20 @@ html
         link(rel='stylesheet', href='/lib/jquery-ui/themes/base/jquery-ui.min.css')
         link(rel='stylesheet', href='/lib/jquery-ui/themes/base/autocomplete.css')
         link(rel='stylesheet', href='/lib/bootstrap/dist/css/bootstrap.min.css')
+        link(rel="stylesheet" href="/lib/bootstrap-modal/css/bootstrap-modal.css")
+        link(rel="stylesheet" href="/lib/bootstrap-combobox/css/bootstrap-combobox.css")
         link(rel="stylesheet" href="/lib/bootstrap-table/dist/bootstrap-table.min.css")
         link(rel="stylesheet" href="/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.css")
         link(rel="stylesheet" href="/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css")
         link(rel="stylesheet" href="/lib/jquery.tagsinput/dist/jquery.tagsinput.min.css")
         link(rel="stylesheet" href="/lib/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.min.css")
         link(rel="stylesheet" href="/lib/bootstrap-tokenfield/dist/css/tokenfield-typeahead.min.css")
+        link(rel="stylesheet" href="/lib/bootstrap-wysihtml5/lib/css/wysiwyg-color.css")
+        link(rel="stylesheet" href="/lib/bootstrap-wysihtml5/lib/css/prettify.css")
+        link(rel="stylesheet" href="/lib/bootstrap-wysihtml5/dist/bootstrap-wysihtml5-0.0.2.css")
+        link(rel="stylesheet" href="/lib/bootstrap-treeview/dist/bootstrap-treeview.min.css")
+        link(rel="stylesheet" href="/lib/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css")
+        //link(rel="stylesheet" href="/lib/bootstrap-modal/css/bootstrap-modal-bs3patch.css")
         link(rel="stylesheet" href="/stylesheets/footer.css")
     body
         +nav("MCV Thesis", "dropdown_menu")
@@ -32,6 +40,8 @@ html
                 +nav_item("/auth/signin", "login") Login
                 +nav_item("/auth/signup", "register") Register
         block content
+        script( src='/lib/bootstrap-wysihtml5/lib/js/wysihtml5-0.3.0.min.js')
+        script( src='/lib/bootstrap-wysihtml5/lib/js/prettify.js')
         script( src='/lib/jquery/dist/jquery.min.js' )
         script( src='/lib/jquery-ui/jquery-ui.min.js' )
         script( src='/lib/bootstrap/dist/js/bootstrap.min.js' )
@@ -39,6 +49,15 @@ html
         script( src='/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js' )
         script( src='/lib/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js' )
         script( src='/lib/typeahead.js/dist/bloodhound.min.js' )
+        script( src='/lib/bootstrap-wysihtml5/dist/bootstrap-wysihtml5-0.0.2.min.js')
+        script( src='/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js')
+        script( src='/lib/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
+        script( src='/lib/bootstrap-modal/js/bootstrap-modal.js')
+        script( src='/lib/bootstrap-modal/js/bootstrap-modalmanager.js')
+        script( src='/lib/bootstrap-combobox/js/bootstrap-combobox.js')
+        script( src='/lib/bootbox.js/bootbox.js' )
+        script( src='/lib/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js')
+
         block scripts
         footer
             .container

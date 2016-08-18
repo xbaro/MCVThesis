@@ -7,7 +7,8 @@ module.exports = function(sequelize, DataTypes) {
         title: DataTypes.STRING,
         abstract: DataTypes.TEXT,
         keywords: DataTypes.STRING,
-        approved: DataTypes.BOOLEAN
+        approved: DataTypes.BOOLEAN,
+        order: DataTypes.INTEGER
     });
 
     //Thesis.hasMany(models.User, {as: 'Advisors'})

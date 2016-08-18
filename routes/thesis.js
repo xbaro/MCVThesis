@@ -2,7 +2,6 @@
 var router = express.Router();
 var Model = require('../models');
 
-
 function get_host_http(req) {
     var port = req.app.get('port')
     var host = req.headers.host;
@@ -37,6 +36,7 @@ function get_host_https(req) {
     return host + ':' + port;
 }
 
+
 router.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
@@ -54,7 +54,7 @@ router.get('/user_data', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        Model.User.findOne({attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name'],
+        Model.User.findOne({attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name', 'student'],
             where: {username: req.user.username}})
         .then(function(data) {
             res.setHeader('Content-Type', 'application/json');
