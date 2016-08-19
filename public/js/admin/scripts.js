@@ -8,6 +8,10 @@ function dateFormatter(value, row) {
     return '';
 }
 
+function strCapitalize(str) {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
 // Serrialize a form to a JSON object
 $.fn.serializeFormJSON = function () {
 
@@ -34,7 +38,7 @@ $.fn.getFormatedDate = function () {
     var month = ("0" + (date.getMonth() + 1)).slice(-2);
 
     return date.getFullYear() + "-" + (month) + "-" + (day);
-}
+};
 
 // Assign a date to a date input
 $.fn.setFormatedDate = function (date) {
@@ -48,7 +52,16 @@ $.fn.setFormatedDate = function (date) {
     } else {
         this.val('');
     }
-}
+};
+$.fn.setFormatedTime = function (date) {
+    if(date) {
+        var date = new Date(date);
+
+        this.val(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ':' + ("0" + date.getSeconds()).slice(-2));
+    } else {
+        this.val('');
+    }
+};
 
 /*
 jQuery(document).ready(function() {

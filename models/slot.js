@@ -2,6 +2,12 @@
 
 module.exports = function(sequelize, DataTypes) {
     var Slot = sequelize.define("Slot", {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            unique: true,
+            autoIncrement: true
+        },
         place:  DataTypes.STRING,
         start: DataTypes.DATE,
         end: DataTypes.DATE,

@@ -8,6 +8,8 @@ jQuery(document).ready(function() {
         // Activate the buttons
         $('#btnEditPeriod').removeClass('disabled');
         $('#btnDelPeriod').removeClass('disabled');
+        $('#slots_panel').show();
+        showTree();
     });
 
     /*******************************
@@ -18,6 +20,7 @@ jQuery(document).ready(function() {
         // Disable the buttons
         $('#btnEditPeriod').addClass('disabled');
         $('#btnDelPeriod').addClass('disabled');
+        $('#slots_panel').hide();
 
         // Reset the form data
         $('#periodFormModal').find('form').trigger("reset");
@@ -69,6 +72,7 @@ jQuery(document).ready(function() {
                                     // Deactivate the buttons
                                     $('#btnEditUser').addClass('disabled');
                                     $('#btnDelUser').addClass('disabled');
+                                    $('#slots_panel').hide();
 
                                     // Reload the table data
                                     $('#periodsTable').bootstrapTable('refresh');
@@ -150,6 +154,7 @@ jQuery(document).ready(function() {
                 // Deactivate the buttons
                 $('#btnEditPeriod').addClass('disabled');
                 $('#btnDelPeriod').addClass('disabled');
+                $('#slots_panel').hide();
 
                 // Reload the table data
                 $('#periodsTable').bootstrapTable('refresh');

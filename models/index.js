@@ -33,11 +33,11 @@ db.Thesis.belongsToMany(db.User, { through: 'Committee', as:'Reviewed'});
 db.User.hasMany(db.Thesis, {as: 'Author'});
 db.Thesis.belongsTo(db.User);
 
-db.Period.hasMany(db.Track);
-db.Track.belongsTo(db.Period);
+db.Period.hasMany(db.Track, {onDelete: 'CASCADE'});
+db.Track.belongsTo(db.Period, {onDelete: 'CASCADE'});
 
-db.Track.hasMany(db.Slot);
-db.Slot.belongsTo(db.Track);
+db.Track.hasMany(db.Slot, {onDelete: 'CASCADE'});
+db.Slot.belongsTo(db.Track, {onDelete: 'CASCADE'});
 
 db.Slot.hasMany(db.Thesis);
 db.Thesis.belongsTo(db.Slot);

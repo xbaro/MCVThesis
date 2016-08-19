@@ -96,6 +96,88 @@ block content
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-dismiss="modal") Close
                     button#btnAcceptPeriod.btn.btn-primary(type="button") Save changes
+    #trackFormModal.modal(tabindex="-1", role="dialog", aria-labelledby="trackModalLabel" aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4#trackModalLabel.modal-title Track data
+                .modal-body
+                    #track_modalBody.modal-body
+                        .row#trackFormBox
+                            col-md-12
+                                form#trackForm.form-horizontal
+                                    input#track_id(type="hidden" name="id")
+                                    input#track_period_id(type="hidden" name="period_id")
+                                    .form-group
+                                        label.col-md-4.control-label(for="track_title") Title
+                                        .col-md-6
+                                            input#track_title.form-control(type='text', name="title", placeholder='Title', required=true)
+                                    .form-group
+                                        label.col-md-4.control-label(for="track_keywords") Keywords
+                                        .col-md-6
+                                            input#track_keywords.form-control(name="keywords", type="text", placeholder="Keywords")
+
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-dismiss="modal") Close
+                    button#btnAcceptTrack.btn.btn-primary(type="button") Save changes
+
+    #slotFormModal.modal(tabindex="-1", role="dialog", aria-labelledby="slotModalLabel" aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4#slotModalLabel.modal-title Slot data
+                .modal-body
+                    #slot_modalBody.modal-body
+                        .row#slotFormBox
+                            col-md-12
+                                form#slotForm.form-horizontal
+                                    input#slot_id(type="hidden" name="id")
+                                    input#slot_track_id(type="hidden" name="track_id")
+                                    .form-group
+                                        label.col-md-4.control-label(for="slot_place") Place
+                                        .col-md-6
+                                            input#slot_place.form-control(type='text', name="place", placeholder='Place', required=true)
+                                            p.form-text.text-muted
+                                                | Address, building, room name.
+                                    //.form-group
+                                        label.col-md-4.control-label(for="slot_start") Start date
+                                        .col-md-6
+                                            .input-group
+                                                span.input-group-addon
+                                                    input#slot_start_date.form-control(name="start_date", type="date", placeholder="Start date")
+                                                    input#slot_start_time.form-control(name="start_time", type="time", placeholder="Start time")
+                                    //.form-group
+                                        label.col-md-4.control-label(for="slot_end") End Date
+                                        .col-md-6
+                                            .input-group
+                                                span.input-group-addon
+                                                    input#slot_end_date.form-control(name="end_date", type="date", placeholder="End date")
+                                                    input#slot_end_time.form-control(name="end_time", type="time", placeholder="End time")
+                                    .form-group
+                                        label.col-md-4.control-label(for="slot_date") Date
+                                        .col-md-6
+                                            input#slot_date.form-control(name="date", type="date", placeholder="Date")
+                                    .form-group
+                                        label.col-md-4.control-label(for="slot_start_time") Start time
+                                        .col-md-6
+                                            input#slot_start_time.form-control(name="start_time", type="time", placeholder="Start")
+                                    .form-group
+                                        label.col-md-4.control-label(for="slot_end_time") Start time
+                                        .col-md-6
+                                            input#slot_end_time.form-control(name="end_time", type="time", placeholder="End")
+                                    .form-group
+                                        label.col-md-4.control-label(for="slot_capacity") Capacity
+                                        .col-md-6
+                                            input#slot_capacity.form-control(type='text', name="capacity", placeholder='Capacity', required=true)
+                                            p.form-text.text-muted
+                                                | Number of theses that can be defended in this slot
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-dismiss="modal") Close
+                    button#btnAcceptSlot.btn.btn-primary(type="button") Save changes
 
     +panel("User management", "primary")
         #userForm_messages
@@ -168,12 +250,24 @@ block content
                             th(data-field="active", data-sortable="true") Active
                             th(data-field="closed", data-sortable="true") Closed
 
-                #track_panel.panel.panel-info.margin-bottom-40(style="display: none;")
+                #slots_panel.panel.panel-info.margin-bottom-40(style="display: none;")
+                    #treeForm_messages
                     .panel-heading
                         .panel-title
                             i.fa.fa-edit
                     .panel-body
-
+                        p
+                            | Select the period to add tracks, or a track to add slots.
+                        #slotsTree-toolbar
+                            .form-inline(role="form")
+                                .btn-group
+                                    button#btnAddElement.btn.btn-default.btn-lg.disabled(type="button", data-action="add")
+                                        span.glyphicon.glyphicon-plus-sign(aria-hidden="true")
+                                    button#btnEditElement.btn.btn-default.btn-lg.disabled(type="button", data-action="edit")
+                                        span.glyphicon.glyphicon-pencil(aria-hidden="true")
+                                    button#btnDelElement.btn.btn-danger.btn-lg.disabled(type="button")
+                                        span.glyphicon.glyphicon-trash(aria-hidden="true")
+                        #slots_tree
 
 block scripts
     script
