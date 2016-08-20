@@ -41,18 +41,45 @@ function getTreeData(data) {
                     text += ("0" + de.getHours()).slice(-2) + ':' + ("0" + de.getMinutes()).slice(-2);
                 }
                 text += '   @ ' + s.place;
+                var capacity = 0;
+                if (s.capacity) {
+                    capacity=s.capacity;
+                }
                 var slot = {
                     text: text,
                     icon: 'glyphicon glyphicon-calendar',
                     type: "slot",
                     data_object: s,
-                    tags: [s.capacity]
+                    tags: [capacity-s.Theses.length],
+                    nodes: []
                 };
+
+                $.each(s.Theses, function(i, ts) {
+                    var thesis = {
+                        text: '<strong>' + ts.User.full_name + '</strong><p>' + ts.title + '</p>',
+                        icon: 'glyphicon glyphicon-book',
+                        type: "thesis",
+                        data_object: ts
+                    };
+                    slot.nodes.push(thesis);
+                });
+                if (slot.nodes.length == 0) {
+                    delete slot.nodes;
+                }
+
                 track.nodes.push(slot);
             });
 
+            if (track.nodes.length == 0) {
+                delete track.nodes;
+            }
+
             period.nodes.push(track);
         });
+
+        if (period.nodes.length == 0) {
+            delete period.nodes;
+        }
         tree_data.push(period);
     });
 
@@ -61,6 +88,10 @@ function getTreeData(data) {
 
 
 function showTree() {
+
+    // Disable drag thesis
+    $('.unassigned-thesis').draggable( "option", "disabled", true );
+
     var selectedPeriods = $('#periodsTable').bootstrapTable('getSelections');
     if (selectedPeriods.length>0) {
         $.get('/admin/tracks/' + selectedPeriods[0].id, {},  'json')
@@ -69,14 +100,34 @@ function showTree() {
             $('#btnEditElement').addClass('disabled');
             $('#btnDelElement').addClass('disabled');
 
-            $('#slots_tree').treeview({data: getTreeData(data), showTags: true, levels: 3});
+            $('#slots_tree').treeview({data: getTreeData(data), showTags: true, levels: 3, color: "#428bca"});
 
             $('#slots_tree').on('nodeSelected', function(event, data) {
-                $('#btnEditElement').removeClass('disabled');
-                $('#btnDelElement').removeClass('disabled');
+                if(data.type != 'period' && data.type != 'thesis') {
+                    $('#btnEditElement').removeClass('disabled');
+                    $('#btnDelElement').removeClass('disabled');
+                }
 
-                if(data.type != 'slot') {
+                if(data.type == 'period' || data.type == 'track') {
                     $('#btnAddElement').removeClass('disabled');
+                }
+
+                if(data.type == 'slot') {
+                    // Enable drag thesis
+                    $('.unassigned-thesis').draggable( "option", "disabled", false );
+                } else {
+                    $('.unassigned-thesis').draggable( "option", "disabled", true );
+                }
+
+                if(data.type == 'thesis') {
+                    var slotNode = $('#slots_tree').treeview('getParent', data);
+                    if(data.nodeId != slotNode.nodes[0].nodeId) {
+                        $('#btnThesisUp').removeClass('disabled');
+                    }
+                    if(data.nodeId != slotNode.nodes[slotNode.nodes.length-1].nodeId) {
+                        $('#btnThesisDown').removeClass('disabled');
+                    }
+                    $('#btnThesisRemove').removeClass('disabled');
                 }
             });
 
@@ -84,6 +135,54 @@ function showTree() {
                 $('#btnAddElement').addClass('disabled');
                 $('#btnEditElement').addClass('disabled');
                 $('#btnDelElement').addClass('disabled');
+
+                $('#btnThesisUp').addClass('disabled');
+                $('#btnThesisDown').addClass('disabled');
+                $('#btnThesisRemove').addClass('disabled');
+            });
+
+            $( "#slots_tree" ).droppable({
+                accept: ".unassigned-thesis",
+                classes: {
+                    "ui-droppable-active": "ui-state-default"
+                },
+                drop: function( event, ui ) {
+                    var selectedNodes = $('#slots_tree').treeview('getSelected');
+                    if (selectedNodes.length == 0) {
+                        return;
+                    }
+                    if (selectedNodes[0].type != 'slot') {
+                        return;
+                    }
+                    var slotId = selectedNodes[0].data_object.id;
+                    var thesisID = ui.draggable.attr('id').split('_')[1];
+
+                    $.post( "/admin/thesis/" + thesisID + "/assign", {slot_id: slotId}, 'json').done(function( data ) {
+                        if(data) {
+                            // Update the tree
+                            var slotNode = $('#slots_tree').treeview('getParent', selectedNodes[0]);
+                            if(slotNode) {
+                                var newNode = {};
+                                newNode.icon = 'glyphicon glyphicon-book';
+                                newNode.nodeId = 'thesis_node_' + data.thesis.id;
+                                newNode.type = "thesis";
+                                newNode.parentId = selectedNodes[0].nodeId;
+                                newNode.selectable = selectedNodes[0].selectable;
+                                newNode.state = {checked: false, disabled: false, expanded: false, selected: false};
+                                newNode.data_object = data.thesis;
+                                newNode.text = '<strong>' + data.thesis.User.full_name + '</strong><p>' + data.thesis.title + '</p>';
+
+                                selectedNodes[0].nodes.push(newNode);
+                                selectedNodes[0].state.selected = false;
+
+                                selectedNodes[0].tags[0] = selectedNodes[0].tags[0] - 1;
+
+                                $('#slots_tree').treeview('expandNode', slotNode);
+                            }
+                            $('#' + ui.draggable.attr('id')).hide();
+                        }
+                    });
+                }
             });
 
         }).fail(function() {
@@ -100,7 +199,89 @@ function showTree() {
 
 }
 
+function addThesis(thesis, parent) {
+
+    var id = 'thesis_' + thesis['id'];
+    var advisors = '';
+    $.each(thesis['Advised'], function(i, a) {
+        if (i>0) {
+            advisors+= ', ';
+        }
+        advisors+=a['full_name'] + '(' + a['organization'] + ')';
+    });
+
+    var newThesis = $('<div/>',{id: id}).addClass("panel").appendTo(parent);
+
+    if (thesis['approved']) {
+        newThesis.addClass("panel-default").addClass('.margin-bottom-40');
+    } else {
+        newThesis.addClass("panel-warning").addClass('.margin-bottom-40');
+    }
+
+    var header = $('<div>').addClass("panel-heading").append(
+        $("<div>").addClass("panel-title").append(
+            $('<p>').append("<strong>" +  thesis['title'] + "</strong>")
+        ).append(
+            $('<p>').append("<i>by " + thesis['User'].full_name + "</i>")
+        )
+    ).appendTo(newThesis);
+
+    if (!thesis['approved']) {
+        header.append($('<p>').append("<strong><i>Requires teacher approval</i></strong>"))
+    }
+
+    var body = $('<div>').addClass("panel-body").append(
+        $("<div>").addClass("panel-title").append(
+            $('<p>').append("<strong>Abstract:</strong>")
+        ).append(
+            $('<p>').append(thesis['abstract'])
+        )
+    ).append(
+        $("<div>").addClass("panel-title").append(
+            $('<p>').append("<strong>Keywords:</strong>")
+        ).append(
+            $('<p>').append("<i>" + thesis['keywords'] + "</i>")
+        )
+    ).append(
+        $("<div>").addClass("panel-title").append(
+            $('<p>').append("<strong>Advisor/s:</strong>")
+        ).append(
+            $('<p>').append("<i>" + advisors + "</i>")
+        )
+    ).appendTo(newThesis);
+
+    var footer = $('<div>').addClass("panel-footer").appendTo(newThesis);
+
+    if(!thesis['approved']) {
+        var footer_btn = $('<div>').addClass('button-group').appendTo(footer);
+
+        if ((current_user.teacher || current_user.admin)) {
+            $('<button>').addClass('btn').addClass('btn-info').addClass('approve-thesis').append("Approve").appendTo(footer_btn);
+        }
+    }
+
+    newThesis.addClass('unassigned-thesis');
+    newThesis.draggable({ revert: true, helper: "clone", disabled: true });
+}
+
+function showUnassignedTheses() {
+    $('#panel_unassignedTheses').empty();
+
+    $.get( "/admin/thesis/unassigned", 'json').done(function( data ) {
+        $.each(data, function (i, t) {
+            addThesis(t, $('#panel_unassignedTheses'));
+        });
+    });
+
+    //$('#panel_unassignedTheses').paginate({pagerSelector:'#thesisPagination',childSelector:'.panel',showPrevNext:true,hidePageNumbers:false,perPage:4});
+}
+
 jQuery(document).ready(function() {
+
+    $('#btnRefresh').on('click', function(e) {
+        showTree();
+        showUnassignedTheses();
+    });
 
     $('#btnAddElement').on('click', function(e) {
         var selectedNodes = $('#slots_tree').treeview('getSelected');
@@ -111,6 +292,10 @@ jQuery(document).ready(function() {
         $('#btnAddElement').addClass('disabled');
         $('#btnEditElement').addClass('disabled');
         $('#btnDelElement').addClass('disabled');
+
+        $('#btnThesisUp').addClass('disabled');
+        $('#btnThesisDown').addClass('disabled');
+        $('#btnThesisRemove').addClass('disabled');
 
         switch(selectedNodes[0].type) {
             case 'period':
@@ -376,5 +561,79 @@ jQuery(document).ready(function() {
             });
         });
 
+    });
+
+
+    $('#btnThesisUp').on('click', function(e) {
+        var selectedNodes = $('#slots_tree').treeview('getSelected');
+        if (selectedNodes.length == 0) {
+            return;
+        }
+
+        $.post('/admin/thesis/' + selectedNodes[0].data_object.id + '/up', {}, 'json')
+            .done(function (data) {
+                var slotNode = $('#slots_tree').treeview('getParent', selectedNodes[0]);
+                if(slotNode) {
+                    var index = -1;
+                    $.each(slotNode.nodes, function(i,n) {
+                        if (n.nodeId == selectedNodes[0].nodeId) {
+                            index = i;
+                        }
+                    });
+                    if(index!=-1) {
+                        var aux = slotNode.nodes[index];
+                        slotNode.nodes[index] = slotNode.nodes[index-1];
+                        slotNode.nodes[index-1] = aux;
+                        $('#slots_tree').treeview('expandNode', slotNode);
+                    }
+                    if(index==1) {
+                        $('#btnThesisUp').addClass('disabled');
+                    }
+                    $('#btnThesisDown').removeClass('disabled');
+                }
+            });
+    });
+
+    $('#btnThesisDown').on('click', function(e) {
+        var selectedNodes = $('#slots_tree').treeview('getSelected');
+        if (selectedNodes.length == 0) {
+            return;
+        }
+        $.post('/admin/thesis/' + selectedNodes[0].data_object.id + '/down', {}, 'json')
+            .done(function (data) {
+                var slotNode = $('#slots_tree').treeview('getParent', selectedNodes[0]);
+                if(slotNode) {
+                    var index = -1;
+                    $.each(slotNode.nodes, function(i,n) {
+                        if (n.nodeId == selectedNodes[0].nodeId) {
+                            index = i;
+                        }
+                    });
+                    if(index!=-1) {
+                        var aux = slotNode.nodes[index];
+                        slotNode.nodes[index] = slotNode.nodes[index+1];
+                        slotNode.nodes[index+1] = aux;
+                        $('#slots_tree').treeview('expandNode', slotNode);
+                    }
+                    if(index==slotNode.nodes.length-2) {
+                        $('#btnThesisDown').addClass('disabled');
+                    }
+                    $('#btnThesisUp').removeClass('disabled');
+                }
+            });
+    });
+
+    $('#btnThesisRemove').on('click', function(e) {
+        var selectedNodes = $('#slots_tree').treeview('getSelected');
+        if (selectedNodes.length == 0) {
+            return;
+        }
+        $.post('/admin/thesis/' + selectedNodes[0].data_object.id + '/unassign', {}, 'json')
+            .done(function (data) {
+                if(data) {
+                    showTree();
+                    showUnassignedTheses();
+                }
+            });
     });
 });

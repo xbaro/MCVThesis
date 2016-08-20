@@ -218,7 +218,8 @@ block content
             ul
                 li <strong>Period:</strong> Evaluation period, when theses can be defended. Each period have different thematic tracks.
                 li <strong>Track:</strong> Logic aggregation of theses with similar topics. Each track have different defense slots.
-                li <strong>Track:</strong> Place and moment when a thesis can be defended.
+                li <strong>Slot:</strong> Place and moment when a thesis can be defended.
+        p Select a period in order to manage the tracks, slots and thesis assignation
 
         .panel.panel-default.margin-bottom-40
             .panel-heading
@@ -256,22 +257,43 @@ block content
                         .panel-title
                             i.fa.fa-edit
                     .panel-body
-                        p
-                            | Select the period to add tracks, or a track to add slots.
-                        #slotsTree-toolbar
-                            .form-inline(role="form")
-                                .btn-group
-                                    button#btnAddElement.btn.btn-default.btn-lg.disabled(type="button", data-action="add")
-                                        span.glyphicon.glyphicon-plus-sign(aria-hidden="true")
-                                    button#btnEditElement.btn.btn-default.btn-lg.disabled(type="button", data-action="edit")
-                                        span.glyphicon.glyphicon-pencil(aria-hidden="true")
-                                    button#btnDelElement.btn.btn-danger.btn-lg.disabled(type="button")
-                                        span.glyphicon.glyphicon-trash(aria-hidden="true")
-                        #slots_tree
+                        p Select a period to add tracks.
+                        p Select a track to add slots.
+                        p Select a slot to assign theses. Each slot have the number of remaining theses that can be assigned.
+
+                        #slotsTree-toolbar.btn-toolbar.mcv-toolbar(role="toolbar")
+                            .btn-group(role="group")
+                                button#btnRefresh.btn.btn-default.btn-lg(type="button", data-action="add")
+                                    span.glyphicon.glyphicon-refresh(aria-hidden="true")
+                            .btn-group(role="group")
+                                button#btnAddElement.btn.btn-default.btn-lg.disabled(type="button", data-action="add")
+                                    span.glyphicon.glyphicon-plus-sign(aria-hidden="true")
+                                button#btnEditElement.btn.btn-default.btn-lg.disabled(type="button", data-action="edit")
+                                    span.glyphicon.glyphicon-pencil(aria-hidden="true")
+                                button#btnDelElement.btn.btn-danger.btn-lg.disabled(type="button")
+                                    span.glyphicon.glyphicon-trash(aria-hidden="true")
+                            .btn-group(role="group")
+                                button#btnThesisUp.btn.btn-default.btn-lg.disabled(type="button", data-action="add")
+                                    span.glyphicon.glyphicon-arrow-up(aria-hidden="true")
+                                button#btnThesisDown.btn.btn-default.btn-lg.disabled(type="button", data-action="edit")
+                                    span.glyphicon.glyphicon-arrow-down(aria-hidden="true")
+                                button#btnThesisRemove.btn.btn-default.btn-lg.disabled(type="button")
+                                    span.glyphicon.glyphicon-remove(aria-hidden="true")
+
+
+
+                        .row
+                            .col-xs-6.col-md-4
+                                #slots_tree
+                            .col-xs-12.col-md-8
+                                #panel_unassignedTheses.panel-group
+                                #thesisPagination.pagination
+
+
 
 block scripts
     script
-        include ../public/js/admin/scripts.js
+        include ../public/js/scripts.js
         include ../public/js/admin/users.js
         include ../public/js/admin/periods.js
         include ../public/js/admin/tracks.js

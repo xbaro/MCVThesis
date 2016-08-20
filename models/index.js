@@ -42,6 +42,12 @@ db.Slot.belongsTo(db.Track, {onDelete: 'CASCADE'});
 db.Slot.hasMany(db.Thesis);
 db.Thesis.belongsTo(db.Slot);
 
+db.Thesis.hasMany(db.Committee);
+db.Committee.belongsTo(db.Thesis);
+
+db.User.hasMany(db.Committee);
+db.Committee.belongsTo(db.User);
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

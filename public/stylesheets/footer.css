@@ -21,3 +21,7 @@
 [data-notify="container"] {
     width: 80%
 }
+
+.mcv-toolbar {
+    margin-bottom: 10px;
+}

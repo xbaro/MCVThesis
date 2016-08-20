@@ -10,6 +10,7 @@ jQuery(document).ready(function() {
         $('#btnDelPeriod').removeClass('disabled');
         $('#slots_panel').show();
         showTree();
+        showUnassignedTheses();
     });
 
     /*******************************

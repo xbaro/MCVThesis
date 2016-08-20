@@ -25,20 +25,42 @@ html
         //link(rel="stylesheet" href="/lib/bootstrap-modal/css/bootstrap-modal-bs3patch.css")
         link(rel="stylesheet" href="/stylesheets/footer.css")
     body
-        +nav("MCV Thesis", "dropdown_menu")
-            +nav_item("/", "index" ) Home
-            if(user)
-                +nav_item("/thesis", "thesis") Thesis
-                if(user.teacher)
-                    +nav_item("/committees", "committees") Committees
-                if(user.admin)
-                    +nav_item("/admin", "admin") Admin
-                +nav_item("/profile", "profile") My Profile
-                +nav_item("/auth/signout", "logout") <i class="fa fa-signout"> Logout #{user.username}</i>
+        nav.navbar.navbar-default.navbar-fixed-top
+            .container-fluid
+                .navbar-header
+                    button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#mcv-navbar" aria-expanded="false")
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    a.navbar-brand(href="#") MCV Theses
+                        //img(alt="MCV Theses" src="/images/favicon-96x96.png")
 
-            else
-                +nav_item("/auth/signin", "login") Login
-                +nav_item("/auth/signup", "register") Register
+
+                #mcv-navbar.collapse.navbar-collapse
+                    ul.nav.navbar-nav
+                        +nav_item("/", "index" ) Home
+                        if(user)
+                            +nav_item("/thesis", "thesis") Thesis
+                            if(user.teacher)
+                                +nav_item("/committees", "committees") Committees
+                            if(user.admin)
+                                +nav_item("/admin", "admin") Admin
+                            +nav_item("/profile", "profile") My Profile
+                    ul.nav.navbar-nav.navbar-right
+                        if(user)
+                            li
+                                a(href="/auth/signout")
+                                    i.fa.fa-signout Logout #{user.username}
+
+                        else
+                            li
+                                a(href="/auth/signin") Login
+                            li
+                                a(href="/auth/signup") Register
+                            //+nav_item("/auth/signin", "login") Login
+                            //+nav_item("/auth/signup", "register") Register
+
         block content
         script( src='/lib/bootstrap-wysihtml5/lib/js/wysihtml5-0.3.0.min.js')
         script( src='/lib/bootstrap-wysihtml5/lib/js/prettify.js')

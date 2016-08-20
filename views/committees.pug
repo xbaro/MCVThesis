@@ -1,5 +1,13 @@
 ﻿extends layout
 
 block content
+    .row#tree_messages
+        .col-xs-6.col-md-4
+            #committee_tree
+        .col-xs-12.col-md-8
+            p test
 
-
+block scripts
+    script
+        include ../public/js/scripts.js
+        include ../public/js/committee/tree.js
