@@ -175,6 +175,12 @@ block content
                                             input#slot_capacity.form-control(type='text', name="capacity", placeholder='Capacity', required=true)
                                             p.form-text.text-muted
                                                 | Number of theses that can be defended in this slot
+                                    .form-group
+                                        label.col-md-4.control-label(for="slot_duration") Thesis Duration
+                                        .col-md-6
+                                            input#slot_duration.form-control(type='text', name="duration", placeholder='Duration', required=true)
+                                            p.form-text.text-muted
+                                                | Duration in minutes of each thesis defense
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-dismiss="modal") Close
                     button#btnAcceptSlot.btn.btn-primary(type="button") Save changes

@@ -114,13 +114,12 @@ jQuery(document).ready(function() {
                 });
 
                 $('.del-thesis').on('click', function(e) {
-                    bootbox.confirm("You will remove the thesis and all its related information.", function(result) {
-                        if(result) {
-                            $.post("/thesis/" + getThesisId(e) + "/delete", 'json').done(function (data) {
-                                showTheses();
-                            });
-                        }
-                    });
+                    var r = confirm("You will remove the thesis and all its related information.");
+                    if (r == true) {
+                        $.post("/thesis/" + getThesisId(e) + "/delete", 'json').done(function (data) {
+                            showTheses();
+                        });
+                    }
                 });
 
                 $('.approve-thesis').on('click', function(e) {
@@ -185,7 +184,7 @@ jQuery(document).ready(function() {
             if (data.teacher || data.admin) {
                 $('#btnNewThesis').show();
                 if (!data.admin) {
-                    $("#advisors").val(current_user.full_name + ', ');
+                    $("#advisors").val(current_user.full_name);
                     var item = current_user;
                     item.label = item.full_name;
                     selected_advisors.push(item);

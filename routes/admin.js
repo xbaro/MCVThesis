@@ -480,6 +480,7 @@ router.post('/slot/new', function (req, res) {
                 start: data.start,
                 end: data.end,
                 capacity: data.capacity,
+                duration: data.duration,
                 TrackId: data.track_id
             }).then(function(slot) {
                 if (slot) {
@@ -521,7 +522,8 @@ router.post('/slot/update', function (req, res) {
                 place: slot.place,
                 start: slot.start,
                 end: slot.end,
-                capacity: slot.capacity
+                capacity: slot.capacity,
+                duration: slot.duration
             },
             {
                 where: { id: slot.id }

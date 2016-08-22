@@ -12,6 +12,7 @@ module.exports = function(sequelize, DataTypes) {
         start: DataTypes.DATE,
         end: DataTypes.DATE,
         capacity: DataTypes.INTEGER,
+        duration: DataTypes.INTEGER,
         full: DataTypes.VIRTUAL
     },
     {

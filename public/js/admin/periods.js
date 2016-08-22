@@ -13,6 +13,28 @@ jQuery(document).ready(function() {
         showUnassignedTheses();
     });
 
+    // When data is loaded check if there is only one active period and select it
+    $('#periodsTable').on('load-success.bs.table', function (e, data) {
+        var active = -1;
+        var open = -1;
+        $.each(data, function(i,p) {
+            if (!p.closed && open<0) {
+                open = i;
+            }
+            if (p.active && active<0) {
+                active = i;
+            }
+        });
+
+        if(active>=0) {
+             $('#periodsTable').bootstrapTable('check', active);
+        } else if (open>=0) {
+            $('#periodsTable').bootstrapTable('check', open);
+        }
+    });
+
+
+
     /*******************************
      * Toolbar actions
      *******************************/

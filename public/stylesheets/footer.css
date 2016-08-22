@@ -25,3 +25,7 @@
 .mcv-toolbar {
     margin-bottom: 10px;
 }
+
+body {
+    padding-top: 70px;
+}
