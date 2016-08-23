@@ -193,6 +193,7 @@ function showUnassignedTheses(node) {
         $.each(data, function (i, t) {
             addThesis(t, $('#panel_Theses'));
         });
+        $(window).scrollTop(lastScrollValue);
         $('.request_committee').on('click', function(event) {
             var thesisId = event.target.dataset.thesis;
             var role = event.target.dataset.role;
@@ -218,6 +219,49 @@ function showUnassignedTheses(node) {
                     showPeriodsTree(node);
                 });
         });
+
+        $('.assign_committee').on('click', function(event) {
+            var thesisId = event.target.dataset.thesis;
+            var role = event.target.dataset.role;
+
+            // Initialize the values
+            $( ".teacher-autocomplete" ).val('');
+            $("#thesis_id").val(thesisId);
+            $("#role").val(role);
+
+            // Show the window
+            $('#assignFormModal').modal('show', event.target);
+        });
+
+        $( ".teacher-autocomplete" ).autocomplete({
+            source: '/committees/teachers',
+            minLength: 1,
+            select: function(event, ui) {
+                // Close the selection menu
+                $( ".teacher-autocomplete" ).autocomplete( "close" );
+
+                // Get the data
+                var thesisId = $("#thesis_id").val();
+                var role = $("#role").val();
+                var username = ui.item.username;
+
+                $.post('/committees/theses/assign/' + thesisId + '/' + role, {username: username}, 'json')
+                    .done(function (data) {
+                        showPeriodsTree(node);
+                        // Close the window
+                        $('#assignFormModal').modal('hide');
+                    });
+            }
+        });
+        $( ".teacher-autocomplete" ).autocomplete( "option", "appendTo", "#assignFormModal" );
+        $('#assignFormModal').on('shown.bs.modal', function () {
+            $('.teacher-autocomplete').focus();
+        });
+        $('#assignFormModal').on('show.bs.modal', function () {
+            lastScrollValue=$(window).scrollTop();
+        });
+        $('#assignFormModal').on('hidden.bs.modal', function () {
+            $(window).scrollTop(lastScrollValue);
+        });
     });
 }
-

@@ -1,7 +1,38 @@
 ﻿extends layout
 
 block content
+    #assignFormModal.modal(tabindex="-1", role="dialog", aria-labelledby="assignModalLabel" aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4#assignModalLabel.modal-title Committee member
+                #assign_modalBody.modal-body
+                    .row#assignFormBox
+                        col-md-12
+                            form#assignForm.form-horizontal
+                                input#thesis_id(type="hidden")
+                                input#role(type="hidden")
+                                .form-group
+                                    label.col-md-4.control-label(for="user") Committee Member
+                                    .col-md-6
+                                        input#user.form-control.teacher-autocomplete(type='text', name="user", placeholder='Name')
+
     +panel("My Committees", "primary")
+        table#myCommitteesTable(data-toggle="table", data-url="/committees/my", data-sort-name="date",
+            data-sort-order="asc", data-pagination="true", data-search="true", data-page-list="[5, 10]",
+            data-show-refresh="true", data-show-toggle="false", data-show-columns="true",
+            data-page-size="5")
+            thead
+                tr
+                    th(data-field="date", data-sortable="true",  data-formatter="dateFormatter") Date
+                    th(data-field="start", data-sortable="true") Start
+                    th(data-field="end", data-sortable="true") End
+                    th(data-field="thesis_author_name", data-sortable="true") Author
+                    th(data-field="thesis_title", data-sortable="true") Title
+                    th(data-field="role", data-sortable="true") Role
+                    th(data-field="place", data-sortable="true") Place
 
     +panel("Available Committees", "primary")
         #userForm_messages

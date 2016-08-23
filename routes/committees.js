@@ -4,7 +4,7 @@ var Model = require('../models');
 
 
 function get_host_http(req) {
-    var port = req.app.get('port')
+    var port = req.app.get('port');
     var host = req.headers.host;
 
     var host_parts = host.split(':');
@@ -21,7 +21,7 @@ function get_host_http(req) {
 }
 
 function get_host_https(req) {
-    var port = req.app.get('port-ssl')
+    var port = req.app.get('port-ssl');
     var host = req.headers.host;
 
     var host_parts = host.split(':');
@@ -50,6 +50,79 @@ router.get('/', function (req, res) {
     }
 });
 
+
+router.get('/my', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        Model.Thesis.findAll({
+            attributes: ['id', 'title', 'order'],
+            include: [
+                {
+                    model: Model.Slot,
+                    attributes: ['id', 'place', 'start', 'end', 'duration'],
+                    include: [
+                        {
+                            model: Model.Track,
+                            attributes: ['id', 'title'],
+                            include: [
+                                {
+                                    model: Model.Period,
+                                    attributes: ['id', 'title','end'],
+                                    where: {
+                                        end: {
+                                            $or: {
+                                                $gt: new Date(),
+                                                $eq: null
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    model: Model.User,
+                    attributes: ['username', 'name', 'surname', 'full_name'],
+                    where: {username: req.user.username},
+                    as: "Reviewed",
+                    required: true
+                },
+                {
+                    model: Model.User,
+                    attributes: ['username', 'name', 'surname', 'full_name']
+                }
+            ]
+        })
+        .then(function(data) {
+            var tdata=[].concat(data).map(function(thesis){
+                var s_date = new Date(new Date(thesis.Slot.start).getTime() + (thesis.order-1)*thesis.Slot.duration*60000);
+                var e_date = new Date(s_date.getTime() + thesis.Slot.duration*60000);
+                var item = {};
+                item.thesis_id = thesis.id;
+                item.thesis_title = thesis.title;
+                item.thesis_author_name = thesis.User.full_name;
+                item.thesis_author_username = thesis.User.username;
+                item.date = thesis.Slot.start;
+                item.start = s_date.getHours() + ":" + ("0" + s_date.getMinutes()).slice(-2);
+                item.end = e_date.getHours() + ":" + ("0" + e_date.getMinutes()).slice(-2);
+                item.place = thesis.Slot.place;
+                if(thesis.Reviewed && thesis.Reviewed.length>0) {
+                    if(thesis.Reviewed[0].Committee) {
+                        item.role = thesis.Reviewed[0].Committee.role;
+                    }
+                }
+                return item;
+            });
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(tdata));
+        });
+    }
+});
+
 router.get('/periods/open', function (req, res) {
     if (!req.isAuthenticated()) {
         res.setHeader('Content-Type', 'application/json');
@@ -57,7 +130,7 @@ router.get('/periods/open', function (req, res) {
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
         Model.Period.findAll({
-            attributes: ['id', 'title', 'start', 'end', 'active', 'closed'],
+            attributes: ['id', 'title', 'start', 'end'],
             where: {
                   end: {
                         $or: {
@@ -284,11 +357,17 @@ router.post('/theses/assign/:thesisId/:role', function (req, res) {
             res.status(401);
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
+            var data = req.body;
             var thesisId = req.params.thesisId;
             var role = req.params.role;
             var select = {};
+            var username = req.user.username;
             select[role] = true;
             select.ThesisId = thesisId;
+
+             if(req.user.admin && data && data.username) {
+                 username = data.username;
+             }
 
             return Model.sequelize.transaction(function (t) {
                 return Model.Committee.count({where: select}, {transaction: t}).then(function (count) {
@@ -297,7 +376,7 @@ router.post('/theses/assign/:thesisId/:role', function (req, res) {
                     } else {
                         var attribs = {};
                         attribs[role] = true;
-                        attribs.UserUsername = req.user.username,
+                        attribs.UserUsername = username,
                             attribs.ThesisId = thesisId;
 
                         return Model.Committee.create(attribs, {transaction: t});
@@ -368,5 +447,55 @@ router.post('/theses/unassign/:thesisId', function (req, res) {
         }
     }
 });
+
+router.get('/teachers', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.redirect('/auth/signin');
+    } else {
+        if (req.query['term']) {
+            Model.User.findAll({
+                attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                where: {teacher: true,
+                    $or: [
+                        {
+                          name: {
+                            $like: '%' + req.query['term'] + '%'
+                          }
+                        },
+                        {
+                          surname: {
+                            $like: '%' + req.query['term'] + '%'
+                          }
+                        }
+                        ]}
+            }).then(function (data) {
+                var tdata=[].concat(data).map(function(user){
+                    var item = {};
+                    item.label = user.full_name + ' (' + user.organization + ')';
+                    item.username = user.username;
+                    return item;
+                });
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(tdata));
+            })
+
+        } else {
+            Model.User.findAll({
+                attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                where: {teacher: true}
+            }).then(function (data) {
+                var tdata=[].concat(data).map(function(user){
+                    var item = {};
+                    item.label = user.full_name + ' (' + user.organization + ')';
+                    item.username = user.username;
+                    return item;
+                });
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(tdata));
+            })
+        }
+    }
+});
+
 
 module.exports = router;

@@ -82,8 +82,11 @@ function getFullTreeData(data) {
     return tree_data;
 }
 
-
+var lastScrollValue;
 function showPeriodsTree(selected) {
+
+    lastScrollValue = $(window).scrollTop();
+
     $.get('/committees/periods/open', {},  'json')
     .done(function( data ) {
 
