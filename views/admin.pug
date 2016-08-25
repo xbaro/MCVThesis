@@ -142,21 +142,13 @@ block content
                                         .col-md-6
                                             input#slot_place.form-control(type='text', name="place", placeholder='Place', required=true)
                                             p.form-text.text-muted
-                                                | Address, building, room name.
-                                    //.form-group
-                                        label.col-md-4.control-label(for="slot_start") Start date
+                                                | Address, building.
+                                    .form-group
+                                        label.col-md-4.control-label(for="slot_room") Room
                                         .col-md-6
-                                            .input-group
-                                                span.input-group-addon
-                                                    input#slot_start_date.form-control(name="start_date", type="date", placeholder="Start date")
-                                                    input#slot_start_time.form-control(name="start_time", type="time", placeholder="Start time")
-                                    //.form-group
-                                        label.col-md-4.control-label(for="slot_end") End Date
-                                        .col-md-6
-                                            .input-group
-                                                span.input-group-addon
-                                                    input#slot_end_date.form-control(name="end_date", type="date", placeholder="End date")
-                                                    input#slot_end_time.form-control(name="end_time", type="time", placeholder="End time")
+                                            input#slot_room.form-control(type='text', name="room", placeholder='Room', required=true)
+                                            p.form-text.text-muted
+                                                | Room name or code.
                                     .form-group
                                         label.col-md-4.control-label(for="slot_date") Date
                                         .col-md-6
@@ -294,8 +286,6 @@ block content
                             .col-xs-12.col-md-8
                                 #panel_unassignedTheses.panel-group
                                 #thesisPagination.pagination
-
-
 
 block scripts
     script

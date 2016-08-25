@@ -9,6 +9,7 @@ module.exports = function(sequelize, DataTypes) {
             autoIncrement: true
         },
         place:  DataTypes.STRING,
+        room:  DataTypes.STRING,
         start: DataTypes.DATE,
         end: DataTypes.DATE,
         capacity: DataTypes.INTEGER,

@@ -477,6 +477,7 @@ router.post('/slot/new', function (req, res) {
 
             Model.Slot.create({
                 place: data.place,
+                room: data.room,
                 start: data.start,
                 end: data.end,
                 capacity: data.capacity,
@@ -523,7 +524,8 @@ router.post('/slot/update', function (req, res) {
                 start: slot.start,
                 end: slot.end,
                 capacity: slot.capacity,
-                duration: slot.duration
+                duration: slot.duration,
+                room: slot.room
             },
             {
                 where: { id: slot.id }
@@ -595,7 +597,7 @@ router.get('/tracks/:periodID', function (req, res) {
                             include: [
                                 {
                                     model: Model.Slot,
-                                    attributes: ['id', 'place', 'start', 'end', 'capacity'],
+                                    attributes: ['id', 'place', 'start', 'end', 'capacity', 'room'],
                                     include: [
                                         {
                                             model: Model.Thesis,
@@ -755,15 +757,32 @@ router.post('/thesis/:thesisID/unassign', function (req, res) {
             Model.Thesis.findOne({attributes: ['id', 'SlotId', 'order'],where: {id: thesisID}})
                 .then(function(thesis) {
                     if (thesis) {
+                        var old_slotId = thesis.SlotId;
+                        var old_order = thesis.order;
                         thesis.order = null;
                         thesis.SlotId = null;
                         thesis.save().then(function (result) {
-                            res.setHeader('Content-Type', 'application/json');
-                            res.send(JSON.stringify({
-                                error: false,
-                                message: 'Thesis updated',
-                                thesis: thesis
-                            }, null, 3));
+                            Model.Thesis.update(
+                                {
+                                    order: Model.sequelize.literal('"order" - 1')
+                                },
+                                {
+                                    where:
+                                    {
+                                        SlotId: old_slotId,
+                                        order: {
+                                            $gt: old_order
+                                        }
+                                    }
+                                }
+                            ).then(function(updated_data) {
+                                res.setHeader('Content-Type', 'application/json');
+                                res.send(JSON.stringify({
+                                    error: false,
+                                    message: 'Thesis updated',
+                                    thesis: thesis
+                                }, null, 3));
+                            });
                         });
                     } else {
                         res.setHeader('Content-Type', 'application/json');
@@ -869,5 +888,204 @@ router.get('/thesis/unassigned', function (req, res) {
         }
     }
 });
+
+router.get('/alerts/noslot', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            Model.Thesis.findAll({
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                where: {SlotId: null, approved: true},
+                include: [
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name']
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        as: "Advised"
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        as: "Reviewed"
+                    }
+                ]
+            }).then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
+            });
+        }
+    }
+});
+
+router.get('/alerts/noauthor', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            Model.Thesis.findAll({
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                where: {UserUsername: null, approved: true}
+            }).then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
+            });
+        }
+    }
+});
+
+router.get('/alerts/notapproved', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            Model.Thesis.findAll({
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                where: {approved: false},
+                include: [
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name']
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        as: "Advised"
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        as: "Reviewed"
+                    }
+                ]
+            }).then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
+            });
+        }
+    }
+});
+
+router.get('/alerts/noadvisor', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            Model.Thesis.findAll({
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                where: {approved: true},
+                include: [
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name']
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name'],
+                        as: "Advised",
+                        required: false
+                    }
+                ]
+            }).then(function(data) {
+                var retVal = [];
+                for(var i = 0; i< data.length; i++) {
+                    if(data[i].Advised.length==0) {
+                        retVal.push(data[i]);
+                    }
+                }
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(retVal));
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
+            });
+        }
+    }
+});
+
+router.get('/alerts/nocommittee', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            Model.Thesis.findAll({
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                where: {approved: true},
+                include: [
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name']
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name'],
+                        as: "Advised",
+                        required: false
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        as: "Reviewed"
+                    }
+                ]
+            }).then(function(data) {
+                var retVal = [];
+                for(var i = 0; i< data.length; i++) {
+                    if(data[i].Reviewed.length<3) {
+                        retVal.push(data[i]);
+                    }
+                }
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(retVal));
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
+            });
+        }
+    }
+});
+
 
 module.exports = router;

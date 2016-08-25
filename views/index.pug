@@ -1,11 +1,50 @@
 ﻿extends layout
 
 block content
-    p Admin: - Theses without author
-    p Admin: - Theses without advisor
-    p Admin: - Theses without slot
-    p Admin: - Theses without committee
-    p Admin/Teacher: - Statistics on theses advising/assigned committees for each teacher + remark oun information
-    p ALL: - Active period with the calendar
+    if user && user.admin
+        .panel.panel-danger.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-exclamation-triangle #{' '} Administration alerts
+            .panel-body#warnings
+                #no_warnings
+                    i.fa.fa-thumbs-o-up #{' '} No alarms detected
 
 
+
+    .panel.panel-default.margin-bottom-40
+        .panel-heading
+            .panel-title
+                i.fa.fa-calendar #{' '} Next theses defense
+        .panel-body
+            #agenda
+
+    if user && user.teacher
+        .panel.panel-info.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-info #{' '} Statistics
+            .panel-body
+                table#index_periodsTable(data-toggle="table", data-url="/periods", data-sort-name="start",
+                    data-page-list="[5, 10, 20]", data-page-size="5",
+                    data-sort-order="desc", data-click-to-select="true", data-select-item-name="selPeriod",
+                    data-pagination="true", data-search="true",
+                    data-show-refresh="true", data-show-toggle="false", data-show-columns="true")
+                    thead
+                        tr
+                            th(data-field="state" data-radio="true")
+                            th(data-field="id", data-sortable="true", data-visible="false") Id
+                            th(data-field="title", data-sortable="true") Period
+                            th(data-field="start", data-sortable="true", data-formatter="dateFormatter") Start Date
+                            th(data-field="end", data-sortable="true", data-formatter="dateFormatter") End Date
+                            th(data-field="active", data-sortable="true") Active
+                            th(data-field="closed", data-sortable="true") Closed
+                p Admin/Teacher: - Statistics on theses advising/assigned committees for each teacher + remark oun information
+
+
+block scripts
+    script
+        include ../public/js/scripts.js
+        include ../public/js/index/scripts.js
+        if user && user.admin
+            include ../public/js/index/tests.js
