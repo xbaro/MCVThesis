@@ -3,7 +3,7 @@
 		"name": "MCV Theses",
 		"script"      : "bin/www",
 		"watch"       : "../",
-		"ignore_watch" : ["node_modules", "bower_components", "public/lib"],
+		"ignore_watch" : ["node_modules", "bower_components", "public/lib", "*.sqlite"],
 		"log_date_format"  : "YYYY-MM-DD HH:mm Z",
 		"instances": 5,
 		"exec_mode": "cluster",
