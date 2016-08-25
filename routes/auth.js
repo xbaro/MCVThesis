@@ -106,7 +106,6 @@ router.post('/signup',  function (req, res, next) {
             Model.User
                 .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, webpage: user.webpage, organization: user.organization}})
                 .spread(function(user, created) {
-                    if()
                     //res.render('signin', { title: 'Sign In' });
                     passport.authenticate('local', {
                         successRedirect: '/',
