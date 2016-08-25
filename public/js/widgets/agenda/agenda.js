@@ -47,6 +47,10 @@
             return date.getHours() + ":" + ("0" + date.getMinutes()).slice(-2);
         },
         _loadData: function() {
+
+            if (!this.source_data || this.source_data.length==0) {
+                this.table_body.append('No events to show');
+            }
             var dates = {};
             var slot = {};
             var tracks = {};
