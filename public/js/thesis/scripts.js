@@ -331,6 +331,7 @@ jQuery(document).ready(function() {
         // Reset the form data
         $('#thesisFormModal').find('form').trigger("reset");
         $('#abstract').val('');
+        selected_advisors=[];
 
         // Ensure that username is enabled for edit
         $('#user_username').attr('readonly', false);

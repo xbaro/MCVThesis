@@ -1017,7 +1017,7 @@ router.get('/alerts/noadvisor', function (req, res) {
                     },
                     {
                         model: Model.User,
-                        attributes: ['username', 'name', 'surname', 'full_name'],
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
                         as: "Advised",
                         required: false
                     }
@@ -1060,7 +1060,7 @@ router.get('/alerts/nocommittee', function (req, res) {
                     },
                     {
                         model: Model.User,
-                        attributes: ['username', 'name', 'surname', 'full_name'],
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organizarion'],
                         as: "Advised",
                         required: false
                     },

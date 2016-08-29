@@ -205,4 +205,56 @@ router.get('/periods', function (req, res) {
     }
 });
 
+router.get('/stats/:periodId', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin && !req.user.teacher) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+        } else {
+            var periodId = req.params.periodId;
+            Model.User.findAll({
+                attributes: ['username', 'name', 'surname', 'full_name', 'organization',
+                    [Model.sequelize.fn('count', Model.sequelize.col('Advisor.id')), 'num_advised'],
+                    [Model.sequelize.fn('count', Model.sequelize.col('Committee.id')), 'num_committee']],
+                include: [
+                    {
+                        model: Model.Thesis,
+                        as: 'Advisor',
+                        include: [
+                            {
+                                model: Model.Slot,
+                                include:[
+                                    {
+                                        model: Model.Track,
+                                        include: [
+                                            {
+                                                model: Model.Period,
+                                                where: {id: periodId}
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        model: Model.Thesis,
+                        as: 'Committee'
+                    }
+                ],
+                group: ['username', 'name', 'surname', 'organization']
+            })
+            .then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            });
+        }
+    }
+});
+
 module.exports = router;
