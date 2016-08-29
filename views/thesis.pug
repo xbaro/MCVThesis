@@ -6,34 +6,52 @@ block content
 
     if (message_error)
         +alert("danger") #{message_error}
+    #thesisForm_messages
+    #thesisFormModal.modal(tabindex="-1", role="dialog", aria-labelledby="thesisModalLabel" aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4#thesisModalLabel.modal-title Thesis data
+                #thesis_modalBody.modal-body
+                    .row#thesisFormBox
+                        col-md-12
+                            form#thesisForm.form-horizontal
+                                input#thesis_id(type="hidden" name="id")
+                                input#author_username(type="hidden" name="username")
+                                .form-group
+                                    label.col-md-4.control-label(for="author") Author
+                                    .col-md-6
+                                        input#author.form-control(type='text', name="author", placeholder='Author')
+                                .form-group
+                                    label.col-md-4.control-label(for="title") Title
+                                    .col-md-6
+                                        input#title.form-control(type='text', name="title", placeholder='Title')
+                                .form-group
+                                    label.col-md-4.control-label(for="abstract") Abstract
+                                    .col-md-6
+                                        //input#abstract.form-control(type='textarea', name="abstract", placeholder='Abstract', required=true)
+                                        textarea#abstract.form-control(rows="10", name="abstract", placeholder='Abstract')
+                                .form-group
+                                    label.col-md-4.control-label(for="keywords") Keywords
+                                    .col-md-6
+                                        input#keywords.form-control(type='text', name="keywords", placeholder='Keywords')
+                                .form-group
+                                    label.col-md-4.control-label(for="advisors") Advisors
+                                    .col-md-6
+                                        input#advisors.form-control(type='text', name="advisors", placeholder='Advisors')
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-dismiss="modal") Close
+                    button#btnAcceptThesis.btn.btn-primary(type="button" data-action="none") Save changes
+    #thesis-toolbar.btn-toolbar.mcv-toolbar(role="toolbar")
+        .btn-group(role="group")
+            button#btnNewThesis.btn.btn-default.btn-lg(type="button", data-action="add")
+                span.glyphicon.glyphicon-plus-sign(aria-hidden="true")
+            button#btnRefresh.btn.btn-default.btn-lg(type="button", data-action="add")
+                span.glyphicon.glyphicon-refresh(aria-hidden="true")
 
-    #thesis_edt.panel.panel-info.margin-bottom-40(style="display: none;")
-        .panel-heading
-            .panel-title
-                i.fa.fa-edit
-        .panel-body
-            form#formNewThesis(role="form", action="/thesis/new", method="post")
-                .form-group
-                    label(for="author") Author
-                    input#author.form-control(type='text', name="author", placeholder='Author')
-                .form-group
-                    label(for="title") Title
-                    input#title.form-control(type='text', name="title", placeholder='Title')
-                .form-group
-                    label(for="abstract") Abstract
-                    //input#abstract.form-control(type='textarea', name="abstract", placeholder='Abstract', required=true)
-                    textarea#abstract.form-control(rows="10", name="abstract", placeholder='Abstract', required=true)
-                .form-group
-                    label(for="keywords") Keywords
-                    input#keywords.form-control(type='text', name="keywords", placeholder='Keywords')
-                .form-group
-                    label(for="advisors") Advisors
-                    input#advisors.form-control(type='text', name="advisors", placeholder='Advisors')
-                .btn-group
-                    button.btn.btn-default(type='submit', style = "margin-left:10px;") Create
-                    button#btnCancelNew.btn.btn-default(type='button', style = "margin-left:10px;") Cancel
-
-    +panel("My Theses", "primary") <button id="btnNewThesis" class="btn btn-default">Create New</button>
+    +panel("My Theses", "primary")
 
         #panel_myThesis.panel-group
 
@@ -43,4 +61,5 @@ block content
 
 block scripts
     script
+        include ../public/js/scripts.js
         include ../public/js/thesis/scripts.js

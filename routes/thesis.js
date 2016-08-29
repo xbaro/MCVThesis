@@ -213,20 +213,90 @@ router.get('/teachers', function (req, res) {
     }
 });
 
+router.get('/:thesisID', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.redirect('/auth/signin');
+    } else {
+        var thesisID = req.params.thesisID;
+        Model.Thesis.findById(thesisID, {
+            include: [
+                        {
+                            model: Model.User,
+                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
+                        },
+                        {
+                            model: Model.User,
+                            as: 'Advised',
+                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
+                        },
+                        {
+                            model: Model.User,
+                            as: 'Reviewed',
+                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
+                        }
+                    ]
+        }).then(function(thesis){
+            if (thesis) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(thesis, null, 3));
+            } else {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Thesis not find' }, null, 3));
+            }
+        });
+    }
+});
+
 router.post('/:thesisID/update', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            // request was via https, so redirect to http
-            res.redirect('http://' + get_host_http(req) + req.originalUrl);
+        var data = req.body;
+        var username = req.user.username;
+        if (req.user.teacher || req.user.admin) {
+            username = data.author;
         } else {
-            /*Model.Thesis.findAll({ where: {author: req.user.username} })
-            .then(function(data) {
+            if(req.user.username!=data.author) {
                 res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(data));
-            });*/
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+                return;
+            }
         }
+        Model.Thesis.update({
+            title: data.title,
+            abstract: data.abstract,
+            keywords: data.keywords
+        }, {
+            where: { id: data.id }
+        }).then(function(result) {
+            if(result && result[0]) {
+                Model.Thesis.findById(data.id).then(function (thesis) {
+                    if (thesis) {
+                        Model.User.findById(username).then(function (author) {
+                            thesis.setUser(author).then(function (aThesis) {
+                                var adList = data['advisors'];
+                                Model.User.findAll({
+                                    where: {username: data.advisors}
+                                }).then(function (advisors) {
+                                    thesis.setAdvised(advisors).then(function (data) {
+
+                                        res.setHeader('Content-Type', 'application/json');
+                                        res.send(JSON.stringify({error: false, message: 'Thesis created'}));
+                                    });
+                                });
+                            });
+                        });
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify({ error: true, message: 'Thesis not find when updating relations' }, null, 3));
+                    }
+                });
+            } else {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Thesis not updated' }, null, 3));
+            }
+        });
     }
 });
 
@@ -235,7 +305,6 @@ router.post('/:thesisID/delete', function (req, res) {
         res.redirect('/auth/signin');
     } else {
         var thesisID = req.params.thesisID;
-
         Model.Thesis.findById(thesisID).then(function(thesis){
             if(thesis) {
                 if(thesis.approved && !req.user.teacher && !req.user.admin) {
@@ -323,29 +392,13 @@ router.post('/new', function (req, res) {
             if(thesis) {
                 Model.User.findById(username).then(function(author) {
                     thesis.setUser(author).then(function(aThesis) {
-                        Model.User.findAll({where: {username: {$in: data.advisors}}}).then(function (advisors) {
+                        var adList = data['advisors'];
+                        Model.User.findAll({where: { username: data.advisors }
+                        }).then(function (advisors) {
                             thesis.setAdvised(advisors).then(function (data) {
-                                Model.Thesis.findById(thesis.id, {
-                                    include: [
-                                        {
-                                            model: Model.User,
-                                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
-                                        },
-                                        {
-                                            model: Model.User,
-                                            as: 'Advised',
-                                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
-                                        },
-                                        {
-                                            model: Model.User,
-                                            as: 'Reviewed',
-                                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
-                                        }
-                                    ]
-                                }).then(function (tdata) {
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.send(JSON.stringify(tdata));
-                                });
+
+                                res.setHeader('Content-Type', 'application/json');
+                                res.send(JSON.stringify({error: false, message:'Thesis created'}));
                             });
                         });
                     });

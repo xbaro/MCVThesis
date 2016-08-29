@@ -28,12 +28,15 @@ jQuery(document).ready(function() {
         } else {
             newThesis.addClass("panel-warning").addClass('.margin-bottom-40');
         }
-
+        var authorName = '<undefinded>';
+        if(thesis['User']) {
+            authorName = thesis['User'].full_name;
+        }
         var header = $('<div>').addClass("panel-heading").append(
             $("<div>").addClass("panel-title").append(
                 $('<p>').append("<strong>" +  thesis['title'] + "</strong>")
             ).append(
-                $('<p>').append("<i>by " + thesis['User'].full_name + "</i>")
+                $('<p>').append("<i>by " + authorName + "</i>")
             )
         ).appendTo(newThesis);
 
@@ -110,16 +113,54 @@ jQuery(document).ready(function() {
                     addThesis(t, 'at_', $('#panel_advisedThesis'));
                 });
                 $('.edit-thesis').on('click', function(e) {
-                    alert( 'edit (' + getThesisId(e) + ')' );
+                    $.get('/thesis/' + getThesisId(e), {}, 'json').done(function(thesis) {
+                        if (thesis && !thesis.hasOwnProperty('error')) {
+                            // Reset the form data
+                            $('#thesisFormModal').find('form').trigger("reset");
+
+                            // Assign the values
+                            $('#thesis_id').val(thesis.id);
+                            $('#title').val(thesis.title);
+                            $('#abstract').val(thesis.abstract);
+                            $('#keywords').val(thesis.keywords);
+
+                            var advisors = [];
+                            $.each(thesis.Advised, function(idx, adv) {
+                                advisors.push(adv.full_name);
+                            });
+                            $('#advisors').val(advisors.join(', '));
+                            selected_advisors = thesis.Advised;
+
+                            $('#author').val(thesis.User.full_name);
+                            $('#author_username').val(thesis.User.username);
+
+                            // Check the status for the author field
+                            if(current_user.teacher || current_user.admin) {
+                                $('#author').attr('readonly', false);
+                            } else {
+                                $('#author').attr('readonly', true);
+                            }
+
+                            // Adapt the form for update
+                            $('#thesisFormModal').find('.modal-title').text('Edit thesis');
+                            $('#thesisFormModal').find('.btn-primary').text('Update');
+                            $('#thesisFormModal').find('.btn-primary').data('action', 'edit');
+
+                            // Show the window
+                            $('#thesisFormModal').modal('show', e.target);
+                        }
+                    });
                 });
 
                 $('.del-thesis').on('click', function(e) {
-                    var r = confirm("You will remove the thesis and all its related information.");
-                    if (r == true) {
-                        $.post("/thesis/" + getThesisId(e) + "/delete", 'json').done(function (data) {
-                            showTheses();
+                    bootbox.confirm("You will remove the thesis and all the related information.",
+                        function (result) {
+                            if (result) {
+                                $.post("/thesis/" + getThesisId(e) + "/delete", 'json').done(function (data) {
+                                    showTheses();
+                                });
+                            }
                         });
-                    }
                 });
 
                 $('.approve-thesis').on('click', function(e) {
@@ -134,14 +175,31 @@ jQuery(document).ready(function() {
 
     function get_advisors() {
         var sel = split($('#advisors').val());
-        //TODO: Check that all advisors in selected_advisors are in sel. Discard the differences.
         var ad_ids=[];
-        $.map(selected_advisors, function(n, i){
-            var ad = {};
-            //ad.username = n['username'];
-            //ad_ids.push(ad);
-            ad_ids.push(n['username']);
+        var new_list = [];
+
+        $.each(selected_advisors, function(i, n){
+            var user_exist = false;
+            var repeated = false;
+            $.each(new_list, function(idx, u_obj){
+                if(u_obj.username==n['username']) {
+                    repeated=true;
+                }
+            });
+            if(!repeated) {
+                $.each(sel, function (idx, u_fn) {
+                    if (u_fn == n['full_name']) {
+                        user_exist = true;
+                    }
+                });
+                if (user_exist) {
+                    ad_ids.push(n['username']);
+                    new_list.push(n);
+                }
+            }
         });
+
+        selected_advisors = new_list;
         return ad_ids;
     }
 
@@ -165,6 +223,7 @@ jQuery(document).ready(function() {
                   },
             select: function( event, ui ) {
                     $( "#author" ).val( ui.item.full_name );
+                    $('#author_username').val(ui.item.username);
 
                     return false;
                   }
@@ -173,6 +232,8 @@ jQuery(document).ready(function() {
                 .append( "<div>" + item.full_name + "</div>" )
                 .appendTo( ul );
             };
+
+        $( "#author" ).autocomplete( "option", "appendTo", "#thesisFormModal" );
     });
 
 
@@ -250,50 +311,114 @@ jQuery(document).ready(function() {
                 .append( "<div>" + item.full_name + "</div>" )
                 .appendTo( ul );
         };
+        $( "#advisors" ).autocomplete( "option", "appendTo", "#thesisFormModal" );
 
-    $('#abstract').wysihtml5({
-        "events":      {
-            "load": function () {
-                jQuery('.wysihtml5').addClass('nicehide');
+    $('#thesisFormModal').on('shown.bs.modal', function () {
+        $('#abstract').wysihtml5({
+            "events":      {
+                "load": function () {
+                    jQuery('.wysihtml5').addClass('nicehide');
+                }
             }
-        }
+        });
     });
 
-    $('#abstract').val('');
+    $('#btnRefresh').on('click', function(e) {
+        showTheses();
+    });
 
     $('#btnNewThesis').on('click', function(e) {
-        $('#thesis_edt').show();
-        $('#btnNewThesis').hide();
-    });
-    $('#btnCancelNew').on('click', function(e) {
-        $('#thesis_edt').hide();
-    });
-    $('#thesis_edt').submit(function( event ) {
-        event.preventDefault();
-        var $form = $(event.target);
-        var data = {};
-        $.map($form.serializeArray(), function(n, i){
-            data[n['name']] = n['value'];
-        });
+        // Reset the form data
+        $('#thesisFormModal').find('form').trigger("reset");
+        $('#abstract').val('');
 
-        var author = $('#author').autocomplete('instance').selectedItem;
-        data['advisors'] = get_advisors();
+        // Ensure that username is enabled for edit
+        $('#user_username').attr('readonly', false);
+
+        // Adapt the form for creation
+        $('#thesisFormModal').find('.modal-title').text('Add new thesis');
+        $('#thesisFormModal').find('.btn-primary').text('Add');
+        $('#thesisFormModal').find('.btn-primary').data('action', 'add');
+
+        // Show the window
+        $('#thesisFormModal').modal('show', $('#btnNewThesis'));
+    });
+
+    $('#btnAcceptThesis').on('click', function(e) {
+        var action = $(this).data('action');
+
+        // Get the data from the form
+        var thesis = $('#thesisFormModal').find('form').serializeFormJSON();
+
+        // Process special fields
+        var author = $('#author_username').val();
+        thesis['advisors'] = get_advisors();
         if (current_user.teacher || current_user.admin) {
-            data['author'] = author.username;
+            thesis['author'] = author;
         } else {
-            data['author'] = current_user.username;
+            thesis['author'] = current_user.username;
         }
 
+        // Set the action
+        var post_action = '';
+        var msg_title = 'Error';
+        var msg_body = '';
+        switch (action) {
+            case 'add':
+                post_action = '/thesis/new';
+                msg_title = 'Add new thesis';
+                msg_body = 'Created thesis for <strong>' + thesis.author + '</strong>';
+                break;
+            case 'edit':
+                post_action = '/thesis/' + thesis['id'] + '/update';
+                msg_title = 'Update thesis';
+                msg_body = 'Thesis of <strong>' + thesis.author + '</strong> successfully updated'
+                break;
+        }
+
+        // Perform the action
         $.ajax({
             type: "POST",
-            url: $form.attr('action'),
-            data: JSON.stringify(data),
+            url: post_action,
+            data: JSON.stringify(thesis),
             contentType: "application/json; charset=utf-8",
             dataType: "json"
-        }).done(function(data) {
-            $('#btnNewThesis').show();
-            $('#thesis_edt').hide();
-            showTheses();
+        }).done(function( data ) {
+                // Show the message
+                if(data.hasOwnProperty('error') && !data.error) {
+                    $.notify({
+                        title: '<strong>' + msg_title +'</strong>',
+                        message: msg_body,
+                        newest_on_top: true
+                    }, {
+                        type: 'success',
+                        element: '#thesisForm_messages'
+                    });
+                    // Close the modal form
+                    $('#thesisFormModal').modal('hide');
+                    showTheses();
+
+                } else {
+                    $.notify({
+                        title: '<strong>Error</strong>',
+                        message: 'Unexpected error processing the request [action='+ action + ', msg=' + data.message + '].',
+                        newest_on_top: true
+                    },{
+                        type: 'danger',
+                        element: '#thesis_modalBody'
+                    });
+                }
+
+        }).fail(function() {
+            $.notify({
+                title: '<strong>Error</strong>',
+                message: 'Unexpected error processing the request [action='+ action + ', author=' + thesis.author + '].',
+                newest_on_top: true
+            },{
+                type: 'danger',
+                element: '#thesis_modalBody'
+            });
         });
+
     });
 });
