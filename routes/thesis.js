@@ -2,6 +2,7 @@
 var router = express.Router();
 var Model = require('../models');
 
+var env  = process.env.NODE_ENV || "development";
 function get_host_http(req) {
     var port = req.app.get('port')
     var host = req.headers.host;
@@ -12,7 +13,7 @@ function get_host_http(req) {
         host = host_parts[0];
     }
 
-    if (port == 80) {
+    if (env === "production" || port == 80) {
         return host;
     }
 
@@ -20,7 +21,7 @@ function get_host_http(req) {
 }
 
 function get_host_https(req) {
-    var port = req.app.get('port-ssl');
+    var port = req.app.get('port-ssl')
     var host = req.headers.host;
 
     var host_parts = host.split(':');
@@ -29,13 +30,12 @@ function get_host_https(req) {
         host = host_parts[0];
     }
 
-    if (port == 443) {
+    if (env === "production" || port == 443) {
         return host;
     }
 
     return host + ':' + port;
 }
-
 
 router.get('/', function (req, res) {
     if (!req.isAuthenticated()) {

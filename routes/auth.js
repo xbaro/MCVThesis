@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt-nodejs');
 var passport = require('passport');
 var Model = require('../models');
 
+var env  = process.env.NODE_ENV || "development";
 function get_host_http(req) {
     var port = req.app.get('port')
     var host = req.headers.host;
@@ -14,7 +15,7 @@ function get_host_http(req) {
         host = host_parts[0];
     }
 
-    if (port == 80) {
+    if (env === "production" || port == 80) {
         return host;
     }
 
@@ -31,7 +32,7 @@ function get_host_https(req) {
         host = host_parts[0];
     }
 
-    if (port == 443) {
+    if (env === "production" || port == 443) {
         return host;
     }
 
