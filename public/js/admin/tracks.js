@@ -90,7 +90,7 @@ function getTreeData(data) {
 function showTree(selected) {
 
     // Disable drag thesis
-    $('.unassigned-thesis').draggable( "option", "disabled", true );
+    //$('.unassigned-thesis').draggable( "option", "disabled", true );
 
     var selectedPeriods = $('#periodsTable').bootstrapTable('getSelections');
     if (selectedPeriods.length>0) {

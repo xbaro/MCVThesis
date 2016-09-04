@@ -11,10 +11,10 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "mcv_thesis",
-    "password": ".mcv_thesis.",
-    "database": "mcv_thesis",
+    "username": "mcv_theses",
+    "password": ".mcv_theses.",
+    "database": "mcv_theses",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres"
   }
 }

@@ -213,40 +213,6 @@ router.get('/teachers', function (req, res) {
     }
 });
 
-router.get('/:thesisID', function (req, res) {
-    if (!req.isAuthenticated()) {
-        res.redirect('/auth/signin');
-    } else {
-        var thesisID = req.params.thesisID;
-        Model.Thesis.findById(thesisID, {
-            include: [
-                        {
-                            model: Model.User,
-                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
-                        },
-                        {
-                            model: Model.User,
-                            as: 'Advised',
-                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
-                        },
-                        {
-                            model: Model.User,
-                            as: 'Reviewed',
-                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
-                        }
-                    ]
-        }).then(function(thesis){
-            if (thesis) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(thesis, null, 3));
-            } else {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({ error: true, message: 'Thesis not find' }, null, 3));
-            }
-        });
-    }
-});
-
 router.post('/:thesisID/update', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
@@ -408,5 +374,83 @@ router.post('/new', function (req, res) {
     }
 });
 
+router.get('/open', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            Model.Thesis.findAll({
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                include: [
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name']
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        as: "Advised"
+                    },
+                    {
+                        model: Model.User,
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        as: "Reviewed"
+                    },
+                    {
+                        model: Model.Slot,
+                        attributes: ['id', 'start', 'end'],
+                        required: false
+                    }
+                ]
+            }).then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
+            });
+        }
+    }
+});
+
+router.get('/:thesisID', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.redirect('/auth/signin');
+    } else {
+        var thesisID = req.params.thesisID;
+        Model.Thesis.findById(thesisID, {
+            include: [
+                        {
+                            model: Model.User,
+                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
+                        },
+                        {
+                            model: Model.User,
+                            as: 'Advised',
+                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
+                        },
+                        {
+                            model: Model.User,
+                            as: 'Reviewed',
+                            attributes: ['username', 'name', 'surname', 'full_name', 'roles', 'organization', 'email'],
+                        }
+                    ]
+        }).then(function(thesis){
+            if (thesis) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(thesis, null, 3));
+            } else {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Thesis not found' }, null, 3));
+            }
+        });
+    }
+});
 
 module.exports = router;

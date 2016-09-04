@@ -59,6 +59,27 @@ block content
 
         #panel_advisedThesis.panel-group
 
+    if user && user.teacher
+
+        .panel.panel-default.margin-bottom-40
+            .panel-heading
+                .panel-title
+                    i.fa.fa-calendar #{' '} Active Theses
+            .panel-body
+                table#thesesTable(data-toggle="table", data-url="/thesis/open", data-sort-name="User.full_name",
+                data-page-list="[5, 10, 20, 50, 100, 200]", data-page-size="5",
+                data-sort-order="asc", data-pagination="true", data-search="true"
+                data-show-refresh="true", data-show-toggle="false", data-show-columns="true")
+                    thead
+                        tr
+                            th(data-field="id", data-sortable="true", data-visible="false") Id
+                            th(data-field="User.full_name", data-sortable="true") Author
+                            th(data-field="title", data-sortable="true") Title
+                            th(data-field="id", data-formatter="getAdvisorsValue") Advisors
+                            th(data-field="id", data-formatter="getSlotInfo") Presentation
+                            th(data-field="id", data-formatter="getCommitteeValue") Committee
+                            th(data-field="id", data-formatter="getActionButtons") Actions
+
 block scripts
     script
         include ../public/dist/scripts.js

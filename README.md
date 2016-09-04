@@ -12,3 +12,22 @@ npm install bower -g
 - gulp
 
 node bin/www
+
+## Production
+
+### Postgres
+
+- Install postgres
+    sudo apt-get install postgres
+- Create a user and a database
+    sudo su - postgres
+    createuser -P -d mcv_theses
+    exit
+    
+- Modify the credentials on the file config/config.json
+- Run the application in production mode
+    NODE_ENV=production node bin/www
+    
+   
+
+
