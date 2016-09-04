@@ -47,3 +47,6 @@ public/lib
 
 # Ingore certificates folder
 ssl
+
+# Ingnore compressed files
+public/dist

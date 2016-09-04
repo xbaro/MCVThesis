@@ -3,6 +3,8 @@ var gulp = require('gulp'), 
     notify = require("gulp-notify") 
     bower = require('gulp-bower');
 
+var minify = require('gulp-minify');
+
 var config = {
      sassPath: './resources/sass',
      bowerDir: './bower_components' 
@@ -29,4 +31,17 @@ gulp.task('css', function() { 
      gulp.watch(config.bowerDir + '/**/*.scss', ['css']); 
 });
 
-  gulp.task('default', ['bower', 'icons', 'css']);
+gulp.task('compress', function() {
+  gulp.src('public/js/**/*.js')
+    .pipe(minify({
+        ext:{
+            src:'-debug.js',
+            min:'.js'
+        },
+        exclude: ['tasks'],
+        ignoreFiles: ['.combo.js', '-min.js']
+    }))
+    .pipe(gulp.dest('public/dist'))
+});
+
+  gulp.task('default', ['bower', 'icons', 'css', 'compress']);

@@ -12,6 +12,8 @@ var profile = require('./routes/profile');
 var committees = require('./routes/committees');
 var thesis = require('./routes/thesis');
 
+var compression = require('compression');
+
 /* BEGIN: Add session and user required modules */
 var session = require('express-session');
 var Store = require('express-sequelize-session') (session.Store);
@@ -34,6 +36,8 @@ app.set('forceSSLOptions', {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// compress all requests
+app.use(compression());
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));

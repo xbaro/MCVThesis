@@ -15,6 +15,7 @@
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "1.15.2",
+    "compression": "^1.6.2",
     "cookie-parser": "1.4.3",
     "debug": "2.0.0",
     "express": "4.9.8",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-bower": "0.0.13",
+    "gulp-minify": "0.0.14",
     "gulp-notify": "^2.2.0",
     "gulp-ruby-sass": "^2.0.6",
     "gulp-sass": "^2.3.2",
