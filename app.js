@@ -46,6 +46,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public'), {force: false}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
 /* BEGIN: Configure Passport for user authentication */
 passport.use(new LocalStrategy(function (username, password, done) {
