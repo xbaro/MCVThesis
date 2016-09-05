@@ -247,7 +247,7 @@ router.get('/stats/:periodId', function (req, res) {
                         as: 'Committee'
                     }
                 ],
-                group: ['username', 'name', 'surname', 'organization']
+                group: ['username', 'name', 'surname', 'organization', 'Advisor.id', 'Committee.id']
             })
             .then(function(data) {
                 res.setHeader('Content-Type', 'application/json');
