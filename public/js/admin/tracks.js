@@ -342,6 +342,8 @@ jQuery(document).ready(function() {
                 $('#slot_date').setFormatedDate(row.start);
                 $('#slot_start_time').setFormatedTime(row.start);
                 $('#slot_end_time').setFormatedTime(row.end);
+                $('#slot_duration').val(row.duration);
+
 
 
                 // Show the window
