@@ -7,6 +7,9 @@
 		"log_date_format"  : "YYYY-MM-DD HH:mm Z",
 		"instances": 5,
 		"exec_mode": "cluster",
-		"max_memory_restart" : "1000M"
+		"max_memory_restart" : "1000M",
+	    "env_production" : {
+       		"NODE_ENV": "production"
+    	}
 	}]
 }
