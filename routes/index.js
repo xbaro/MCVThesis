@@ -218,9 +218,7 @@ router.get('/stats/:periodId', function (req, res) {
         } else {
             var periodId = req.params.periodId;
             Model.User.findAll({
-                attributes: ['username', 'name', 'surname', 'full_name', 'organization',
-                    [Model.sequelize.fn('count', Model.sequelize.col('Advisor.id')), 'num_advised'],
-                    [Model.sequelize.fn('count', Model.sequelize.col('Committee.id')), 'num_committee']],
+                attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
                 include: [
                     {
                         model: Model.Thesis,
@@ -246,8 +244,7 @@ router.get('/stats/:periodId', function (req, res) {
                         model: Model.Thesis,
                         as: 'Committee'
                     }
-                ],
-                group: ['username', 'name', 'surname', 'organization', 'Advisor.id', 'Committee.id']
+                ]
             })
             .then(function(data) {
                 res.setHeader('Content-Type', 'application/json');
