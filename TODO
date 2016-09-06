@@ -12,3 +12,4 @@
 - Add important dates (deadlines and others)
 - Allow export to CSV
 - Allow import data
+- Use datepicker for browsers not supporting date and time HTML5 inputs: http://www.blog.tictacsoluciones.com/2013/06/formularios-html5-date-como-usar-y.html

@@ -201,6 +201,7 @@ function showUnassignedTheses(node) {
             $.post('/committees/theses/assign/' + thesisId + '/' + role, {}, 'json')
                 .done(function (data) {
                     showPeriodsTree(node);
+                    $('#myCommitteesTable').bootstrapTable('refresh');
                 });
         });
         $('.abandon_committee').on('click', function(event) {
@@ -208,6 +209,7 @@ function showUnassignedTheses(node) {
             $.post('/committees/theses/unassign/' + thesisId, {}, 'json')
                 .done(function (data) {
                     showPeriodsTree(node);
+                    $('#myCommitteesTable').bootstrapTable('refresh');
                 });
         });
 
@@ -217,6 +219,7 @@ function showUnassignedTheses(node) {
             $.post('/committees/theses/unassign/' + thesisId, {role: role}, 'json')
                 .done(function (data) {
                     showPeriodsTree(node);
+                    $('#myCommitteesTable').bootstrapTable('refresh');
                 });
         });
 
@@ -250,6 +253,7 @@ function showUnassignedTheses(node) {
                         showPeriodsTree(node);
                         // Close the window
                         $('#assignFormModal').modal('hide');
+                        $('#myCommitteesTable').bootstrapTable('refresh');
                     });
             }
         });

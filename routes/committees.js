@@ -62,7 +62,7 @@ router.get('/my', function (req, res) {
             include: [
                 {
                     model: Model.Slot,
-                    attributes: ['id', 'place', 'start', 'end', 'duration'],
+                    attributes: ['id', 'place', 'start', 'end', 'duration', 'room'],
                     include: [
                         {
                             model: Model.Track,
@@ -110,6 +110,7 @@ router.get('/my', function (req, res) {
                 item.start = s_date.getHours() + ":" + ("0" + s_date.getMinutes()).slice(-2);
                 item.end = e_date.getHours() + ":" + ("0" + e_date.getMinutes()).slice(-2);
                 item.place = thesis.Slot.place;
+                item.room = thesis.Slot.room;
                 if(thesis.Reviewed && thesis.Reviewed.length>0) {
                     if(thesis.Reviewed[0].Committee) {
                         item.role = thesis.Reviewed[0].Committee.role;
