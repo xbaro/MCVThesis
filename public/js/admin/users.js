@@ -81,6 +81,8 @@ jQuery(document).ready(function() {
             $('#user_organization').val(row.organization);
             $('#user_roles').val(row.roles);
             $('#user_keywords').val(row.keywords);
+            $('#user_password').val('');
+
         }
 
         // Show the window
