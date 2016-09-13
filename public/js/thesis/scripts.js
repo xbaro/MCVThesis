@@ -49,7 +49,7 @@ function getCommitteeValue(value, row, index) {
     if(row.Reviewed.length > 0 ) {
         committee += '<ul>';
         $.each(row.Reviewed, function(idx, rev) {
-            committee += '<li>' + rev.full_name + ' (' + rev.organization + ') </li>'
+            committee += '<li><a href="mailto:' + rev.email + '">' + rev.full_name + '</a> (' + rev.organization + ')</li>';
         });
         committee += '</ul>';
     }

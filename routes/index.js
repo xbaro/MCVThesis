@@ -71,113 +71,114 @@ router.get('/config', function (req, res) {
 });
 
 router.get('/calendar', function (req, res) {
-    if (!req.isAuthenticated()) {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(401);
-        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
-    } else {
-        Model.Thesis.findAll({
-            attributes: ['id', 'title', 'order', 'abstract'],
-            include: [
-                {
-                    model: Model.Slot,
-                    attributes: ['id', 'place', 'start', 'end', 'duration', 'room'],
-                    where: {start: {
-                        $gt: (new Date()-24*60*60*1000)
-                    }},
-                    required: true,
-                    include: [
-                        {
-                            model: Model.Track,
-                            attributes: ['id', 'title'],
-                            include: [
-                                {
-                                    model: Model.Period,
-                                    attributes: ['id', 'title', 'start', 'end']
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    model: Model.User,
-                    attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                    as: "Reviewed"
-                },
-                {
-                    model: Model.User,
-                    attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                    as: "Advised"
-                },
-                {
-                    model: Model.User,
-                    attributes: ['username', 'name', 'surname', 'full_name']
-                }
-            ],
-            order: [
-                [Model.Slot, 'start'],
-                [Model.Slot, 'id'],
-                ['order'],
-                [Model.Slot, Model.Track, 'title'],
-                [Model.Slot, 'place'],
-                [Model.Slot, 'room']
-            ]
-        })
-        .then(function(data) {
-            var tdata=[].concat(data).map(function(thesis){
-                var s_date = new Date(new Date(thesis.Slot.start).getTime() + (thesis.order-1)*thesis.Slot.duration*60000);
-                var e_date = new Date(s_date.getTime() + thesis.Slot.duration*60000);
-                var item = {};
-                item.thesis_id = thesis.id;
-                item.thesis_title = thesis.title;
-                item.thesis_author_name = thesis.User.full_name;
-                item.thesis_author_username = thesis.User.username;
-                item.thesis_abstract = thesis.abstract;
-                item.date = thesis.Slot.start;
-                item.start = s_date.getHours() + ":" + ("0" + s_date.getMinutes()).slice(-2);
-                item.end = e_date.getHours() + ":" + ("0" + e_date.getMinutes()).slice(-2);
-                item.place = thesis.Slot.place;
-                item.duration = thesis.Slot.duration;
-                item.room = thesis.Slot.room;
-                item.track_id = thesis.Slot.Track.id;
-                item.track_title = thesis.Slot.Track.title;
-                item.committee = {};
-                item.committee.president = {};
-                item.committee.president.name = '';
-                item.committee.president.organization = '';
-                item.committee.secretary = {};
-                item.committee.secretary.name = '';
-                item.committee.secretary.organization = '';
-                item.committee.vocal = {};
-                item.committee.vocal.name = '';
-                item.committee.vocal.organization = '';
-                for(i = 0; i<thesis.Reviewed.length; i++) {
-                    if(thesis.Reviewed[i].Committee.president) {
-                        item.committee.president.name = thesis.Reviewed[i].full_name;
-                        item.committee.president.organization = thesis.Reviewed[i].organization;
+    Model.Thesis.findAll({
+        attributes: ['id', 'title', 'order', 'abstract'],
+        include: [
+            {
+                model: Model.Slot,
+                attributes: ['id', 'place', 'start', 'end', 'duration', 'room'],
+                where: {start: {
+                    $gt: (new Date()-24*60*60*1000)
+                }},
+                required: true,
+                include: [
+                    {
+                        model: Model.Track,
+                        attributes: ['id', 'title'],
+                        include: [
+                            {
+                                model: Model.Period,
+                                attributes: ['id', 'title', 'start', 'end']
+                            }
+                        ]
                     }
-                    if(thesis.Reviewed[i].Committee.secretary) {
-                        item.committee.secretary.name = thesis.Reviewed[i].full_name;
-                        item.committee.secretary.organization = thesis.Reviewed[i].organization;
-                    }
-                    if(thesis.Reviewed[i].Committee.vocal) {
-                        item.committee.vocal.name = thesis.Reviewed[i].full_name;
-                        item.committee.vocal.organization = thesis.Reviewed[i].organization;
-                    }
+                ]
+            },
+            {
+                model: Model.User,
+                attributes: ['username', 'name', 'surname', 'full_name', 'organization', 'email'],
+                as: "Reviewed"
+            },
+            {
+                model: Model.User,
+                attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                as: "Advised"
+            },
+            {
+                model: Model.User,
+                attributes: ['username', 'name', 'surname', 'full_name']
+            }
+        ],
+        order: [
+            [Model.Slot, 'start'],
+            [Model.Slot, 'id'],
+            ['order'],
+            [Model.Slot, Model.Track, 'title'],
+            [Model.Slot, 'place'],
+            [Model.Slot, 'room']
+        ]
+    })
+    .then(function(data) {
+        var tdata=[].concat(data).map(function(thesis){
+            var s_date = new Date(new Date(thesis.Slot.start).getTime() + (thesis.order-1)*thesis.Slot.duration*60000);
+            var e_date = new Date(s_date.getTime() + thesis.Slot.duration*60000);
+            var item = {};
+            item.thesis_id = thesis.id;
+            item.thesis_title = thesis.title;
+            item.thesis_author_name = thesis.User.full_name;
+            item.thesis_author_username = thesis.User.username;
+            item.thesis_abstract = thesis.abstract;
+            item.date = thesis.Slot.start;
+            item.start = s_date.getHours() + ":" + ("0" + s_date.getMinutes()).slice(-2);
+            item.end = e_date.getHours() + ":" + ("0" + e_date.getMinutes()).slice(-2);
+            item.place = thesis.Slot.place;
+            item.duration = thesis.Slot.duration;
+            item.room = thesis.Slot.room;
+            item.track_id = thesis.Slot.Track.id;
+            item.track_title = thesis.Slot.Track.title;
+            item.committee = {};
+            item.committee.president = {};
+            item.committee.president.name = '';
+            item.committee.president.email = '';
+            item.committee.president.organization = '';
+            item.committee.secretary = {};
+            item.committee.secretary.name = '';
+            item.committee.secretary.email = '';
+            item.committee.secretary.organization = '';
+            item.committee.vocal = {};
+            item.committee.vocal.name = '';
+            item.committee.vocal.email = '';
+            item.committee.vocal.organization = '';
+            for(i = 0; i<thesis.Reviewed.length; i++) {
+                if(thesis.Reviewed[i].Committee.president) {
+                    item.committee.president.name = thesis.Reviewed[i].full_name;
+                    item.committee.president.organization = thesis.Reviewed[i].organization;
+                    item.committee.president.email = thesis.Reviewed[i].email;
                 }
-                item.advisors = [];
-                for(i = 0; i<thesis.Advised.length; i++) {
-                    var adv_item = {};
-                    adv_item.name = thesis.Advised[i].full_name;
-                    adv_item.organization = thesis.Advised[i].organization;
-                    item.advisors.push(adv_item);
+                if(thesis.Reviewed[i].Committee.secretary) {
+                    item.committee.secretary.name = thesis.Reviewed[i].full_name;
+                    item.committee.secretary.organization = thesis.Reviewed[i].organization;
+                    item.committee.secretary.email = thesis.Reviewed[i].email;
                 }
-                return item;
-            });
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(tdata));
+                if(thesis.Reviewed[i].Committee.vocal) {
+                    item.committee.vocal.name = thesis.Reviewed[i].full_name;
+                    item.committee.vocal.organization = thesis.Reviewed[i].organization;
+                    item.committee.vocal.email = thesis.Reviewed[i].email;
+                }
+            }
+            item.advisors = [];
+            for(i = 0; i<thesis.Advised.length; i++) {
+                var adv_item = {};
+                adv_item.name = thesis.Advised[i].full_name;
+                adv_item.organization = thesis.Advised[i].organization;
+                item.advisors.push(adv_item);
+            }
+            return item;
         });
-    }
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(tdata));
+    });
+
 });
 
 router.get('/periods', function (req, res) {

@@ -399,12 +399,12 @@ router.get('/open', function (req, res) {
                     },
                     {
                         model: Model.User,
-                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization', 'email'],
                         as: "Reviewed"
                     },
                     {
                         model: Model.Slot,
-                        attributes: ['id', 'start', 'end'],
+                        attributes: ['id', 'start', 'end', 'place', 'room'],
                         required: false
                     }
                 ]

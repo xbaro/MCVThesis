@@ -194,9 +194,9 @@
                 advisors += object.advisors[a].name + ' (' + object.advisors[a].organization + ')';
             }
             var committee = '<ul>' +
-                                '<li><strong><em>President: </em></strong>' + object.committee['president'].name + ' (' + object.committee['president'].organization + ')</li>' +
-                                '<li><strong><em>Secretary: </em></strong>' + object.committee['secretary'].name + ' (' + object.committee['secretary'].organization + ')</li>' +
-                                '<li><strong><em>Vocal: </em></strong>' + object.committee['vocal'].name + ' (' + object.committee['vocal'].organization + ')</li>' +
+                                '<li><strong><em>President: </em></strong>' + (object.committee['president'].name ? object.committee['president'].name + ' (' + object.committee['president'].organization + ') &lt;' + object.committee['president'].email + '&gt;</li>' : "") +
+                                '<li><strong><em>Secretary: </em></strong>' + (object.committee['secretary'].name ? object.committee['secretary'].name + ' (' + object.committee['secretary'].organization + ') &lt;' + object.committee['secretary'].email + '&gt;</li>' : "") +
+                                '<li><strong><em>Vocal: </em></strong>' + (object.committee['vocal'].name ? object.committee['vocal'].name + ' (' + object.committee['vocal'].organization + ') &lt;' + object.committee['vocal'].email + '&gt;</li>' : "") +
                             '</ul>';
 
             return '<a href="#event_cell_' + id + '" class="btn btn-info btn-xs" data-toggle="collapse"><i class="glyphicon glyphicon-plus"></i></a> <strong>' + object.thesis_author_name + '</strong>' +
