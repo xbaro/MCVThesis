@@ -119,8 +119,10 @@ function showTree(selected) {
                 if(data.type == 'slot') {
                     // Enable drag thesis
                     $('.unassigned-thesis').draggable( "option", "disabled", false );
+                    $('.add_thesis_slot').prop("disabled",false);
                 } else {
                     $('.unassigned-thesis').draggable( "option", "disabled", true );
+                    $('.add_thesis_slot').prop("disabled",true);
                 }
 
                 if(data.type == 'thesis') {
@@ -203,7 +205,7 @@ function addThesis(thesis, parent) {
             $('<p>').append("<strong>" +  thesis['title'] + "</strong>")
         ).append(
             $('<p>').append("<i>by " + thesis['User'].full_name + "</i>")
-        )
+        ).append("<button class='add_thesis_slot' data-id='" + thesis['id'] + "'>Assign</button>" )
     ).appendTo(newThesis);
 
     if (!thesis['approved']) {
@@ -242,6 +244,24 @@ function addThesis(thesis, parent) {
 
     newThesis.addClass('unassigned-thesis');
     newThesis.draggable({ revert: true, helper: "clone", disabled: true });
+    $('.add_thesis_slot').on('click', function(e) {
+        var selectedNodes = $('#slots_tree').treeview('getSelected');
+        if (selectedNodes.length == 0) {
+            alert("No slot selected");
+            return false;
+        }
+        if (selectedNodes[0].type == 'slot') {
+            var thesisID = e.target.dataset['id'];
+            var slotId = selectedNodes[0].data_object.id;
+
+            $.post( "/admin/thesis/" + thesisID + "/assign", {slot_id: slotId}, 'json').done(function( result ) {
+                if(result) {
+                    showTree(selectedNodes[0]);
+                    showUnassignedTheses();
+                }
+            });
+        }
+    });
 }
 
 function showUnassignedTheses() {
@@ -251,6 +271,7 @@ function showUnassignedTheses() {
         $.each(data, function (i, t) {
             addThesis(t, $('#panel_unassignedTheses'));
         });
+        $('.add_thesis_slot').prop("disabled",true);
     });
 
     //$('#panel_unassignedTheses').paginate({pagerSelector:'#thesisPagination',childSelector:'.panel',showPrevNext:true,hidePageNumbers:false,perPage:4});
