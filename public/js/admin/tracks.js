@@ -99,6 +99,7 @@ function showTree(selected) {
             $('#btnAddElement').addClass('disabled');
             $('#btnEditElement').addClass('disabled');
             $('#btnDelElement').addClass('disabled');
+            $('#btnFixOrder').addClass('disabled');
 
             $('#slots_tree').treeview({data: getTreeData(data), showTags: true, levels: 3, color: "#428bca"});
 
@@ -120,9 +121,11 @@ function showTree(selected) {
                     // Enable drag thesis
                     $('.unassigned-thesis').draggable( "option", "disabled", false );
                     $('.add_thesis_slot').prop("disabled",false);
+                    $('#btnFixOrder').removeClass('disabled');
                 } else {
                     $('.unassigned-thesis').draggable( "option", "disabled", true );
                     $('.add_thesis_slot').prop("disabled",true);
+                    $('#btnFixOrder').addClass('disabled');
                 }
 
                 if(data.type == 'thesis') {
@@ -284,6 +287,20 @@ jQuery(document).ready(function() {
         showUnassignedTheses();
     });
 
+    $('#btnFixOrder').on('click', function(e) {
+        var selectedNodes = $('#slots_tree').treeview('getSelected');
+        if (selectedNodes.length == 0) {
+            return;
+        }
+
+        $.post('/admin/slot/' + selectedNodes[0].data_object.id + '/reorder', {}, 'json')
+            .done(function (data) {
+                var slotNode = $('#slots_tree').treeview('getParent', selectedNodes[0]);
+                showTree();
+                showUnassignedTheses();
+            });
+    });
+
     $('#btnAddElement').on('click', function(e) {
         var selectedNodes = $('#slots_tree').treeview('getSelected');
         if (selectedNodes.length == 0) {
@@ -297,6 +314,8 @@ jQuery(document).ready(function() {
         $('#btnThesisUp').addClass('disabled');
         $('#btnThesisDown').addClass('disabled');
         $('#btnThesisRemove').addClass('disabled');
+
+        $('#btnFixOrder').addClass('disabled');
 
         switch(selectedNodes[0].type) {
             case 'period':

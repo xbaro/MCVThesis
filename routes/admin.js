@@ -574,6 +574,37 @@ router.post('/slot/delete', function (req, res) {
     }
 });
 
+router.post('/slot/:slotID/reorder', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+        } else {
+            var slotId = req.params.slotID;
+            Model.Thesis.findAll({
+                attributes: ['id', 'SlotId', 'order'],
+                where: { SlotId: slotId },
+                order: ['order']
+            })
+            .then(function (result) {
+                if(result) {
+                    for(var i=0; i<result.length; i++) {
+                        result[i].order = i + 1;
+                        result[i].save();
+                    }
+                }
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: false, message: 'Slot ' + slotId + ' => order fixed' }, null, 3));
+            });
+        }
+    }
+});
+
 router.get('/tracks/:periodID', function (req, res) {
     if (!req.isAuthenticated()) {
         res.setHeader('Content-Type', 'application/json');
