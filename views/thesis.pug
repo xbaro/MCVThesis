@@ -41,6 +41,10 @@ block content
                                     label.col-md-4.control-label(for="advisors") Advisors
                                     .col-md-6
                                         input#advisors.form-control(type='text', name="advisors", placeholder='Advisors')
+                                .form-group
+                                    label.col-md-4.control-label(for="nda") This thesis requires to sign an NDA
+                                    .col-md-6
+                                        input#nda.form-control(type='checkbox', name="nda", placeholder='This thesis requires an NDA')
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-dismiss="modal") Close
                     button#btnAcceptThesis.btn.btn-primary(type="button" data-action="none") Save changes

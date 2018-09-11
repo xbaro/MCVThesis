@@ -200,7 +200,7 @@ router.get('/theses/period', function (req, res) {
         } else {
             var periodId = req.query.id;
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', "order"],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', "order", 'nda'],
                 where: {approved: true},
                 include: [
                     {
@@ -260,7 +260,7 @@ router.get('/theses/track', function (req, res) {
         } else {
             var trackId = req.query.id;
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', "order"],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', "order", 'nda'],
                 where: {approved: true},
                 include: [
                     {
@@ -314,7 +314,7 @@ router.get('/theses/slot', function (req, res) {
         } else {
             var slotId = req.query.id;
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', "order"],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', "order", 'nda'],
                 where: {SlotId: slotId, approved: true},
                 include: [
                     {

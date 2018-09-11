@@ -208,8 +208,17 @@ function addThesis(thesis, parent) {
             $('<p>').append("<strong>" +  thesis['title'] + "</strong>")
         ).append(
             $('<p>').append("<i>by " + thesis['User'].full_name + "</i>")
-        ).append("<button class='add_thesis_slot' data-id='" + thesis['id'] + "'>Assign</button>" )
+        )
     ).appendTo(newThesis);
+
+    if (thesis['nda'] == true) {
+        var nda_alert = $('<div class="alert alert-warning" role="alert">');
+        nda_alert.append("<span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span>");
+        nda_alert.append("<strong><i>This thesis is under NDA. Members of the committee agreed to signs such NDA.</i></strong>");
+        header.append(nda_alert);
+    }
+
+    header.append("<button class='add_thesis_slot' data-id='" + thesis['id'] + "'>Assign to Slot</button>" );
 
     if (!thesis['approved']) {
         header.append($('<p>').append("<strong><i>Requires teacher approval</i></strong>"))
@@ -261,6 +270,7 @@ function addThesis(thesis, parent) {
                 if(result) {
                     showTree(selectedNodes[0]);
                     showUnassignedTheses();
+                    $('.add_thesis_slot').prop("disabled", false);
                 }
             });
         }

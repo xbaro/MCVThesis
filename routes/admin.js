@@ -632,7 +632,7 @@ router.get('/tracks/:periodID', function (req, res) {
                                     include: [
                                         {
                                             model: Model.Thesis,
-                                            attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'order', 'approved'],
+                                            attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'order', 'approved', 'nda'],
                                             include: [
                                                 {
                                                     model: Model.User,
@@ -891,7 +891,7 @@ router.get('/thesis/unassigned', function (req, res) {
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'nda'],
                 where: {SlotId: null, approved: true},
                 include: [
                     {
@@ -932,7 +932,7 @@ router.get('/alerts/noslot', function (req, res) {
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'nda'],
                 where: {SlotId: null, approved: true},
                 include: [
                     {
@@ -973,7 +973,7 @@ router.get('/alerts/noauthor', function (req, res) {
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'nda'],
                 where: {UserUsername: null, approved: true}
             }).then(function(data) {
                 res.setHeader('Content-Type', 'application/json');
@@ -998,7 +998,7 @@ router.get('/alerts/notapproved', function (req, res) {
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'nda'],
                 where: {approved: false},
                 include: [
                     {
@@ -1039,7 +1039,7 @@ router.get('/alerts/noadvisor', function (req, res) {
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'nda'],
                 where: {approved: true},
                 include: [
                     {
@@ -1082,7 +1082,7 @@ router.get('/alerts/nocommittee', function (req, res) {
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
             Model.Thesis.findAll({
-                attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
+                attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'nda'],
                 where: {approved: true},
                 include: [
                     {

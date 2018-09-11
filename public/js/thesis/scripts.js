@@ -159,6 +159,11 @@ jQuery(document).ready(function() {
                 $('#title').val(thesis.title);
                 $('#abstract').val(thesis.abstract);
                 $('#keywords').val(thesis.keywords);
+                if (thesis['nda'] == true) {
+                    $('#nda').attr('checked', true);
+                } else {
+                    $('#nda').attr('checked', false);
+                }
 
                 var advisors = [];
                 $.each(thesis.Advised, function(idx, adv) {
@@ -424,6 +429,8 @@ jQuery(document).ready(function() {
         } else {
             thesis['author'] = current_user.username;
         }
+
+        thesis['nda'] = $("#nda").is(":checked");
 
         // Set the action
         var post_action = '';

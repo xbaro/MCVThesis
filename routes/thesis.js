@@ -232,7 +232,8 @@ router.post('/:thesisID/update', function (req, res) {
         Model.Thesis.update({
             title: data.title,
             abstract: data.abstract,
-            keywords: data.keywords
+            keywords: data.keywords,
+            nda: data.nda
         }, {
             where: { id: data.id }
         }).then(function(result) {
@@ -353,7 +354,8 @@ router.post('/new', function (req, res) {
             title: data.title,
             abstract: data.abstract,
             keywords: data.keywords,
-            approved: false
+            approved: false,
+            nda: data.nda
         }).then(function(thesis) {
             if(thesis) {
                 Model.User.findById(username).then(function(author) {

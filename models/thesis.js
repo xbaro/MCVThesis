@@ -8,7 +8,8 @@ module.exports = function(sequelize, DataTypes) {
         abstract: DataTypes.TEXT,
         keywords: DataTypes.STRING,
         approved: DataTypes.BOOLEAN,
-        order: DataTypes.INTEGER
+        order: DataTypes.INTEGER,
+        nda: DataTypes.BOOLEAN
     });
 
     //Thesis.hasMany(models.User, {as: 'Advisors'})
