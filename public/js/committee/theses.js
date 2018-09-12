@@ -37,7 +37,7 @@ function addThesis(thesis, parent) {
     if (thesis['nda'] == true) {
         var nda_alert = $('<div class="alert alert-warning" role="alert">');
         nda_alert.append("<span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span>");
-        nda_alert.append("<strong><i>This thesis is under NDA. Members of the committee agreed to signs such NDA.</i></strong>");
+        nda_alert.append("<strong><i>This thesis is under NDA. Members of the committee agreed to sign such NDA.</i></strong>");
         header.append(nda_alert);
     }
 
