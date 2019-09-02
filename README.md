@@ -39,6 +39,39 @@
     sudo npm install pm2 -g
     pm2 start pm2_conf.json --env production
     
+    
+## Docker
+
+### First start
+In order to apply the migrations in the right way, follow those steps:
+
+1. Start the database: 
+```bash
+docker-compose up -d db
+```
+2. Run the migrations: 
+```bash 
+docker-compose exec web node ./node_modules/sequelize-cli/lib/sequelize db:migrate
+```
+3. Start all services
+```bash
+docker-compose up -d
+```
+
+
+#### Restore from pre-migrations database
+
+pg_restore -U mcv_theses -d mcv_theses --data-only -t users 2019_09_02_mcv_theses_backup.dump
+pg_restore -U mcv_theses -d mcv_theses --data-only -t periods 2019_09_02_mcv_theses_backup.dump
+pg_restore -U mcv_theses -d mcv_theses --data-only -t tracks 2019_09_02_mcv_theses_backup.dump
+pg_restore -U mcv_theses -d mcv_theses --data-only -t slots 2019_09_02_mcv_theses_backup.dump
+pg_restore -U mcv_theses -d mcv_theses --data-only -t thesis 2019_09_02_mcv_theses_backup.dump
+pg_restore -U mcv_theses -d mcv_theses --data-only -t configs 2019_09_02_mcv_theses_backup.dump
+pg_restore -U mcv_theses -d mcv_theses --data-only -t advisors 2019_09_02_mcv_theses_backup.dump
+pg_restore -U mcv_theses -d mcv_theses --data-only -t committees 2019_09_02_mcv_theses_backup.dump
+
+
+    
    
 
 

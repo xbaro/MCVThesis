@@ -25,14 +25,16 @@ services:
       - front-end      
       - back-end
     ports:
-      - "80:8080"
-      - "443:8443"
+      - "80:80"
+      - "443:443"
     environment:
       - DB_PASSWORD
       - DB_USER
       - DB_NAME
       - DB_HOST=db
       - DB_DIALECT=postgres
+      - PORT=80
+      - PORT_SSL=443
     volumes:
       - web_certs:/ssl
     labels:
