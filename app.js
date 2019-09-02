@@ -17,7 +17,7 @@ var compression = require('compression');
 /* BEGIN: Add session and user required modules */
 var session = require('express-session');
 var Store = require('express-sequelize-session') (session.Store);
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var LTIStrategy = require('passport-lti');

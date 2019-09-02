@@ -1,0 +1,445 @@
+{
+    "tables": {
+        "Committees": {
+            "tableName": "Committees",
+            "schema": {
+                "president": {
+                    "field": "president",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "secretary": {
+                    "field": "secretary",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "vocal": {
+                    "field": "vocal",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "waiting": {
+                    "field": "waiting",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "UserUsername": {
+                    "primaryKey": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "username"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "UserUsername",
+                    "allowNull": true,
+                    "seqType": "Sequelize.STRING"
+                },
+                "ThesisId": {
+                    "primaryKey": true,
+                    "references": {
+                        "model": "Theses",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "ThesisId",
+                    "allowNull": true,
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Configs": {
+            "tableName": "Configs",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "students_create": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "students_create",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "students_delete": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "students_delete",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "students_edit": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "students_edit",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "Periods": {
+            "tableName": "Periods",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "unique": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "title": {
+                    "field": "title",
+                    "seqType": "Sequelize.STRING"
+                },
+                "start": {
+                    "field": "start",
+                    "seqType": "Sequelize.DATE"
+                },
+                "end": {
+                    "field": "end",
+                    "seqType": "Sequelize.DATE"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "Sessions": {
+            "tableName": "Sessions",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "session_id": {
+                    "field": "session_id",
+                    "seqType": "Sequelize.undefined"
+                },
+                "expires": {
+                    "field": "expires",
+                    "seqType": "Sequelize.undefined"
+                },
+                "data": {
+                    "field": "data",
+                    "seqType": "Sequelize.undefined"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "Slots": {
+            "tableName": "Slots",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "unique": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "place": {
+                    "field": "place",
+                    "seqType": "Sequelize.STRING"
+                },
+                "room": {
+                    "field": "room",
+                    "seqType": "Sequelize.STRING"
+                },
+                "start": {
+                    "field": "start",
+                    "seqType": "Sequelize.DATE"
+                },
+                "end": {
+                    "field": "end",
+                    "seqType": "Sequelize.DATE"
+                },
+                "capacity": {
+                    "field": "capacity",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "duration": {
+                    "field": "duration",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "TrackId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Tracks",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "TrackId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Theses": {
+            "tableName": "Theses",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "title": {
+                    "field": "title",
+                    "seqType": "Sequelize.STRING"
+                },
+                "abstract": {
+                    "field": "abstract",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "keywords": {
+                    "field": "keywords",
+                    "seqType": "Sequelize.STRING"
+                },
+                "approved": {
+                    "field": "approved",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "order": {
+                    "field": "order",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "nda": {
+                    "field": "nda",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "UserUsername": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "username"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "UserUsername",
+                    "seqType": "Sequelize.STRING"
+                },
+                "SlotId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Slots",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "SlotId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Tracks": {
+            "tableName": "Tracks",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "unique": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "title": {
+                    "field": "title",
+                    "seqType": "Sequelize.STRING"
+                },
+                "keywords": {
+                    "field": "keywords",
+                    "seqType": "Sequelize.STRING"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "PeriodId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Periods",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "PeriodId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Users": {
+            "tableName": "Users",
+            "schema": {
+                "username": {
+                    "primaryKey": true,
+                    "field": "username",
+                    "seqType": "Sequelize.STRING"
+                },
+                "name": {
+                    "field": "name",
+                    "seqType": "Sequelize.STRING"
+                },
+                "surname": {
+                    "field": "surname",
+                    "seqType": "Sequelize.STRING"
+                },
+                "password": {
+                    "field": "password",
+                    "seqType": "Sequelize.STRING"
+                },
+                "admin": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "admin",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "teacher": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "teacher",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "email": {
+                    "field": "email",
+                    "seqType": "Sequelize.STRING"
+                },
+                "organization": {
+                    "field": "organization",
+                    "seqType": "Sequelize.STRING"
+                },
+                "webpage": {
+                    "field": "webpage",
+                    "seqType": "Sequelize.STRING"
+                },
+                "keywords": {
+                    "field": "keywords",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "Advisors": {
+            "tableName": "Advisors",
+            "schema": {
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "UserUsername": {
+                    "primaryKey": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "username"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "UserUsername",
+                    "seqType": "Sequelize.STRING"
+                },
+                "ThesisId": {
+                    "primaryKey": true,
+                    "references": {
+                        "model": "Theses",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "ThesisId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        }
+    },
+    "revision": 1
+}

@@ -1,8 +1,10 @@
 ﻿var express = require('express');
 var router = express.Router();
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
 var passport = require('passport');
 var Model = require('../models');
+
+var saltRounds = 10;
 
 var env  = process.env.NODE_ENV || "development";
 function get_host_http(req) {
@@ -102,7 +104,7 @@ router.post('/signup',  function (req, res, next) {
         } else{
 
             var password = user.password;
-            var hash = bcrypt.hashSync(password);
+            var hash = bcrypt.hashSync(password, saltRounds);
 
             Model.User
                 .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, webpage: user.webpage, organization: user.organization}})

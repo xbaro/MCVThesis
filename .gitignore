@@ -39,6 +39,7 @@ jspm_packages
 # Bower directories
 bower_components
 public/lib
+build
 
 # Development files
 .DS_Store

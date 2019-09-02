@@ -1,25 +1,32 @@
-"use strict";
+'use strict';
 
-var fs        = require("fs");
-var path      = require("path");
-var Sequelize = require("sequelize");
-var env       = process.env.NODE_ENV || "development";
-var config    = require(path.join(__dirname, '..', 'config', 'config.json'))[env];
-var sequelize = new Sequelize(config.database, config.username, config.password, config);
-var db        = {};
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
+const db = {};
+
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
 
 fs
   .readdirSync(__dirname)
-  .filter(function(file) {
-    return (file.indexOf(".") !== 0) && (file !== "index.js");
+  .filter(file => {
+    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
-  .forEach(function(file) {
-    var model = sequelize.import(path.join(__dirname, file));
+  .forEach(file => {
+    const model = sequelize['import'](path.join(__dirname, file));
     db[model.name] = model;
   });
 
-Object.keys(db).forEach(function(modelName) {
-  if ("associate" in db[modelName]) {
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
@@ -48,27 +55,9 @@ db.Committee.belongsTo(db.Thesis);
 db.User.hasMany(db.Committee);
 db.Committee.belongsTo(db.User);
 
+db.User.belongsTo(db.Institution);
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
-db.getConfigSync = function() {
-  var ret_val = null;
-  db.Config.findAll().then(function(data) {
-    if(data) {
-      ret_val = data[0];
-    } else {
-      db.Config.create().then(function (data) {
-        if (data) {
-          ret_val = data;
-        } else {
-          ret_val = {};
-        }
-      });
-    }
-  });
-  while(!ret_val);
-
-  return ret_val;
-};
 
 module.exports = db;

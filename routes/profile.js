@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
 var Model = require('../models');
 
 var env  = process.env.NODE_ENV || "development";
