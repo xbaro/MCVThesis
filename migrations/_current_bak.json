@@ -135,41 +135,6 @@
             },
             "indexes": []
         },
-        "Sessions": {
-            "tableName": "Sessions",
-            "schema": {
-                "id": {
-                    "allowNull": false,
-                    "primaryKey": true,
-                    "autoIncrement": true,
-                    "field": "id",
-                    "seqType": "Sequelize.INTEGER"
-                },
-                "session_id": {
-                    "field": "session_id",
-                    "seqType": "Sequelize.undefined"
-                },
-                "expires": {
-                    "field": "expires",
-                    "seqType": "Sequelize.undefined"
-                },
-                "data": {
-                    "field": "data",
-                    "seqType": "Sequelize.undefined"
-                },
-                "createdAt": {
-                    "allowNull": false,
-                    "field": "createdAt",
-                    "seqType": "Sequelize.DATE"
-                },
-                "updatedAt": {
-                    "allowNull": false,
-                    "field": "updatedAt",
-                    "seqType": "Sequelize.DATE"
-                }
-            },
-            "indexes": []
-        },
         "Slots": {
             "tableName": "Slots",
             "schema": {

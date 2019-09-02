@@ -8,14 +8,15 @@ var debug = require('debug')('MCVTheses');
 var app = require('../app');
 var env       = process.env.NODE_ENV || "development";
 
+var config = {};
 if (env === "docker") {
-  var config = {
+  config = {
     "path": process.env.SSL_PATH,
     "key": process.env.SSL_KEY,
     "crt": process.env.SSL_CRT,
   }
 } else {
-  var config    = require(path.join(__dirname, '..', 'config', 'ssl.json'))[env];
+  config    = require(path.join(__dirname, '..', 'config', 'ssl.json'))[env];
 }
 
 app.set('port', process.env.PORT || 8080);

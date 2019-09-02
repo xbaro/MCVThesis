@@ -7,7 +7,6 @@ var Sequelize = require('sequelize');
  *
  * createTable "Configs", deps: []
  * createTable "Periods", deps: []
- * createTable "Sessions", deps: []
  * createTable "Users", deps: []
  * createTable "Tracks", deps: [Periods]
  * createTable "Slots", deps: [Tracks]
@@ -20,7 +19,7 @@ var Sequelize = require('sequelize');
 var info = {
     "revision": 1,
     "name": "create_db",
-    "created": "2019-08-02T11:02:08.929Z",
+    "created": "2019-09-02T15:53:43.693Z",
     "comment": ""
 };
 
@@ -88,44 +87,6 @@ var migrationCommands = [{
                 "end": {
                     "type": Sequelize.DATE,
                     "field": "end"
-                },
-                "createdAt": {
-                    "type": Sequelize.DATE,
-                    "field": "createdAt",
-                    "allowNull": false
-                },
-                "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "field": "updatedAt",
-                    "allowNull": false
-                }
-            },
-            {}
-        ]
-    },
-    {
-        fn: "createTable",
-        params: [
-            "Sessions",
-            {
-                "id": {
-                    "type": Sequelize.INTEGER,
-                    "field": "id",
-                    "autoIncrement": true,
-                    "primaryKey": true,
-                    "allowNull": false
-                },
-                "session_id": {
-                    "type": Sequelize.undefined,
-                    "field": "session_id"
-                },
-                "expires": {
-                    "type": Sequelize.undefined,
-                    "field": "expires"
-                },
-                "data": {
-                    "type": Sequelize.undefined,
-                    "field": "data"
                 },
                 "createdAt": {
                     "type": Sequelize.DATE,
