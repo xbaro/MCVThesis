@@ -4,7 +4,7 @@ var bcrypt = require('bcrypt');
 var Model = require('../models');
 var env  = process.env.NODE_ENV || "development";
 function get_host_http(req) {
-    var port = req.app.get('port')
+    var port = req.app.get('port');
     var host = req.headers.host;
 
     var host_parts = host.split(':');
@@ -13,7 +13,7 @@ function get_host_http(req) {
         host = host_parts[0];
     }
 
-    if (env === "production" || port == 80) {
+    if (env === "production" || port === 80) {
         return host;
     }
 
@@ -21,7 +21,7 @@ function get_host_http(req) {
 }
 
 function get_host_https(req) {
-    var port = req.app.get('port-ssl')
+    var port = req.app.get('port-ssl');
     var host = req.headers.host;
 
     var host_parts = host.split(':');
@@ -30,7 +30,7 @@ function get_host_https(req) {
         host = host_parts[0];
     }
 
-    if (env === "production" || port == 443) {
+    if (env === "production" || port === 443) {
         return host;
     }
 
@@ -1113,6 +1113,131 @@ router.get('/alerts/nocommittee', function (req, res) {
             }).catch(function (err) {
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
+            });
+        }
+    }
+});
+
+router.get('/institutions', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (req.secure) {
+            if (!req.user.admin) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401);
+                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+            } else {
+                Model.Institution.findAll({
+                    attributes: ['id', 'acronym', 'name', 'validated']
+                })
+                .then(function(data) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(data));
+                });
+            }
+        } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+        }
+    }
+});
+
+router.post('/institution/new', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+        } else {
+            var data = req.body;
+
+            Model.Institution.create({
+                acronym: data.acronym,
+                name: data.name,
+                validated: true
+            }).then(function(institution) {
+                if (institution) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: false, message: 'Institution created', institution: institution}, null, 3));
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: true, message: 'Institution not created' }, null, 3));
+                }
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Institution not created' }, null, 3));
+            });
+
+        }
+    }
+});
+
+router.post('/institution/update', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+        } else {
+            var institution = req.body;
+
+            Model.Institution.update({
+                acronym: institution.acronym,
+                name: institution.name
+            },
+            {
+                where: { id: institution.id }
+            })
+            .then(function (result) {
+                if (result[0] === 1) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({error: false, message: 'Institution updated', institution: institution}, null, 3));
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: true, message: 'Error on the institution update.', institution: institution }, null, 3));
+                }
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Institution not updated' }, null, 3));
+            });
+        }
+    }
+});
+
+router.post('/institution/delete', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+        } else {
+            var institution = req.body;
+            Model.Institution.destroy({
+                where: { id: institution.id }
+            })
+            .then(function (result) {
+                if (result == 1) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: false, message: 'Institution (' + institution.acronym + ': ' + institution.name + ') deleted' }, null, 3));
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: true, message: 'Institution not deleted' }, null, 3));
+                }
             });
         }
     }
