@@ -1,21 +1,21 @@
 version: '3.7'
 
 services:
-  traefik:
-    image: traefik
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro   
-      - ./conf/traefik.toml:/traefik.toml
-      - ./conf/acme.json:/acme.json
-    depends_on:
-      - web
-    networks:
-      - front-end
+#  traefik:
+#    image: traefik
+#    restart: always
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#      - "8080:8080"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - ./conf/traefik.toml:/traefik.toml
+#      - ./conf/acme.json:/acme.json
+#    depends_on:
+#      - web
+#    networks:
+#      - front-end
 
   web:
     build: .
@@ -50,6 +50,17 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:    
       - db_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - front-end
+      - back-end
 
 volumes:
   db_data:

@@ -18,6 +18,7 @@
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
+    "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-ims-lti": "^0.2.4",
     "express-sequelize-session": "^0.4.0",
