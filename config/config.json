@@ -16,5 +16,8 @@
     "database": "mcv_theses",
     "host": "127.0.0.1",
     "dialect": "postgres"
+  },
+  "docker": {
+    "use_env_variable": true
   }
 }

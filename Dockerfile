@@ -9,12 +9,13 @@ ADD bower.json /code/bower.json
 
 RUN npm install
 
-ADD bower_components /code/bower_components
-#RUN bower -v --allow-root install
+RUN bower -v --allow-root install
 
 ADD . /code
 
 RUN gulp
+
+ENV NODE_ENV=docker
 
 EXPOSE 8080
 EXPOSE 8443

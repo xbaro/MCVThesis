@@ -1,0 +1,11 @@
+# Database configuration
+DB_USER=mcv_theses
+DB_PASSWORD=.mcv_theses.
+DB_NAME=mcv_theses
+DB_HOST=db
+DB_DIALECT="postgres"
+
+# SSL configuration
+SSL_PATH=/ssl
+SSL_KEY=test.key
+SSL_CRT=test.crt

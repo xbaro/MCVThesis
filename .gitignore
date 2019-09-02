@@ -51,3 +51,6 @@ ssl
 
 # Ingnore compressed files
 public/dist
+
+# Ignore data path
+data
