@@ -13,3 +13,6 @@ SSL_CRT=test.crt
 # SMTP Credentials (Currently only GMAIL is accepted)
 SMTP_USER=
 SMTP_PASSWORD=
+
+# Number of threads to start on the web docker (-1 => Number of cores)
+NUM_THREADS=4
