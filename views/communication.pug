@@ -1,0 +1,30 @@
+extends layout
+
+block content
+
+    if (message_ok)
+        +alert("success") #{message_ok}
+
+    if (message_error)
+        +alert("danger") #{message_error}
+
+    +panel("Notify Committees", "primary")
+        p Send a mail to all members of committees of current open period. The mail contains:
+        ul
+            li <strong>Committee Information:</strong> The place, date and time of the defense, the learner and basic data of the thesis
+            li <strong>Rubric:</strong> The rubric documents to be used during the defense.
+        a(class='button' href='/communication/notify/committees') Send Mail
+
+    +panel("Notify Advisors", "primary")
+        p Send a mail to all advisors of theses defended in current open period. The mail contains:
+        ul
+            li <strong>Committee Information:</strong> The place, date and time of the defense, the learner and basic data of the thesis
+            li <strong>Rubric:</strong> The rubric document to be sent to the members of the committee.
+        a(class='button' href='/communication/notify/advisors') Send Mail
+
+    +panel("Notify Learners", "primary")
+        p Send a mail to all learners defending on the current open period. The mail contains:
+        ul
+            li <strong>Committee Information:</strong> The place, date and time of the defense, and the name and mails of the members of the committees
+            li <strong>Instructions:</strong> Instructions to submit the PDF of the master thesis to all the members of the committee.
+        a(class='button' href='/communication/notify/learners') Send Mail
