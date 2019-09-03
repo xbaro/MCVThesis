@@ -47,6 +47,7 @@ jQuery(document).ready(function() {
 
         // Reset the form data
         $('#periodFormModal').find('form').trigger("reset");
+        $("#period_locked")[0].checked = false;
 
         // Adapt the form for creation
         $('#periodFormModal').find('.modal-title').text('Add new period');
@@ -74,6 +75,7 @@ jQuery(document).ready(function() {
             $('#period_title').val(row.title);
             $('#period_start').setFormatedDate(row.start);
             $('#period_end').setFormatedDate(row.end);
+            $("#period_locked")[0].checked = row.locked === true;
         }
 
         // Show the window

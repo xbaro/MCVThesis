@@ -131,7 +131,7 @@ router.get('/periods/open', function (req, res) {
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
         Model.Period.findAll({
-            attributes: ['id', 'title', 'start', 'end'],
+            attributes: ['id', 'title', 'start', 'end', 'locked'],
             where: {
                   end: {
                         $or: {

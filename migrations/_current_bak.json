@@ -100,6 +100,42 @@
             },
             "indexes": []
         },
+        "Institutions": {
+            "tableName": "Institutions",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "unique": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "acronym": {
+                    "unique": true,
+                    "field": "acronym",
+                    "seqType": "Sequelize.STRING"
+                },
+                "name": {
+                    "field": "name",
+                    "seqType": "Sequelize.STRING"
+                },
+                "validated": {
+                    "field": "validated",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
         "Periods": {
             "tableName": "Periods",
             "schema": {
@@ -121,6 +157,10 @@
                 "end": {
                     "field": "end",
                     "seqType": "Sequelize.DATE"
+                },
+                "allow_committee": {
+                    "field": "allow_committee",
+                    "seqType": "Sequelize.BOOLEAN"
                 },
                 "createdAt": {
                     "allowNull": false,
@@ -363,6 +403,17 @@
                     "allowNull": false,
                     "field": "updatedAt",
                     "seqType": "Sequelize.DATE"
+                },
+                "InstitutionId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Institutions",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "InstitutionId",
+                    "seqType": "Sequelize.INTEGER"
                 }
             },
             "indexes": []
@@ -406,5 +457,5 @@
             "indexes": []
         }
     },
-    "revision": 1
+    "revision": 3
 }

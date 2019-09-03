@@ -96,6 +96,10 @@ block content
                                         label.col-md-4.control-label(for="period_end") End Date
                                         .col-md-6
                                             input#period_end.form-control(name="end", type="date", placeholder="End date")
+                                    .form-group
+                                        label.col-md-4.control-label(for="period_locked") Locked
+                                        .col-md-6
+                                            input#period_locked.form-control(type='checkbox', name="locked", placeholder='Prevent teachers to manage their committees')
 
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-dismiss="modal") Close
@@ -307,6 +311,7 @@ block content
                             th(data-field="end", data-sortable="true", data-formatter="dateFormatter") End Date
                             th(data-field="active", data-sortable="true") Active
                             th(data-field="closed", data-sortable="true") Closed
+                            th(data-field="locked", data-sortable="true") Locked
 
                 #slots_panel.panel.panel-info.margin-bottom-40(style="display: none;")
                     #treeForm_messages

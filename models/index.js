@@ -52,6 +52,7 @@ db.Committee.belongsTo(db.Thesis);
 db.User.hasMany(db.Committee);
 db.Committee.belongsTo(db.User);
 
+db.Institution.hasMany(db.User);
 db.User.belongsTo(db.Institution);
 
 db.sequelize = sequelize;

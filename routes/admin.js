@@ -248,7 +248,7 @@ router.get('/periods', function (req, res) {
                 res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
             } else {
                 Model.Period.findAll({
-                    attributes: ['id', 'title', 'start', 'end', 'active', 'closed']
+                    attributes: ['id', 'title', 'start', 'end', 'active', 'closed', 'locked']
                 })
                 .then(function(data) {
                     res.setHeader('Content-Type', 'application/json');
@@ -284,7 +284,8 @@ router.post('/period/new', function (req, res) {
             Model.Period.create({
                 title: data.title,
                 start: data.start,
-                end: data.end
+                end: data.end,
+                locked: data.locked === true || data.locked === "on"
             }).then(function(period) {
                 if (period) {
                     res.setHeader('Content-Type', 'application/json');
@@ -324,13 +325,14 @@ router.post('/period/update', function (req, res) {
             Model.Period.update({
                 title: period.title,
                 start: period.start,
-                end: period.end
+                end: period.end,
+                locked: period.locked === true || period.locked === "on"
             },
             {
                 where: { id: period.id }
             })
             .then(function (result) {
-                if (result[0] == 1) {
+                if (result[0] === 1) {
                     res.setHeader('Content-Type', 'application/json');
                     res.send(JSON.stringify({error: false, message: 'Period updated', period: period}, null, 3));
                 } else {
@@ -361,7 +363,7 @@ router.post('/period/delete', function (req, res) {
                 where: { id: period.id }
             })
             .then(function (result) {
-                if (result == 1) {
+                if (result === 1) {
                     res.setHeader('Content-Type', 'application/json');
                     res.send(JSON.stringify({ error: false, message: 'Period ' + period.title + ' deleted' }, null, 3));
                 } else {

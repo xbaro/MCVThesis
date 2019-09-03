@@ -13,6 +13,10 @@ function getFullTreeData(data) {
             nodes: []
         };
 
+        if (p.locked) {
+            period.icon = 'glyphicon glyphicon-lock';
+        }
+
         $.each(p.Tracks, function (i, t) {
             var track_remaining_members = 0;
             var track = {

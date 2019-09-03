@@ -36,9 +36,10 @@ block content
                     th(data-field="room", data-sortable="true") Room
 
     +panel("Available Committees", "primary")
+        div( id="msg_period_locked" class=["alert", "alert-warning"] style="display: none;")
+            | This period is locked, only administrators can perform changes on the committees
         #userForm_messages
         p On the left tree you have the required members. Select one level to see the theses that require members in the committee
-
         .row
             .col-xs-6.col-md-4
                 #committee_tree
