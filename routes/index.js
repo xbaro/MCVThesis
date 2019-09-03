@@ -206,7 +206,7 @@ router.get('/periods', function (req, res) {
     }
 });
 
-router.get('/stats/:periodId', function (req, res) {
+router.get('/stats/:periodId/advised', function (req, res) {
     if (!req.isAuthenticated()) {
         res.setHeader('Content-Type', 'application/json');
         res.status(401);
@@ -221,6 +221,10 @@ router.get('/stats/:periodId', function (req, res) {
             Model.User.findAll({
                 attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
                 include: [
+                    {
+                        model: Model.Institution,
+                        required: false
+                    },
                     {
                         model: Model.Thesis,
                         as: 'Advisor',
@@ -243,7 +247,76 @@ router.get('/stats/:periodId', function (req, res) {
                     },
                     {
                         model: Model.Thesis,
-                        as: 'Committee'
+                        as: 'Committee',
+                        include: [
+                            {
+                                model: Model.Slot,
+                                include:[
+                                    {
+                                        model: Model.Track,
+                                        include: [
+                                            {
+                                                model: Model.Period,
+                                                where: {id: periodId},
+                                                required: false
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            })
+            .then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            });
+        }
+    }
+});
+
+router.get('/stats/:periodId/committees', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin && !req.user.teacher) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+        } else {
+            var periodId = req.params.periodId;
+            Model.Institution.findAll({
+                attributes: ['acronym', 'name'],
+                include: [
+                    {
+                        model: Model.User,
+                        attributes: ['name', 'surname'],
+                        include: [
+                            {
+                                model: Model.Thesis,
+                                as: 'Committee',
+                                include: [
+                                    {
+                                        model: Model.Slot,
+                                        include:[
+                                            {
+                                                model: Model.Track,
+                                                include: [
+                                                    {
+                                                        model: Model.Period,
+                                                        where: {id: periodId},
+                                                        required: false,
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             })

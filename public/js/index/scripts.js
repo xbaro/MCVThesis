@@ -1,13 +1,23 @@
 function numAdvisedTheses(value, row) {
     return row.Advisor.length;
 }
-function numCommittes(value, row) {
+function numCommittees(value, row) {
     return row.Committee.length;
+}
+
+function numInstitutionCommittees(value, row) {
+    var total = 0;
+
+    for(var i = 0; i < row.Users.length; i++) {
+        total += row.Users[i].Committee.length;
+    }
+    return total;
 }
 
 jQuery(document).ready(function() {
     $('#agenda').agenda({source: '/calendar'});
     $('#index_periodsTable').on('check.bs.table', function (e, row, $element) {
-        $('#index_statsTable').bootstrapTable('refresh',{url: '/stats/' + row.id});
+        $('#index_statsAdvisedTable').bootstrapTable('refresh',{url: '/stats/' + row.id + '/advised'});
+        $('#index_statsCommitteesTable').bootstrapTable('refresh',{url: '/stats/' + row.id + '/committees'});
     });
 });

@@ -40,7 +40,7 @@ block content
                             th(data-field="end", data-sortable="true", data-formatter="dateFormatter") End Date
                             th(data-field="active", data-sortable="true") Active
                             th(data-field="closed", data-sortable="true") Closed
-                table#index_statsTable(data-toggle="table", data-sort-name="username",
+                table#index_statsAdvisedTable(data-toggle="table", data-sort-name="username",
                 data-page-list="[5, 10, 20]", data-page-size="5",
                 data-sort-order="desc", data-click-to-select="true", data-select-item-name="selPeriod",
                 data-pagination="true", data-search="true",
@@ -51,10 +51,20 @@ block content
                             th(data-field="name", data-sortable="true") Name
                             th(data-field="surname", data-sortable="true") Surname
                             th(data-field="organization", data-sortable="true") Organization
+                            th(data-field="Institution.acronym", data-sortable="true") Institution
                             th(data-field="id", data-sortable="true", data-formatter="numAdvisedTheses") Advised
-                            th(data-field="id", data-sortable="true", data-formatter="numCommittes") Committes
+                            th(data-field="id", data-sortable="true", data-formatter="numCommittees") Committees
 
-
+                table#index_statsCommitteesTable(data-toggle="table", data-sort-name="Institution.name",
+                data-page-list="[5, 10, 20]", data-page-size="5",
+                data-sort-order="desc", data-click-to-select="true", data-select-item-name="selPeriod",
+                data-pagination="true", data-search="true",
+                data-show-refresh="true", data-show-toggle="false", data-show-columns="true")
+                    thead
+                        tr
+                            th(data-field="acronym", data-sortable="true", data-visible="false") Acronym
+                            th(data-field="name", data-sortable="true") Name
+                            th(data-field="id", data-sortable="true", , data-formatter="numInstitutionCommittees") Committees
 
 block scripts
     script
