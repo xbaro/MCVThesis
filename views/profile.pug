@@ -15,6 +15,8 @@ block content
                     i.fa.fa-user #{' '} Update the profile data
             .panel-body
                 form(role="form", action="/profile/update", method="post")
+                    input#institution_id(type="hidden" name="inst_id", value=user.InstitutionId)
+                    input#username(type="hidden" name="username", value=user.username)
                     .form-group
                         label(for="name") Name
                         input#name.form-control(type='text', name="name", placeholder='Name', value=user.name, required=true)
@@ -22,8 +24,11 @@ block content
                         label(for="surname") Surname
                         input#surname.form-control(type='text', name="surname", placeholder='Surname', value=user.surname, required=true)
                     .form-group
+                        label.sr-only(for="institution") Institution
+                        select#institution.form-control(name="institution", data-btn-class="", data-size="auto")
+                    .form-group
                         label(for="organization") Organization
-                        input#organization.form-control(type='text', name="organization", placeholder='Organization/affiliation', value=user.organization, required=true)
+                        input#organization.form-control(type='text', name="organization", placeholder='Organization/affiliation in case not listed below', value=user.organization, required=false)
                     .form-group
                         label(for="email") eMail
                         input#email.form-control(type='email', name="email", placeholder='eMail', value=user.email, required=true)
@@ -39,6 +44,7 @@ block content
                     i.fa.fa-lock #{' '} Change password
             .panel-body
                 form(role="form", action="/profile/password", method="post")
+                    input#username(type="hidden" name="username", value=user.username)
                     .form-group
                         label(for="pswd") Password
                         input#pswd.form-control(type='password', name="password", placeholder='Password', required=true)

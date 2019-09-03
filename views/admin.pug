@@ -36,6 +36,10 @@ block content
                                     .col-md-6
                                         input#user_organization.form-control(type='text', name="organization", placeholder='Organization/affiliation')
                                 .form-group
+                                    label.col-md-4.control-label(for="user_institution") Institution
+                                    .col-md-6
+                                        select#user_institution.form-control(name="institution", data-btn-class="", data-size="auto")
+                                .form-group
                                     label.col-md-4.control-label(for="user_email") eMail
                                     .col-md-6
                                         input#user_email.form-control(type='email', name="email", placeholder='eMail')
@@ -235,6 +239,7 @@ block content
                     th(data-field="surname", data-sortable="true") Surname
                     th(data-field="email") Email
                     th(data-field="organization", data-sortable="true") Organization
+                    th(data-field="Institution.acronym", data-sortable="true") Institution
                     th(data-field="roles") Roles
                     th(data-field="keywords") Keywords
 

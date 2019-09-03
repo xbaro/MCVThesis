@@ -51,7 +51,7 @@ docker-compose up -d db
 ```
 2. Run the migrations: 
 ```bash 
-docker-compose exec web node ./node_modules/sequelize-cli/lib/sequelize db:migrate
+docker-compose run web node ./node_modules/sequelize-cli/lib/sequelize db:migrate
 ```
 3. Start all services
 ```bash
@@ -60,15 +60,15 @@ docker-compose up -d
 
 
 #### Restore from pre-migrations database
-
-pg_restore -U mcv_theses -d mcv_theses --data-only -t users 2019_09_02_mcv_theses_backup.dump
-pg_restore -U mcv_theses -d mcv_theses --data-only -t periods 2019_09_02_mcv_theses_backup.dump
-pg_restore -U mcv_theses -d mcv_theses --data-only -t tracks 2019_09_02_mcv_theses_backup.dump
-pg_restore -U mcv_theses -d mcv_theses --data-only -t slots 2019_09_02_mcv_theses_backup.dump
-pg_restore -U mcv_theses -d mcv_theses --data-only -t thesis 2019_09_02_mcv_theses_backup.dump
-pg_restore -U mcv_theses -d mcv_theses --data-only -t configs 2019_09_02_mcv_theses_backup.dump
-pg_restore -U mcv_theses -d mcv_theses --data-only -t advisors 2019_09_02_mcv_theses_backup.dump
-pg_restore -U mcv_theses -d mcv_theses --data-only -t committees 2019_09_02_mcv_theses_backup.dump
+docker cp 2019_09_02_mcv_theses_backup.dump XXX:/.
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t users 2019_09_02_mcv_theses_backup.dump
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t periods 2019_09_02_mcv_theses_backup.dump
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t tracks 2019_09_02_mcv_theses_backup.dump
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t thesis 2019_09_02_mcv_theses_backup.dump
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t slots 2019_09_02_mcv_theses_backup.dump
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t configs 2019_09_02_mcv_theses_backup.dump
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t advisors 2019_09_02_mcv_theses_backup.dump
+docker-compose exec db pg_restore -U mcv_theses -d mcv_theses --data-only -t committees 2019_09_02_mcv_theses_backup.dump
 
 
     

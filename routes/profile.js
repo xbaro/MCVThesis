@@ -3,6 +3,8 @@ var router = express.Router();
 var bcrypt = require('bcrypt');
 var Model = require('../models');
 
+var saltRounds = 10;
+
 var env  = process.env.NODE_ENV || "development";
 function get_host_http(req) {
     var port = req.app.get('port')
@@ -58,18 +60,22 @@ router.post('/update', function (req, res) {
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
         if (req.secure) {
-            if (!req.user.admin) {
+            var user = req.body;
+            if (!req.user.admin && user.username !== req.user.username) {
                 res.setHeader('Content-Type', 'application/json');
                 res.status(401);
                 res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
             } else {
-                var user = req.body
-
+                var institution = user.institution;
+                if (institution < 0) {
+                    institution = null;
+                }
                 Model.User.update({
                     name: user.name,
                     surname: user.surname,
                     email: user.email,
                     organization: user.organization,
+                    institution: institution,
                     keywords: user.keywords,
                     webpage: user.webpage
                 },
@@ -106,13 +112,13 @@ router.post('/password', function (req, res) {
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
         if (req.secure) {
-            if (!req.user.admin) {
+            var user = req.body;
+            if (!req.user.admin && user.username !== req.user.username) {
                 res.setHeader('Content-Type', 'application/json');
                 res.status(401);
                 res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
             } else {
-                var user = req.body
-                var hash = bcrypt.hashSync(user.password);
+                var hash = bcrypt.hashSync(user.password, saltRounds);
 
                 if (user.password === user.password_repeat) {
                     Model.User.update({
@@ -126,13 +132,13 @@ router.post('/password', function (req, res) {
                                 res.render('profile', {
                                     page_name: 'profile',
                                     user: req.user,
-                                    message_ok: "Profile updated."
+                                    message_ok: "Password updated."
                                 });
                             } else {
                                 res.render('profile', {
                                     page_name: 'profile',
                                     user: req.user,
-                                    message_error: "Error on the update."
+                                    message_error: "Error updating the password."
                                 });
                             }
                         });

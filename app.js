@@ -26,6 +26,33 @@ var Model = require('./models');
 var ltiMiddleware = require("express-ims-lti");
 /* END */
 
+
+
+let mailer = require('./lib/mail');
+
+mailer.verify(function(error, success) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Mail system is working");
+    const test_message = {
+        from: 'xbaro@uoc.edu',
+        to: 'xavierbaro@gmail.com',
+        subject: 'Test MCV mail system',
+        html: '<h1>Test Message!</h1><p>This is a test message from MCV Theses manager system.</p>'
+    };
+    /*mailer.sendMail(test_message, function (err, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Test mail sent");
+        }
+    });*/
+  }
+});
+
+
+
 var app = express();
 
 app.set('forceSSLOptions', {

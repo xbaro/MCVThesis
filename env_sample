@@ -9,3 +9,7 @@ DB_DIALECT="postgres"
 SSL_PATH=/ssl
 SSL_KEY=test.key
 SSL_CRT=test.crt
+
+# SMTP Credentials (Currently only GMAIL is accepted)
+SMTP_USER=
+SMTP_PASSWORD=
