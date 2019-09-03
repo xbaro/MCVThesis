@@ -12,7 +12,8 @@ module.exports = function(sequelize, DataTypes) {
         start: DataTypes.DATE,
         end: DataTypes.DATE,
         active: DataTypes.VIRTUAL,
-        closed: DataTypes.VIRTUAL
+        closed: DataTypes.VIRTUAL,
+        locked: DataTypes.BOOLEAN
     },
     {
         getterMethods: {

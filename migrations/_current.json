@@ -158,6 +158,10 @@
                     "field": "end",
                     "seqType": "Sequelize.DATE"
                 },
+                "locked": {
+                    "field": "locked",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -453,5 +457,5 @@
             "indexes": []
         }
     },
-    "revision": 2
+    "revision": 4
 }
