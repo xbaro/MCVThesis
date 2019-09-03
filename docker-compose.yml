@@ -1,0 +1,82 @@
+version: '3.7'
+
+services:
+#  traefik:
+#    image: traefik
+#    restart: always
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#      - "8080:8080"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - ./conf/traefik.toml:/traefik.toml
+#      - ./conf/acme.json:/acme.json
+#    depends_on:
+#      - web
+#    networks:
+#      - front-end
+
+  web:
+    build: .
+    depends_on:
+      - db
+    networks:
+      - front-end      
+      - back-end
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DB_PASSWORD
+      - DB_USER
+      - DB_NAME
+      - DB_HOST=db
+      - DB_DIALECT=postgres
+      - PORT=80
+      - PORT_SSL=443
+    volumes:
+      - web_certs:/ssl
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=web"
+
+  db:
+    image: postgres
+    restart: always
+    networks:
+      - back-end
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:    
+      - db_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - front-end
+      - back-end
+
+volumes:
+  db_data:
+    driver_opts:
+      type: none
+      device: $PWD/data/db
+      o: bind
+  web_certs:
+    driver_opts:
+      type: none
+      device: $PWD/data/certs
+      o: bind     
+networks:
+  front-end:
+    driver: bridge
+  back-end:
+    driver: bridge

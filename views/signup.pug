@@ -34,8 +34,11 @@ block content
                                     label.sr-only(for="surname") Surname
                                     input#surname.form-control(type='text', name="surname", placeholder='Enter your surname', required=true)
                                 .form-group
-                                    label.sr-only(for="organization") Organization
-                                    input#organization.form-control(type='text', name="organization", placeholder='Enter your organization/affiliation', required=true)
+                                    label.sr-only(for="institution") Institution
+                                    select#institution.form-control(name="institution", data-btn-class="", data-size="auto")
+                                .form-group
+                                    label.sr-only(for="organization") Organization (In case not listed on the institution list)
+                                    input#organization.form-control(type='text', name="organization", placeholder='Enter your organization/affiliation', required=false)
                                 .form-group
                                     label.sr-only(for="password") Password
                                     input#password.form-password.form-control(type='password', name="password", placeholder='Password', required=true)

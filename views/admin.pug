@@ -36,6 +36,10 @@ block content
                                     .col-md-6
                                         input#user_organization.form-control(type='text', name="organization", placeholder='Organization/affiliation')
                                 .form-group
+                                    label.col-md-4.control-label(for="user_institution") Institution
+                                    .col-md-6
+                                        select#user_institution.form-control(name="institution", data-btn-class="", data-size="auto")
+                                .form-group
                                     label.col-md-4.control-label(for="user_email") eMail
                                     .col-md-6
                                         input#user_email.form-control(type='email', name="email", placeholder='eMail')
@@ -177,6 +181,35 @@ block content
                     button.btn.btn-secondary(type="button" data-dismiss="modal") Close
                     button#btnAcceptSlot.btn.btn-primary(type="button") Save changes
 
+    #institutionFormModal.modal(tabindex="-1", role="dialog", aria-labelledby="institutionModalLabel" aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4#institutionModalLabel.modal-title Institution data
+                .modal-body
+                    #institution_modalBody.modal-body
+                        .row#slotFormBox
+                            col-md-12
+                                form#institutionForm.form-horizontal
+                                    input#institution_id(type="hidden" name="id")
+                                    .form-group
+                                        label.col-md-4.control-label(for="institution_acronym") Acronym
+                                        .col-md-6
+                                            input#institution_acronym.form-control(type='text', name="acronym", placeholder='Acronym', required=true)
+                                            p.form-text.text-muted
+                                                | A short name that must be unique
+                                    .form-group
+                                        label.col-md-4.control-label(for="institution_name") Name
+                                        .col-md-6
+                                            input#institution_name.form-control(type='text', name="name", placeholder='Name', required=true)
+                                            p.form-text.text-muted
+                                                | Long name of the institution
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-dismiss="modal") Close
+                    button#btnAcceptInstitution.btn.btn-primary(type="button") Save changes
+
     +panel("User management", "primary")
         #userForm_messages
         p Allow to create new users, or assign the roles to existing users:
@@ -206,8 +239,34 @@ block content
                     th(data-field="surname", data-sortable="true") Surname
                     th(data-field="email") Email
                     th(data-field="organization", data-sortable="true") Organization
+                    th(data-field="Institution.acronym", data-sortable="true") Institution
                     th(data-field="roles") Roles
                     th(data-field="keywords") Keywords
+
+    +panel("Institution management", "primary")
+        #institutionForm_messages
+        p Allow to create new institutions.
+        #institutionTable-toolbar
+            .form-inline(role="form")
+                .btn-group
+                    button#btnAddInstitution.btn.btn-default.btn-lg(type="button", data-action="add")
+                        span.glyphicon.glyphicon-plus-sign(aria-hidden="true")
+                    button#btnEditInstitution.btn.btn-default.btn-lg.disabled(type="button", data-action="edit")
+                        span.glyphicon.glyphicon-pencil(aria-hidden="true")
+                    button#btnDelInstitution.btn.btn-danger.btn-lg.disabled(type="button")
+                        span.glyphicon.glyphicon-trash(aria-hidden="true")
+
+        table#institutionTable(data-toggle="table", data-url="/admin/institutions", data-sort-name="acronym",
+                data-sort-order="asc", data-pagination="true", data-search="true", data-page-list="[5, 10, 20, 50, 100, 200]",
+                data-toolbar="#institutionTable-toolbar", data-show-refresh="true", data-show-toggle="false", data-show-columns="true",
+                data-click-to-select="true", data-select-item-name="selInst", data-page-size="5")
+            thead
+                tr
+                    th(data-field="state" data-radio="true" data-switchable="false")
+                    th(data-field="id", data-sortable="true", data-visible="false") Id
+                    th(data-field="acronym", data-sortable="true" data-switchable="false") Acronym
+                    th(data-field="name", data-sortable="true") Name
+                    th(data-field="validated") Validated
 
 
     +panel("Schedule management", "primary")
@@ -294,5 +353,6 @@ block scripts
     script
         include ../public/dist/scripts.js
         include ../public/dist/admin/users.js
+        include ../public/dist/admin/institutions.js
         include ../public/dist/admin/periods.js
         include ../public/dist/admin/tracks.js

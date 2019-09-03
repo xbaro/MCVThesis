@@ -22,6 +22,31 @@ jQuery(document).ready(function() {
         return o;
     };
 
+    // Update the list of institutions on the User modal
+    $("#user_institution option").remove();
+    $.ajax({
+        url: "/admin/institutions",
+        dataType: "json",
+        success: function(options) {
+            var index, select, option;
+
+            // Get the raw DOM object for the select box
+            select = document.getElementById('user_institution');
+
+            // Clear the old options
+            select.options.length = 0;
+            select.options.add(new Option("", -1));
+
+            // Load the new options
+            for (index = 0; index < options.length; ++index) {
+                option = options[index];
+                select.options.add(new Option(option.name, option.id));
+            }
+        }
+    });
+
+
+
     /******************************
      * Users Table
      ******************************/
@@ -43,6 +68,7 @@ jQuery(document).ready(function() {
 
         // Reset the form data
         $('#userFormModal').find('form').trigger("reset");
+        $('#user_institution').val(-1);
 
         // Ensure that username is enabled for edit
         $('#user_username').attr('readonly', false);
@@ -82,6 +108,11 @@ jQuery(document).ready(function() {
             $('#user_roles').val(row.roles);
             $('#user_keywords').val(row.keywords);
             $('#user_password').val('');
+            if(row.Institution === null) {
+                $('#user_institution').val(-1);
+            } else {
+                $('#user_institution').val(row.Institution.id)
+            }
 
         }
 

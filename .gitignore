@@ -39,6 +39,7 @@ jspm_packages
 # Bower directories
 bower_components
 public/lib
+build
 
 # Development files
 .DS_Store
@@ -50,3 +51,6 @@ ssl
 
 # Ingnore compressed files
 public/dist
+
+# Ignore data path
+data

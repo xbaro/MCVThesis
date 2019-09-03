@@ -13,5 +13,8 @@
     "path": "./ssl",
     "key": "./production.key",
     "crt": "./production.crt"
+  },
+  "docker": {
+    "use_env_variable": true
   }
 }

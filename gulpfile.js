@@ -8,7 +8,7 @@ var minify = require('gulp-minify');
 var config = {
      sassPath: './resources/sass',
      bowerDir: './bower_components' 
-}
+};
 
 gulp.task('bower', function() { 
     return bower()
@@ -32,7 +32,7 @@ gulp.task('css', function() { 
 });
 
 gulp.task('compress', function() {
-  gulp.src('public/js/**/*.js')
+  return gulp.src('public/js/**/*.js')
     .pipe(minify({
         ext:{
             src:'-debug.js',
@@ -44,4 +44,4 @@ gulp.task('compress', function() {
     .pipe(gulp.dest('public/dist'))
 });
 
-  gulp.task('default', ['bower', 'icons', 'css', 'compress']);
+  gulp.task('default', gulp.series('bower', 'icons', 'css', 'compress'));
