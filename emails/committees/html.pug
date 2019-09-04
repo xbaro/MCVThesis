@@ -5,6 +5,8 @@ ul
         = ` ${learner_name} <${learner_mail}>`
     li <strong>Title:</strong>
         = ` ${title}`
+    li <strong>Advisors:</strong>
+        = ` ${advisors}`
     li <strong>Abstract:</strong>
         = ` ${abstract}`
     li <strong>Committee:</strong>
@@ -16,9 +18,9 @@ ul
             li <strong>Vocal:</strong>
                 = ` ${vocal}`
     li <strong>Place:</strong>
-        = ` ${place}`
-    li <strong>Place:</strong>
-        = ` ${date}`
+        = ` ${place} - ${room}`
+    li <strong>Defense date:</strong>
+        = ` ${date} from ${start} to ${end}`
 p You will find the rubric attached to this email.
 p Please <strong>do not respond</strong> to this email.
 

@@ -55,6 +55,19 @@ db.Committee.belongsTo(db.User);
 db.Institution.hasMany(db.User);
 db.User.belongsTo(db.Institution);
 
+db.User.hasMany(db.Track, {onDelete: 'CASCADE'});
+
+db.Notification.belongsTo(db.User, {onDelete: 'CASCADE', as: 'to_user'});
+db.Notification.belongsTo(db.User, {onDelete: 'SET NULL', as: 'from_user'});
+
+db.NotificationGroup.hasMany(db.Notification);
+db.Notification.belongsTo(db.NotificationGroup, {onDelete: 'SET NULL'});
+
+
+db.NotificationGroup.hasOne(db.NotificationGroup, {onDelete: 'SET NULL', as: 'Parent'});
+db.NotificationGroup.hasMany(db.NotificationGroup, {as: 'Children'});
+db.NotificationGroup.belongsTo(db.User, {onDelete: 'SET NULL', as: 'from_user'});
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
