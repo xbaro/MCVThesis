@@ -11,6 +11,7 @@ var auth = require('./routes/auth');
 var profile = require('./routes/profile');
 var committees = require('./routes/committees');
 var thesis = require('./routes/thesis');
+var communication = require('./routes/communication');
 
 var compression = require('compression');
 
@@ -169,6 +170,7 @@ app.use('/auth', auth);
 app.use('/profile', profile);
 app.use('/thesis', thesis);
 app.use('/committees', committees);
+app.use('/communication', communication);
 
 
 app.use(ltiMiddleware({

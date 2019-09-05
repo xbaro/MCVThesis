@@ -248,17 +248,19 @@ router.get('/stats/:periodId/advised', function (req, res) {
                     {
                         model: Model.Thesis,
                         as: 'Committee',
+                        required: false,
                         include: [
                             {
                                 model: Model.Slot,
+                                required: false,
                                 include:[
                                     {
                                         model: Model.Track,
+                                        required: false,
                                         include: [
                                             {
                                                 model: Model.Period,
                                                 where: {id: periodId},
-                                                required: false
                                             }
                                         ]
                                     }
@@ -308,7 +310,6 @@ router.get('/stats/:periodId/committees', function (req, res) {
                                                     {
                                                         model: Model.Period,
                                                         where: {id: periodId},
-                                                        required: false,
                                                     }
                                                 ]
                                             }

@@ -35,8 +35,13 @@ services:
       - DB_DIALECT=postgres
       - PORT=80
       - PORT_SSL=443
+      - SMTP_USER
+      - SMTP_PASSWORD
+      - NUM_THREADS
+      - LOGS_FOLDER=/log
     volumes:
       - web_certs:/ssl
+      - web_logs:/log
     labels:
       - "traefik.enable=true"
       - "traefik.backend=web"
@@ -74,7 +79,12 @@ volumes:
     driver_opts:
       type: none
       device: $PWD/data/certs
-      o: bind     
+      o: bind
+  web_logs:
+    driver_opts:
+      type: none
+      device: $PWD/data/logs
+      o: bind
 networks:
   front-end:
     driver: bridge

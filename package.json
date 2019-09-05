@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./main.js",
+    "debug": "node ./bin/www"
   },
   "description": "MCVThesis",
   "repository": "github.com/xbaro/MCVThesis.git",
@@ -19,26 +20,31 @@
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
     "dotenv": "^8.1.0",
+    "email-templates": "^6.0.0",
     "express": "^4.17.1",
     "express-ims-lti": "^0.2.4",
     "express-sequelize-session": "^0.4.0",
     "express-session": "^1.16.2",
     "fs-extra": "^8.1.0",
     "ims-lti": "^3.0.2",
+    "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "nodemailer": "^6.3.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-lti": "^0.0.7",
     "pg": "^7.12.0",
+    "pm2": "^3.5.1",
     "pug": "^2.0.4",
+    "rotating-file-stream": "^1.4.3",
     "secure-random-password": "^0.1.0",
     "sequelize": "^3.35.1",
     "sequelize-auto-migrations": "^1.0.3",
     "sequelize-cli": "^5.5.0",
     "serve-favicon": "^2.5.0",
     "sqlite3": "^4.0.9",
-    "stylus": "^0.54.5"
+    "stylus": "^0.54.5",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
