@@ -2,7 +2,7 @@
 var path = require('path');
 var favicon = require('serve-favicon');
 //var logger = require('morgan');
-var logger = require('logger');
+var logger = require('./logger');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
@@ -35,22 +35,15 @@ let mailer = require('./lib/mail');
 
 mailer.verify(function(error, success) {
   if (error) {
-    console.log(error);
+    logger.error(error);
   } else {
-    console.log("Mail system is working");
+    logger.info("Mail system is working");
     const test_message = {
         from: 'xbaro@uoc.edu',
         to: 'xavierbaro@gmail.com',
         subject: 'Test MCV mail system',
         html: '<h1>Test Message!</h1><p>This is a test message from MCV Theses manager system.</p>'
     };
-    /*mailer.sendMail(test_message, function (err, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("Test mail sent");
-        }
-    });*/
   }
 });
 
@@ -70,7 +63,7 @@ app.set('view engine', 'pug');
 app.use(compression());
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+app.use(require('morgan')("combined", { "stream": logger.stream }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

@@ -29,7 +29,7 @@ app.set('forceSSLOptions', {
 
 models.sequelize.sync().then(function () {
     var server = app.listen(app.get('port'), function() {
-        logger.log('Express server listening on port ' + server.address().port);
+        logger.info('Express server listening on port ' + server.address().port);
     });
 
     var httpsOptions = {
@@ -38,6 +38,6 @@ models.sequelize.sync().then(function () {
     };
 
     https.createServer(httpsOptions, app).listen(app.get('port-ssl'), function() {
-        logger.log('Express HTTPS server listening on port ' + app.get('port-ssl'));
+        logger.info('Express HTTPS server listening on port ' + app.get('port-ssl'));
     });
 });
