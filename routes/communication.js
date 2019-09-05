@@ -109,7 +109,7 @@ function updateGroupStatus(group, callback, error) {
                         },
                         {
                             where: {
-                                id: data.id
+                                id: data[0].id
                             }
                         }).then(callback).catch(error);
                 } else {
@@ -120,13 +120,12 @@ function updateGroupStatus(group, callback, error) {
                         },
                         {
                             where: {
-                                id: data.id
+                                id: data[0].id
                             }
                         }).then(error).catch(error);
                 }
             }
         }
-        error('Invalid data when updating group status');
     }).catch(error);
 }
 
