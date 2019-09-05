@@ -10,8 +10,8 @@ module.exports = {
             "tls": {rejectUnauthorized: false},
             "ignoreTLS ": true,
             "auth": {
-                "user": "sunai.lab.uoc@gmail.com",
-                "pass": "uKvMMSdUux"
+                "user": "your_user",
+                "pass": "your_password"
             }
         }
     },
