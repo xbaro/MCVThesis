@@ -1108,7 +1108,7 @@ router.get('/alerts/nocommittee', function (req, res) {
                     },
                     {
                         model: Model.User,
-                        attributes: ['username', 'name', 'surname', 'full_name', 'organizarion'],
+                        attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
                         as: "Advised",
                         required: false
                     },
