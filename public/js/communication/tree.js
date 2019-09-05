@@ -1,11 +1,18 @@
 function getFullTreeData(data) {
     var tree_data = [];
 
+    var backColor = {
+        pending: "#d8b812b8",
+        sent: "#57a016d1",
+        failed: "#d8181894"
+    };
     $.each([].concat(data), function(i, g) {
         var group = {
             text: g.type,
             icon: 'glyphicon glyphicon-folder-open',
             type: "group",
+            backColor: backColor[g.states],
+            color: "white",
             data_object: g,
             tags: [],
             nodes: []
@@ -16,6 +23,8 @@ function getFullTreeData(data) {
                 text: sg.type,
                 icon: 'glyphicon glyphicon-folder-open',
                 type: "group",
+                backColor: backColor[sg.states],
+                color: "white",
                 data_object: sg,
                 tags: [],
                 nodes: []
@@ -26,6 +35,8 @@ function getFullTreeData(data) {
                     text: n.type,
                     icon: 'glyphicon glyphicon-envelope',
                     type: "notification",
+                    backColor: backColor[n.states],
+                    color: "white",
                     data_object: n,
                     tags: []
                 };
@@ -44,6 +55,8 @@ function getFullTreeData(data) {
                 text: n.type,
                 icon: 'glyphicon glyphicon-envelope',
                 type: "notification",
+                backColor: backColor[n.states],
+                color: "white",
                 data_object: n,
                 tags: []
             };
@@ -60,6 +73,28 @@ function getFullTreeData(data) {
     return tree_data;
 }
 
+function showMailContent(data) {
+    var id = data.data_object.id;
+
+    $('#panel_notifications').html('');
+    if(data.type === 'group') {
+        return;
+    }
+    $.get('/communication/notification/' + id + '/render', {}, 'json')
+        .done(function(result) {
+           $('#panel_notifications').html(result.html);
+        }).fail(function() {
+            $.notify({
+                title: '<strong>Error</strong>',
+                message: 'Unexpected error recovering the tree structure',
+                newest_on_top: true
+            },{
+                type: 'danger',
+                element: '#tree_messages'
+            });
+        });
+}
+
 var lastScrollValue;
 function showNotificationTree(selected) {
 
@@ -72,7 +107,7 @@ function showNotificationTree(selected) {
         $('#notifications_tree').treeview('collapseAll', { silent: true });
 
         $('#notifications_tree').on('nodeSelected', function(event, data) {
-            //showMailContent(data);
+            showMailContent(data);
         });
 
         $('#notifications_tree').on('nodeUnselected', function(event, data) {

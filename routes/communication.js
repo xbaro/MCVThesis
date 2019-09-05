@@ -8,6 +8,42 @@ const path = require('path');
 const logger = require('../logger');
 const moment = require('moment');
 
+const email_templates = {
+    notify_committee: [ new Email({
+        message: {
+            from: 'noreply@mcv.eimt.uoc.edu',
+            attachments: [
+                {
+                    filename: 'EvaluationGuidelinesCommitteeEN.doc',
+                    path: path.normalize(path.join(__dirname, '..', 'emails', 'committees', 'EvaluationGuidelinesCommitteeEN.doc'))
+                }
+            ],
+        },
+        send: true,
+        transport: transport
+    }), 'committees'],
+    notify_advisor: [new Email({
+        message: {
+            from: 'noreply@mcv.eimt.uoc.edu',
+            attachments: [
+                {
+                    filename: 'EvaluationGuidelinesAdvisorEN.doc',
+                    path: path.normalize(path.join(__dirname, '..', 'emails', 'advisors', 'EvaluationGuidelinesAdvisorEN.doc'))
+                }
+            ],
+        },
+        send: true,
+        transport: transport
+    }), 'advisors'],
+    notify_learner: [new Email({
+        message: {
+            from: 'noreply@mcv.eimt.uoc.edu',
+        },
+        send: true,
+        transport: transport
+    }), 'learners'],
+};
+
 function closeGroupWithError(group, error) {
     Model.NotificationGroup.update(
     {
@@ -44,7 +80,7 @@ function updateGroupStatus(group, callback, error) {
         if(data && data.length === 1) {
             var num_pending = 0;
             var num_sent = 0;
-            var num_failed = false;
+            var num_failed = 0;
 
             for(var i=0; i<data[0].Children.length; i++) {
                 if (data[0].Children[i].states === 'pending') {
@@ -109,9 +145,34 @@ function updateNotificationStatus(notification, status, callback, error) {
         .catch(error);
 }
 
-function send_committee_mail(email, member, group, data, callback, error) {
+function get_mail_locals(data) {
+    var advisors = '';
+    for(var i=0; i<data.advisors.length; i++) {
+        if (i>0) {
+            advisors += ', ';
+        }
+        advisors += `${data.advisors[i].name} (${data.advisors[i].institution}) <${data.advisors[i].email}>`;
+    }
+    return {
+        learner_name: data.thesis_author_name,
+        learner_mail: data.thesis_author_email,
+        title: data.thesis_title,
+        abstract: data.thesis_abstract,
+        president: `${data.committee.president.name} (${data.committee.president.institution}) <${data.committee.president.email}>`,
+        secretary: `${data.committee.secretary.name} (${data.committee.secretary.institution}) <${data.committee.secretary.email}>`,
+        vocal: `${data.committee.vocal.name} (${data.committee.vocal.institution}) <${data.committee.vocal.email}>`,
+        advisors: advisors,
+        place: data.place,
+        room: data.room,
+        start: data.start,
+        end: data.end,
+        date: moment(data.date).format('ddd DD/MM/YYYY')
+    }
+}
+
+function send_mail(type, member, group, data, callback, error) {
     Model.Notification.create({
-        type: 'notify_committee',
+        type: type,
         data: JSON.stringify(data),
         NotificationGroupId: group.id,
         start: Date(),
@@ -119,35 +180,15 @@ function send_committee_mail(email, member, group, data, callback, error) {
         fromUserUsername: group.fromUserUsername,
         toUserUsername: member.username
     }).then(function(notification) {
+
         if (notification) {
-            var advisors = '';
-            for(var i=0; i<data.advisors.length; i++) {
-                if (i>0) {
-                    advisors += ', ';
-                }
-                advisors += `${data.advisors[i].name} (${data.advisors[i].institution}) <${data.advisors[i].email}>`;
-            }
-            email
+            email_templates[type][0]
                 .send({
-                    template: 'committees',
+                    template: email_templates[type][1],
                     message: {
                         to: `${member.full_name} <${member.email}>`,
                     },
-                    locals: {
-                        learner_name: data.thesis_author_name,
-                        learner_mail: data.thesis_author_email,
-                        title: data.thesis_title,
-                        abstract: data.thesis_abstract,
-                        president: `${data.committee.president.name} (${data.committee.president.institution}) <${data.committee.president.email}>`,
-                        secretary: `${data.committee.secretary.name} (${data.committee.secretary.institution}) <${data.committee.secretary.email}>`,
-                        vocal: `${data.committee.vocal.name} (${data.committee.vocal.institution}) <${data.committee.vocal.email}>`,
-                        advisors: advisors,
-                        place: data.place,
-                        room: data.room,
-                        start: data.start,
-                        end: data.end,
-                        date: moment(data.date).format('ddd DD/MM/YYYY')
-                    }
+                    locals: get_mail_locals(data)
                 })
                 .then(function() {
                     updateNotificationStatus(notification, 'sent', function() {
@@ -172,66 +213,82 @@ function send_committee_mail(email, member, group, data, callback, error) {
     });
 }
 
-function send_committee_notifications(data, group, callback, error) {
-    Model.NotificationGroup.create({
-        type: 'notify_committee',
-        NotificationGroupId: group.id,
-        start: Date(),
-        states: 'pending',
-        fromUserUsername: group.fromUserUsername,
-        expectedNotifications: 3
-    }).then(function(subgroup) {
-        if (subgroup) {
-            const email = new Email({
-                message: {
-                    from: 'noreply@mcv.eimt.uoc.edu',
-                    attachments: [
-                        {
-                            filename: 'EvaluationGuidelinesCommitteeEN.doc',
-                            path: path.normalize(path.join(__dirname, '..', 'emails', 'committees', 'EvaluationGuidelinesCommitteeEN.doc'))
-                        }
-                    ],
-                },
-                send: true,
-                transport: transport
+function send_notifications(type, data, group, callback, error) {
+    if (type === "notify_learner") {
+        var learner = {
+
+        };
+        send_mail(type, data.author, group, data,
+            function (notification) {
+                updateGroupStatus(group, callback, error);
+            }, function (err) {
+                closeGroupWithError(group, err);
+                if (error) {
+                    error(err);
+                }
             });
-            send_committee_mail(email, data.committee.president, subgroup, data,
-                function(notification) {
-                    updateGroupStatus(subgroup, callback, error);
-                },function(err) {
-                    closeGroupWithError(subgroup, err);
-                    if(error) {
-                        error(err);
+    } else {
+        Model.NotificationGroup.create({
+            type: type,
+            NotificationGroupId: group.id,
+            start: Date(),
+            states: 'pending',
+            fromUserUsername: group.fromUserUsername,
+            expectedNotifications: 3
+        }).then(function (subgroup) {
+            if (subgroup) {
+                if (type === "notify_committee") {
+                    send_mail(type, data.committee.president, subgroup, data,
+                        function (notification) {
+                            updateGroupStatus(subgroup, callback, error);
+                        }, function (err) {
+                            closeGroupWithError(subgroup, err);
+                            if (error) {
+                                error(err);
+                            }
+                        });
+                    send_mail(type, data.committee.secretary, subgroup, data,
+                        function (notification) {
+                            updateGroupStatus(subgroup, callback, error);
+                        }, function (err) {
+                            closeGroupWithError(subgroup, err);
+                            if (error) {
+                                error(err);
+                            }
+                        });
+                    send_mail(type, data.committee.vocal, subgroup, data,
+                        function (notification) {
+                            updateGroupStatus(subgroup, callback, error);
+                        }, function (err) {
+                            closeGroupWithError(subgroup, err);
+                            if (error) {
+                                error(err);
+                            }
+                        });
+                } else if (type === "notify_advisor") {
+                    for (var i = 0; i < data.advisors.length; i++) {
+                        send_mail(type, data.advisors[i], subgroup, data,
+                            function (notification) {
+                                updateGroupStatus(subgroup, callback, error);
+                            }, function (err) {
+                                closeGroupWithError(subgroup, err);
+                                if (error) {
+                                    error(err);
+                                }
+                            });
                     }
-                });
-            send_committee_mail(email, data.committee.secretary, subgroup, data,
-                function(notification) {
-                    updateGroupStatus(subgroup, callback, error);
-                },function(err) {
-                    closeGroupWithError(subgroup, err);
-                    if(error) {
-                        error(err);
-                    }
-                });
-            send_committee_mail(email, data.committee.vocal, subgroup, data,
-                function(notification) {
-                    updateGroupStatus(subgroup, callback, error);
-                },function(err) {
-                    closeGroupWithError(subgroup, err);
-                    if(error) {
-                        error(err);
-                    }
-                });
-        } else {
-            if(error) {
+                }
+            } else {
+                if (error) {
+                    error(err);
+                }
+            }
+        }).catch(function (err) {
+            if (error) {
                 error(err);
             }
-        }
-    }).catch(function (err) {
-        if (error) {
-            error(err);
-        }
-    });
+        });
+    }
 }
 
 function get_committees_period(periodId, callback) {
@@ -302,10 +359,18 @@ function get_committees_period(periodId, callback) {
             item.thesis_id = thesis.id;
             item.thesis_title = thesis.title;
             if(thesis.User === null) {
+                item.author = null;
                 item.thesis_author_name = null;
                 item.thesis_author_username = null;
                 item.thesis_author_email = null;
             } else {
+                item.author = {
+                    name: thesis.User.full_name,
+                    email: thesis.User.email,
+                    username: thesis.User.username,
+                    organization: null,
+                    institution: null
+                };
                 item.thesis_author_name = thesis.User.full_name;
                 item.thesis_author_username = thesis.User.username;
                 item.thesis_author_email = thesis.User.email;
@@ -404,6 +469,36 @@ function get_committees_period(periodId, callback) {
     }).catch(logger.error);
 }
 
+function send_committee_notifications(type, user, callback, error) {
+    get_committees_period(1, function(data) {
+        Model.NotificationGroup.create({
+            type: type,
+            start: Date(),
+            states: 'pending',
+            fromUserUsername: user.username,
+            expectedNotifications: data.length
+        }).then(function(group) {
+            if (group) {
+                for(var i = 0; i<data.length; i++) {
+                    send_notifications(type, data[i], group,
+                        function(g) {
+                            updateGroupStatus(group);
+                        },function(err) {
+                            closeGroupWithError(group, err);
+                        });
+                }
+                if(callback) {
+                    callback(group);
+                }
+            } else {
+                if(error) {
+                    error('Error creating the notification group');
+                }
+            }
+        }).catch(error);
+    });
+}
+
 function get_host_http(req) {
     var port = req.app.get('port');
     var host = req.headers.host;
@@ -466,31 +561,12 @@ router.get('/notify/committees', function (req, res) {
                 res.status(401);
                 res.render('error', { message: 'Unauthorized access', error: {}});
             } else {
-                get_committees_period(1, function(data) {
-                    Model.NotificationGroup.create({
-                        type: 'notify_committee',
-                        start: Date(),
-                        states: 'pending',
-                        fromUserUsername: req.user.username,
-                        expectedNotifications: data.length
-                    }).then(function(group) {
-                        if (group) {
-                            for(var i = 0; i<data.length; i++) {
-                                send_committee_notifications(data[i], group,
-                                    function(g) {
-                                        updateGroupStatus(group);
-                                    },function(err) {
-                                        closeGroupWithError(group, err);
-                                    });
-                            }
-                            res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
-                        } else {
-                            res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
-                        }
-                    }).catch(function (err) {
+                send_committee_notifications('notify_committee', req.user,
+                    function(group) {
+                        res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
+                    }, function(err) {
                         res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
                     });
-                });
             }
         } else {
             // request was via http, so redirect to https
@@ -501,7 +577,6 @@ router.get('/notify/committees', function (req, res) {
 
 router.get('/notify/advisors', function (req, res) {
     if (!req.isAuthenticated()) {
-
         res.redirect('/auth/signin');
     } else {
         if (req.secure) {
@@ -509,7 +584,12 @@ router.get('/notify/advisors', function (req, res) {
                 res.status(401);
                 res.render('error', { message: 'Unauthorized access', error: {}});
             } else {
-                res.render('communication', {page_name: 'communication', user: req.user});
+                send_committee_notifications('notify_advisor', req.user,
+                    function(group) {
+                        res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
+                    }, function(err) {
+                        res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
+                    });
             }
         } else {
             // request was via http, so redirect to https
@@ -521,7 +601,6 @@ router.get('/notify/advisors', function (req, res) {
 
 router.get('/notify/learners', function (req, res) {
     if (!req.isAuthenticated()) {
-
         res.redirect('/auth/signin');
     } else {
         if (req.secure) {
@@ -529,7 +608,12 @@ router.get('/notify/learners', function (req, res) {
                 res.status(401);
                 res.render('error', { message: 'Unauthorized access', error: {}});
             } else {
-                res.render('communication', {page_name: 'communication', user: req.user});
+                send_committee_notifications('notify_learner', req.user,
+                    function(group) {
+                        res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
+                    }, function(err) {
+                        res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
+                    });
             }
         } else {
             // request was via http, so redirect to https
@@ -603,6 +687,45 @@ router.get('/notifications', function (req, res) {
             }).then(function(data) {
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify(data));
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering notifications' }, null, 3));
+            });
+        }
+    }
+});
+
+router.get('/notification/:id/render', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            var notificationId = req.params.id;
+            Model.Notification.findAll({
+                attributes: ['id', 'type', 'start', 'end', 'states', 'data'],
+                where: {id: notificationId}
+            }).then(function(data) {
+                if(data && data.length === 1) {
+                    email_templates[data[0].type][0]
+                        .render(`${email_templates[data[0].type][1]}/html`, get_mail_locals(JSON.parse(data[0].data)))
+                        .then(function (value) {
+                            res.setHeader('Content-Type', 'application/json');
+                            res.send(JSON.stringify({error: false, html: value}));
+                        })
+                        .catch(function (err) {
+                            res.setHeader('Content-Type', 'application/json');
+                            res.send(JSON.stringify({error: true, message: 'err'}, null, 3));
+                        });
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({error: true, message: 'Multiple notifications retrieved'}, null, 3));
+                }
             }).catch(function (err) {
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({ error: true, message: 'Error recovering notifications' }, null, 3));
