@@ -2,18 +2,20 @@ var pm2 = require('pm2');
 var logger = require("./logger");
 
 var instances = process.env.NUM_THREADS || -1;
-var maxMemory = process.env.WEB_MEMORY || 512;
+var maxMemory = process.env.WEB_MEMORY || 1024;
 
 pm2.connect(function() {
     pm2.start({
-        script    : 'bin/www',
+        script    : './bin/www',
         name      : 'MCV Theses',
         exec_mode : 'cluster',
         instances : instances,
+        mergeLogs : true,
         max_memory_restart : maxMemory + 'M',   // Auto-restart if process takes more than XXmo
-    }, function(err) {
-        if (err) return console.error('Error while launching applications', err.stack || err);
-        //console.log('PM2 and application has been succesfully started');
+    }, function(err, apps) {
+        if (err)
+            return logger.error('Error while launching applications', err.stack || err);
+
         logger.log('info','PM2 and application has been succesfully started');
 
         // Display logs in standard output

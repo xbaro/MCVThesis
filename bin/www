@@ -7,6 +7,7 @@ var models = require("../models");
 var debug = require('debug')('MCVTheses');
 var app = require('../app');
 var env       = process.env.NODE_ENV || "development";
+var logger = require("../logger");
 
 var config = {};
 if (env === "docker") {
@@ -28,7 +29,7 @@ app.set('forceSSLOptions', {
 
 models.sequelize.sync().then(function () {
     var server = app.listen(app.get('port'), function() {
-        console.log('Express server listening on port ' + server.address().port);
+        logger.log('Express server listening on port ' + server.address().port);
     });
 
     var httpsOptions = {
@@ -37,6 +38,6 @@ models.sequelize.sync().then(function () {
     };
 
     https.createServer(httpsOptions, app).listen(app.get('port-ssl'), function() {
-        console.log('Express HTTPS server listening on port ' + app.get('port-ssl'));
+        logger.log('Express HTTPS server listening on port ' + app.get('port-ssl'));
     });
 });

@@ -20,13 +20,21 @@ var file_error = path.join(logFolder, 'mcv.error.log');
 
 var logger = new winston.createLogger({
     defaultMeta: { service: 'mcv_theses' },
+    format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD HH:mm:ss'
+        }),
+        winston.format.errors({ stack: true }),
+        winston.format.splat(),
+        winston.format.json()
+      ),
     transports: [
         new winston.transports.File({
             name: 'info-file',
             level: 'info',
+            timestamp:true,
             filename: file_access,
             handleExceptions: true,
-            json: true,
             maxsize: process.env.LOG_ROTATE_MAX_BYTES,
             maxFiles: process.env.LOG_ROTATE_BACKUP_COUNT,
             colorize: false
