@@ -5,6 +5,14 @@ function numCommittees(value, row) {
     return row.Committee.length;
 }
 
+function institutionFormatter(value, row, index) {
+    if (row) {
+        return row.acronym;
+    } else {
+        return '-';
+    }
+}
+
 function numInstitutionCommittees(value, row) {
     var total = 0;
 

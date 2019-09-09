@@ -45,6 +45,13 @@ jQuery(document).ready(function() {
         }
     });
 
+    function institutionFormatter(value, row, index) {
+        if (row) {
+            return row.acronym;
+        } else {
+            return '-';
+        }
+    }
 
 
     /******************************

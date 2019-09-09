@@ -6,7 +6,7 @@ DB_HOST=db
 DB_DIALECT="postgres"
 
 # SSL configuration
-SSL_PATH=/ssl
+# SSL_PATH=/ssl
 SSL_KEY=test.key
 SSL_CRT=test.crt
 

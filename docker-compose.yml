@@ -39,6 +39,9 @@ services:
       - SMTP_PASSWORD
       - NUM_THREADS
       - LOGS_FOLDER=/log
+      - SSL_PATH=/ssl
+      - SSL_KEY
+      - SSL_CRT
     volumes:
       - web_certs:/ssl
       - web_logs:/log
