@@ -6,8 +6,8 @@ function numCommittees(value, row) {
 }
 
 function institutionFormatter(value, row, index) {
-    if (row) {
-        return row.acronym;
+    if (row.Institution) {
+        return row.Institution.acronym;
     } else {
         return '-';
     }

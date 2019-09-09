@@ -1,3 +1,11 @@
+function institutionFormatter(value, row, index) {
+    if (row.Institution) {
+        return row.Institution.acronym;
+    } else {
+        return '-';
+    }
+}
+
 jQuery(document).ready(function() {
 
     /*******************************
@@ -44,15 +52,6 @@ jQuery(document).ready(function() {
             }
         }
     });
-
-    function institutionFormatter(value, row, index) {
-        if (row) {
-            return row.acronym;
-        } else {
-            return '-';
-        }
-    }
-
 
     /******************************
      * Users Table

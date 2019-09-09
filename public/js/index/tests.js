@@ -21,6 +21,12 @@ function showAlarmData(id, title, text, data, columns) {
             columns: columns,
             pagination: true,
             search: true,
+            showExport: true,
+            exportTypes: ['excel'],
+            exportOptions: {
+                fileName: 'exportName',
+                ignoreColumn: ["Actions"]
+            },
             pageSize: 5,
             pageList: [5, 10, 20],
             onLoadSuccess: function (data) {
@@ -57,7 +63,6 @@ function showAlarmData(id, title, text, data, columns) {
         $('#' + id).on('hidden.bs.collapse', function () {
            $(this).parent().find('a').find(".glyphicon").removeClass("glyphicon-collapse-down").addClass("glyphicon-collapse-up");
         });
-
 
 
     } else {
