@@ -31,7 +31,7 @@ models.sequelize.sync().then(function () {
     var server = app.listen(app.get('port'), function() {
         logger.info('Express server listening on port ' + server.address().port);
     });
-
+/*
     var httpsOptions = {
         key: fs.readFileSync(path.join(config.path, config.key)),
         cert: fs.readFileSync(path.join(config.path, config.crt))
@@ -40,4 +40,5 @@ models.sequelize.sync().then(function () {
     https.createServer(httpsOptions, app).listen(app.get('port-ssl'), function() {
         logger.info('Express HTTPS server listening on port ' + app.get('port-ssl'));
     });
+ */
 });
