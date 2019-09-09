@@ -1,0 +1,33 @@
+debug = true
+logLevel = "DEBUG"
+
+defaultEntryPoints = ["http", "https"]
+
+[web]
+# Port for the status/dashboard page
+address = ":8080"
+
+[entryPoints]
+    [entryPoints.http]
+    address = ":80"
+        [entryPoints.http.redirect]
+        entryPoint = "https"
+
+    [entryPoints.https]
+    address = ":443"
+    [entryPoints.https.tls]
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "mcv.eimt.uoc.edu"
+watch = true
+exposedByDefault = false
+
+[acme]
+email = "xbaro@uoc.edu"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+    [acme.httpChallenge]
+    entryPoint = "http"
