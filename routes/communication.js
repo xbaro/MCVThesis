@@ -1,7 +1,6 @@
 ﻿var express = require('express');
 var router = express.Router();
 var Model = require('../models');
-var env  = process.env.NODE_ENV || "development";
 const Email = require('email-templates');
 var transport = require('../lib/mail');
 const path = require('path');
@@ -498,55 +497,16 @@ function send_committee_notifications(type, user, callback, error) {
     });
 }
 
-function get_host_http(req) {
-    var port = req.app.get('port');
-    var host = req.headers.host;
-
-    var host_parts = host.split(':');
-
-    if (host_parts.length > 1) {
-        host = host_parts[0];
-    }
-
-    if (env === "production" || port === 80) {
-        return host;
-    }
-
-    return host + ':' + port;
-}
-
-function get_host_https(req) {
-    var port = req.app.get('port-ssl');
-    var host = req.headers.host;
-
-    var host_parts = host.split(':');
-
-    if (host_parts.length > 1) {
-        host = host_parts[0];
-    }
-
-    if (env === "production" || port === 443) {
-        return host;
-    }
-
-    return host + ':' + port;
-}
-
 router.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
 
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.status(401);
-                res.render('error', { message: 'Unauthorized access', error: {}});
-            } else {
-                res.render('communication', {page_name: 'communication', user: req.user});
-            }
+        if (!req.user.admin) {
+            res.status(401);
+            res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            res.render('communication', {page_name: 'communication', user: req.user});
         }
     }
 });
@@ -555,21 +515,16 @@ router.get('/notify/committees', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.status(401);
-                res.render('error', { message: 'Unauthorized access', error: {}});
-            } else {
-                send_committee_notifications('notify_committee', req.user,
-                    function(group) {
-                        res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
-                    }, function(err) {
-                        res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
-                    });
-            }
+        if (!req.user.admin) {
+            res.status(401);
+            res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            send_committee_notifications('notify_committee', req.user,
+                function(group) {
+                    res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
+                }, function(err) {
+                    res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
+                });
         }
     }
 });
@@ -578,21 +533,16 @@ router.get('/notify/advisors', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.status(401);
-                res.render('error', { message: 'Unauthorized access', error: {}});
-            } else {
-                send_committee_notifications('notify_advisor', req.user,
-                    function(group) {
-                        res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
-                    }, function(err) {
-                        res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
-                    });
-            }
+        if (!req.user.admin) {
+            res.status(401);
+            res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            send_committee_notifications('notify_advisor', req.user,
+                function(group) {
+                    res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
+                }, function(err) {
+                    res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
+                });
         }
     }
 });
@@ -602,21 +552,16 @@ router.get('/notify/learners', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.status(401);
-                res.render('error', { message: 'Unauthorized access', error: {}});
-            } else {
-                send_committee_notifications('notify_learner', req.user,
-                    function(group) {
-                        res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
-                    }, function(err) {
-                        res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
-                    });
-            }
+        if (!req.user.admin) {
+            res.status(401);
+            res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            send_committee_notifications('notify_learner', req.user,
+                function(group) {
+                    res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
+                }, function(err) {
+                    res.render('communication', {page_name: 'communication', user: req.user, message_error: 'Error creating the notification group'});
+                });
         }
     }
 });

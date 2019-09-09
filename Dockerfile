@@ -21,7 +21,8 @@ RUN gulp
 ENV NODE_ENV=docker
 
 EXPOSE 80
-EXPOSE 443
+#EXPOSE 443
 
-CMD [ "npm", "start" ]
+#CMD [ "npm", "start" ]
+CMD ["/usr/local/bin/node", "bin/www"]
 

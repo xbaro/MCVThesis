@@ -2,59 +2,17 @@
 var router = express.Router();
 var bcrypt = require('bcrypt');
 var Model = require('../models');
-var env  = process.env.NODE_ENV || "development";
-
 var saltRounds = 10;
-
-function get_host_http(req) {
-    var port = req.app.get('port');
-    var host = req.headers.host;
-
-    var host_parts = host.split(':');
-
-    if (host_parts.length > 1) {
-        host = host_parts[0];
-    }
-
-    if (env === "production" || port === 80) {
-        return host;
-    }
-
-    return host + ':' + port;
-}
-
-function get_host_https(req) {
-    var port = req.app.get('port-ssl');
-    var host = req.headers.host;
-
-    var host_parts = host.split(':');
-
-    if (host_parts.length > 1) {
-        host = host_parts[0];
-    }
-
-    if (env === "production" || port === 443) {
-        return host;
-    }
-
-    return host + ':' + port;
-}
 
 router.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
-
         res.redirect('/auth/signin');
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.status(401);
-                res.render('error', { message: 'Unauthorized access', error: {}});
-            } else {
-                res.render('admin', {page_name: 'admin', user: req.user});
-            }
+        if (!req.user.admin) {
+            res.status(401);
+            res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            res.render('admin', {page_name: 'admin', user: req.user});
         }
     }
 });
@@ -65,29 +23,24 @@ router.get('/users', function (req, res) {
         res.status(401);
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.setHeader('Content-Type', 'application/json');
-                res.status(401);
-                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
-            } else {
-                Model.User.findAll({
-                    attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords'],
-                    include: [
-                        {
-                            model: Model.Institution,
-                            attributes: ['id', 'acronym', 'name'],
-                        }
-                    ]
-                })
-                .then(function(data) {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(data));
-                });
-            }
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            Model.User.findAll({
+                attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords'],
+                include: [
+                    {
+                        model: Model.Institution,
+                        attributes: ['id', 'acronym', 'name'],
+                    }
+                ]
+            })
+            .then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            });
         }
     }
 });
@@ -98,36 +51,31 @@ router.post('/user/new', function (req, res) {
         res.status(401);
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.setHeader('Content-Type', 'application/json');
-                res.status(401);
-                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
-            } else {
-                var user = req.body;
-                var teacher = user.roles.indexOf('teacher') !== -1;
-                var admin = user.roles.indexOf('admin') !== -1;
-                var password = user.password;
-                var hash = bcrypt.hashSync(password, saltRounds);
-                Model.User
-                    .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, organization: user.organization, keywords: user.keywords, teacher: teacher, admin: admin}})
-                    .spread(function(new_user, created) {
-                        if (created) {
-                            res.setHeader('Content-Type', 'application/json');
-                            res.send(JSON.stringify({ error: false, message: 'User created', user: new_user}, null, 3));
-                        } else {
-                            res.setHeader('Content-Type', 'application/json');
-                            res.send(JSON.stringify({ error: true, message: 'Used cannot be created' }, null, 3));
-                        }
-                    })
-                    .catch(function (err) {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.send(JSON.stringify({ error: true, message: 'The user cannot be created. Does the username exists?' }, null, 3));
-                    });
-            }
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            var user = req.body;
+            var teacher = user.roles.indexOf('teacher') !== -1;
+            var admin = user.roles.indexOf('admin') !== -1;
+            var password = user.password;
+            var hash = bcrypt.hashSync(password, saltRounds);
+            Model.User
+                .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, organization: user.organization, keywords: user.keywords, teacher: teacher, admin: admin}})
+                .spread(function(new_user, created) {
+                    if (created) {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify({ error: false, message: 'User created', user: new_user}, null, 3));
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify({ error: true, message: 'Used cannot be created' }, null, 3));
+                    }
+                })
+                .catch(function (err) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: true, message: 'The user cannot be created. Does the username exists?' }, null, 3));
+                });
         }
     }
 });
@@ -138,66 +86,61 @@ router.post('/user/update', function (req, res) {
         res.status(401);
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.setHeader('Content-Type', 'application/json');
-                res.status(401);
-                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
-            } else {
-                var user = req.body;
-                var teacher = user.roles.indexOf('teacher') !== -1;
-                var admin = user.roles.indexOf('admin') !== -1;
-                var institution = user.institution;
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
+        } else {
+            var user = req.body;
+            var teacher = user.roles.indexOf('teacher') !== -1;
+            var admin = user.roles.indexOf('admin') !== -1;
+            var institution = user.institution;
 
-                if (user.institution < 0) {
-                    institution = null;
-                }
+            if (user.institution < 0) {
+                institution = null;
+            }
 
-                Model.User.update({
-                    name: user.name,
-                    surname: user.surname,
-                    email: user.email,
-                    organization: user.organization,
-                    keywords: user.keywords,
-                    teacher: teacher,
-                    admin: admin,
-                    InstitutionId: institution
-                },
-                {
-                    where: { username: user.username }
-                })
-                .then(function (result) {
-                    if (result[0] == 1) {
-                        if (user.change_password) {
-                            var password = user.password;
-                            var hash = bcrypt.hashSync(password, saltRounds);
-                            Model.User.update({
-                                password: hash
-                            },
-                            {
-                                where: { username: user.username }
-                            }).then(function (result) {
-                                if (result[0] == 1) {
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.send(JSON.stringify({error: false, message: 'User updated', user: user}, null, 3));
-                                } else {
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.send(JSON.stringify({ error: true, message: 'Error on the password update.', user: user}, null, 3));
-                                }
-                            });
-                        } else {
-                            res.setHeader('Content-Type', 'application/json');
-                            res.send(JSON.stringify({error: false, message: 'User updated', user: user}, null, 3));
-                        }
+            Model.User.update({
+                name: user.name,
+                surname: user.surname,
+                email: user.email,
+                organization: user.organization,
+                keywords: user.keywords,
+                teacher: teacher,
+                admin: admin,
+                InstitutionId: institution
+            },
+            {
+                where: { username: user.username }
+            })
+            .then(function (result) {
+                if (result[0] == 1) {
+                    if (user.change_password) {
+                        var password = user.password;
+                        var hash = bcrypt.hashSync(password, saltRounds);
+                        Model.User.update({
+                            password: hash
+                        },
+                        {
+                            where: { username: user.username }
+                        }).then(function (result) {
+                            if (result[0] == 1) {
+                                res.setHeader('Content-Type', 'application/json');
+                                res.send(JSON.stringify({error: false, message: 'User updated', user: user}, null, 3));
+                            } else {
+                                res.setHeader('Content-Type', 'application/json');
+                                res.send(JSON.stringify({ error: true, message: 'Error on the password update.', user: user}, null, 3));
+                            }
+                        });
                     } else {
                         res.setHeader('Content-Type', 'application/json');
-                        res.send(JSON.stringify({ error: true, message: 'Error on the update.', user: user}, null, 3));
+                        res.send(JSON.stringify({error: false, message: 'User updated', user: user}, null, 3));
                     }
-                });
-            }
-        } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: true, message: 'Error on the update.', user: user}, null, 3));
+                }
+            });
         }
     }
 });
@@ -208,29 +151,24 @@ router.post('/user/delete', function (req, res) {
         res.status(401);
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.setHeader('Content-Type', 'application/json');
-                res.status(401);
-                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
-            } else {
-                var user = req.body
-                Model.User.destroy({
-                    where: { username: user.username }
-                })
-                .then(function (result) {
-                    if (result == 1) {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.send(JSON.stringify({ error: false, message: "User " + user.username + " removed." }, null, 3));
-                    } else {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.send(JSON.stringify({ error: true, message: 'User not deleted' }, null, 3));
-                    }
-                });
-            }
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            var user = req.body
+            Model.User.destroy({
+                where: { username: user.username }
+            })
+            .then(function (result) {
+                if (result == 1) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: false, message: "User " + user.username + " removed." }, null, 3));
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: true, message: 'User not deleted' }, null, 3));
+                }
+            });
         }
     }
 });
@@ -241,23 +179,18 @@ router.get('/periods', function (req, res) {
         res.status(401);
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.setHeader('Content-Type', 'application/json');
-                res.status(401);
-                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
-            } else {
-                Model.Period.findAll({
-                    attributes: ['id', 'title', 'start', 'end', 'active', 'closed', 'locked']
-                })
-                .then(function(data) {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(data));
-                });
-            }
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            Model.Period.findAll({
+                attributes: ['id', 'title', 'start', 'end', 'active', 'closed', 'locked']
+            })
+            .then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            });
         }
     }
 });
@@ -628,63 +561,58 @@ router.get('/tracks/:periodID', function (req, res) {
         res.status(401);
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.setHeader('Content-Type', 'application/json');
-                res.status(401);
-                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
-            } else {
-                var periodID = req.params.periodID;
-                Model.Period.findOne({
-                    attributes: ['id', 'title', 'start', 'end', 'active', 'closed'],
-                    where: {id: periodID},
-                    include: [
-                        {
-                            model: Model.Track,
-                            attributes: ['id', 'title', 'keywords'],
-                            include: [
-                                {
-                                    model: Model.Slot,
-                                    attributes: ['id', 'place', 'start', 'end', 'capacity', 'room'],
-                                    include: [
-                                        {
-                                            model: Model.Thesis,
-                                            attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'order', 'approved', 'nda'],
-                                            include: [
-                                                {
-                                                    model: Model.User,
-                                                    attributes: ['username', 'name', 'surname', 'full_name']
-                                                }
-                                            ],
-                                            order: [
-                                                [Model.Thesis, 'order']
-                                            ]
-                                        }
-                                    ],
-                                    order: [
-                                        [Model.Slot, 'start']
-                                    ]
-                                }
-                            ],
-                            order: [
-                                [Model.Track, 'title']
-                            ]
-                        }
-                    ],
-                    order: [
-                        [Model.Track, 'title'],
-                        [Model.Track, Model.Slot, 'start'],
-                        [Model.Track, Model.Slot, Model.Thesis, 'order']
-                    ]
-                })
-                .then(function(data) {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(data));
-                });
-            }
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            var periodID = req.params.periodID;
+            Model.Period.findOne({
+                attributes: ['id', 'title', 'start', 'end', 'active', 'closed'],
+                where: {id: periodID},
+                include: [
+                    {
+                        model: Model.Track,
+                        attributes: ['id', 'title', 'keywords'],
+                        include: [
+                            {
+                                model: Model.Slot,
+                                attributes: ['id', 'place', 'start', 'end', 'capacity', 'room'],
+                                include: [
+                                    {
+                                        model: Model.Thesis,
+                                        attributes: ['id', 'title', 'abstract', 'keywords', 'approved', 'order', 'approved', 'nda'],
+                                        include: [
+                                            {
+                                                model: Model.User,
+                                                attributes: ['username', 'name', 'surname', 'full_name']
+                                            }
+                                        ],
+                                        order: [
+                                            [Model.Thesis, 'order']
+                                        ]
+                                    }
+                                ],
+                                order: [
+                                    [Model.Slot, 'start']
+                                ]
+                            }
+                        ],
+                        order: [
+                            [Model.Track, 'title']
+                        ]
+                    }
+                ],
+                order: [
+                    [Model.Track, 'title'],
+                    [Model.Track, Model.Slot, 'start'],
+                    [Model.Track, Model.Slot, Model.Thesis, 'order']
+                ]
+            })
+            .then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            });
         }
     }
 });
@@ -1141,23 +1069,18 @@ router.get('/institutions', function (req, res) {
         res.status(401);
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
-        if (req.secure) {
-            if (!req.user.admin) {
-                res.setHeader('Content-Type', 'application/json');
-                res.status(401);
-                res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
-            } else {
-                Model.Institution.findAll({
-                    attributes: ['id', 'acronym', 'name', 'validated']
-                })
-                .then(function(data) {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(data));
-                });
-            }
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
         } else {
-            // request was via http, so redirect to https
-            res.redirect('https://' + get_host_https(req) + req.originalUrl);
+            Model.Institution.findAll({
+                attributes: ['id', 'acronym', 'name', 'validated']
+            })
+            .then(function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(data));
+            });
         }
     }
 });
