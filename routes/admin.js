@@ -41,7 +41,6 @@ router.get('/users', function (req, res) {
             if (req.query.offset && req.query.limit) {
                 query.offset = req.query.offset;
                 query.limit = req.query.limit;
-                query.group = ['id'];
                 paginate = true;
             }
             if(req.query.sort) {
@@ -61,7 +60,7 @@ router.get('/users', function (req, res) {
                 .then(function (data) {
                     res.setHeader('Content-Type', 'application/json');
                     if(paginate) {
-                        res.send(JSON.stringify({total: data.count.length, rows: data.rows}));
+                        res.send(JSON.stringify({total: data.count, rows: data.rows}));
                     } else {
                         res.send(JSON.stringify(data.rows));
                     }
