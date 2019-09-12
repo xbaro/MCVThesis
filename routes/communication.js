@@ -307,7 +307,7 @@ function get_committees_period(periodId, callback) {
                             {
                                 model: Model.Period,
                                 attributes: ['id', 'title', 'start', 'end'],
-
+                                id: periodId
                             }
                         ]
                     }
@@ -473,8 +473,8 @@ function get_committees_period(periodId, callback) {
                 adv_item.username = thesis.Advised[i].username;
                 adv_item.email = thesis.Advised[i].email;
                 item.advisors.push(adv_item);
-                item.advisors.html += '<li>' + adv_item.name + '(' + adv_item.institution + ')</li>';
-                item.advisors.txt += '\t- ' + adv_item.name + '(' + adv_item.institution + ')\n';
+                item.advisors_html += '<li>' + adv_item.name + '(' + adv_item.institution + ')</li>';
+                item.advisors_txt += '\t- ' + adv_item.name + '(' + adv_item.institution + ')\n';
             }
             item.advisors_html += '</ul>';
             return item;
