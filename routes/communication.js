@@ -307,7 +307,10 @@ function get_committees_period(periodId, callback) {
                             {
                                 model: Model.Period,
                                 attributes: ['id', 'title', 'start', 'end'],
-                                id: periodId
+                                required: true,
+                                where: {
+                                    id: periodId
+                                }
                             }
                         ]
                     }
