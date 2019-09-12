@@ -8,6 +8,19 @@ block content
     if (message_error)
         +alert("danger") #{message_error}
 
+    table#index_periodsTable(data-click-to-select="true", data-select-item-name="selPeriod",
+        data-show-toggle="false", data-show-columns="true")
+        thead
+            tr
+                th(data-field="state" data-radio="true")
+                th(data-field="id", data-sortable="true", data-visible="false") Id
+                th(data-field="title", data-sortable="true") Period
+                th(data-field="start", data-sortable="true", data-formatter="dateFormatter") Start Date
+                th(data-field="end", data-sortable="true", data-formatter="dateFormatter") End Date
+                th(data-field="active", data-sortable="true") Active
+                th(data-field="closed", data-sortable="true") Closed
+                th(data-field="locked", data-sortable="true") Locked
+
     +panel("Sent notifications", "primary")
         p Those are the notifications sent from the system and their status.
         .row
@@ -15,29 +28,31 @@ block content
                 #notifications_tree
             .col-xs-12.col-md-8
                 #panel_notifications.panel-group
+    if period_id
+        +panel("Notify Committees", "primary")
+            p Send a mail to all members of committees of current open period. The mail contains:
+            ul
+                li <strong>Committee Information:</strong> The place, date and time of the defense, the learner and basic data of the thesis
+                li <strong>Rubric:</strong> The rubric documents to be used during the defense.
+            input.btn.btn-primary(type='button' data-href=`/communication/notify/committees/${period_id}` value='Send Mail')
 
-    +panel("Notify Committees", "primary")
-        p Send a mail to all members of committees of current open period. The mail contains:
-        ul
-            li <strong>Committee Information:</strong> The place, date and time of the defense, the learner and basic data of the thesis
-            li <strong>Rubric:</strong> The rubric documents to be used during the defense.
-        a(class='button' href='/communication/notify/committees') Send Mail
+        +panel("Notify Advisors", "primary")
+            p Send a mail to all advisors of theses defended in current open period. The mail contains:
+            ul
+                li <strong>Committee Information:</strong> The place, date and time of the defense, the learner and basic data of the thesis
+                li <strong>Rubric:</strong> The rubric document to be sent to the members of the committee.
+            input.btn.btn-primary(type='button' data-href=`/communication/notify/advisors/${period_id}` value='Send Mail')
 
-    +panel("Notify Advisors", "primary")
-        p Send a mail to all advisors of theses defended in current open period. The mail contains:
-        ul
-            li <strong>Committee Information:</strong> The place, date and time of the defense, the learner and basic data of the thesis
-            li <strong>Rubric:</strong> The rubric document to be sent to the members of the committee.
-        a(class='button' href='/communication/notify/advisors') Send Mail
-
-    +panel("Notify Learners", "primary")
-        p Send a mail to all learners defending on the current open period. The mail contains:
-        ul
-            li <strong>Committee Information:</strong> The place, date and time of the defense, and the name and mails of the members of the committees
-            li <strong>Instructions:</strong> Instructions to submit the PDF of the master thesis to all the members of the committee.
-        a(class='button' href='/communication/notify/learners') Send Mail
+        +panel("Notify Learners", "primary")
+            p Send a mail to all learners defending on the current open period. The mail contains:
+            ul
+                li <strong>Committee Information:</strong> The place, date and time of the defense, and the name and mails of the members of the committees
+                li <strong>Instructions:</strong> Instructions to submit the PDF of the master thesis to all the members of the committee.
+            input.btn.btn-primary(type='button' data-href=`/communication/notify/learners/${period_id}` value='Send Mail')
 
 block scripts
+    script
+        | const active_periods = JSON.parse('!{period}');
     script
         include ../public/js/scripts.js
         include ../public/js/communication/tree.js

@@ -28,19 +28,43 @@ router.get('/users', function (req, res) {
             res.status(401);
             res.send(JSON.stringify({ error: 'Unauthorized access' }, null, 3));
         } else {
-            Model.User.findAll({
-                attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords'],
-                include: [
-                    {
-                        model: Model.Institution,
-                        attributes: ['id', 'acronym', 'name'],
+            var query = {
+                    attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords'],
+                    include: [
+                        {
+                            model: Model.Institution,
+                            attributes: ['id', 'acronym', 'name'],
+                        }
+                    ]
+                };
+            let paginate = false;
+            if (req.query.offset && req.query.limit) {
+                query.offset = req.query.offset;
+                query.limit = req.query.limit;
+                paginate = true;
+            }
+            if(req.query.sort) {
+                query.order = [[req.query.sort, req.query.order]];
+            }
+            if(req.query.search) {
+                query.where = {
+                    $or: [
+                        Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(User.email) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(User.organization) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(Institution.acronym) like '%" + req.query.search.toLowerCase() + "%'" ),
+                    ]
+                }
+            }
+            Model.User.findAndCountAll(query)
+                .then(function (data) {
+                    res.setHeader('Content-Type', 'application/json');
+                    if(paginate) {
+                        res.send(JSON.stringify({total: data.count, rows: data.rows}));
+                    } else {
+                        res.send(JSON.stringify(data.rows));
                     }
-                ]
-            })
-            .then(function(data) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(data));
-            });
+                });
         }
     }
 });

@@ -92,18 +92,12 @@ router.get('/students', function (req, res) {
                 Model.User.findOne({
                     attributes: ['username', 'name', 'surname', 'full_name', 'roles'],
                     where: {
-                        teacher: false, admin: false,
-                        $or: [
+                        $and: [
                             {
-                                name: {
-                                    $like: '%' + req.query['term'] + '%'
-                                }
+                                teacher: false,
+                                admin: false,
                             },
-                            {
-                                surname: {
-                                    $like: '%' + req.query['term'] + '%'
-                                }
-                            }
+                            Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query['term'].toLowerCase() + "%'" ),
                         ]
                     }
                 }).then(function (data) {
@@ -138,19 +132,14 @@ router.get('/teachers', function (req, res) {
         if (req.query['term']) {
             Model.User.findOne({
                 attributes: ['username', 'name', 'surname', 'full_name', 'roles'],
-                where: {teacher: true,
-                    $or: [
+                where: {
+                    $and: [
                         {
-                          name: {
-                            $like: '%' + req.query['term'] + '%'
-                          }
+                            teacher: true,
                         },
-                        {
-                          surname: {
-                            $like: '%' + req.query['term'] + '%'
-                          }
-                        }
-                        ]}
+                        Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query['term'].toLowerCase() + "%'"),
+                    ]
+                }
             }).then(function (data) {
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify(data));
@@ -342,12 +331,12 @@ router.get('/open', function (req, res) {
             res.status(401);
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
-            Model.Thesis.findAll({
+            let query = {
                 attributes: ['id', 'title', 'abstract', 'keywords', 'approved'],
                 include: [
                     {
                         model: Model.User,
-                        attributes: ['username', 'name', 'surname', 'full_name']
+                        attributes: ['username', 'name', 'surname', 'full_name'],
                     },
                     {
                         model: Model.User,
@@ -357,7 +346,8 @@ router.get('/open', function (req, res) {
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization', 'email'],
-                        as: "Reviewed"
+                        as: "Reviewed",
+                        required: false,
                     },
                     {
                         model: Model.Slot,
@@ -365,9 +355,36 @@ router.get('/open', function (req, res) {
                         required: false
                     }
                 ]
-            }).then(function(data) {
+            };
+
+            let paginate = false;
+            if (req.query.offset && req.query.limit) {
+                query.offset = req.query.offset;
+                query.limit = req.query.limit;
+                paginate = true;
+            }
+            if(req.query.sort) {
+                query.order = [[req.query.sort, req.query.order]];
+            }
+            if(req.query.search) {
+                query.where = {
+                    $or: [
+                        Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(Advised.name || ' ' || Advised.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(Reviewed.name || ' ' || Reviewed.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(Thesis.abstract) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(Thesis.title) like '%" + req.query.search.toLowerCase() + "%'" ),
+                    ]
+                }
+            }
+
+            Model.Thesis.findAndCountAll(query).then(function(data) {
                 res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(data));
+                if(paginate) {
+                    res.send(JSON.stringify({total: data.count, rows: data.rows}));
+                } else {
+                    res.send(JSON.stringify(data.rows));
+                }
             }).catch(function (err) {
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({ error: true, message: 'Error recovering unassigned theses' }, null, 3));
