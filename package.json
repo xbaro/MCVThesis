@@ -21,6 +21,7 @@
     "debug": "^4.1.1",
     "dotenv": "^8.1.0",
     "email-templates": "^6.0.0",
+    "exceljs": "^2.0.1",
     "express": "^4.17.1",
     "express-ims-lti": "^0.2.4",
     "express-sequelize-session": "^0.4.0",
@@ -45,7 +46,8 @@
     "sprintf": "^0.1.5",
     "sqlite3": "^4.0.9",
     "stylus": "^0.54.5",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "xlsx": "^0.15.1"
   },
   "devDependencies": {
     "gulp": "^4.0.2",

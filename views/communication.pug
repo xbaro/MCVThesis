@@ -29,6 +29,10 @@ block content
             .col-xs-12.col-md-8
                 #panel_notifications.panel-group
     if period_id
+        +panel("Export", "primary")
+            p Export the data for current period to Excel file
+            a.btn.btn-primary(href=`/communication/export`) Export
+
         +panel("Notify Committees", "primary")
             p Send a mail to all members of committees of current open period. The mail contains:
             ul

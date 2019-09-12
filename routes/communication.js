@@ -6,6 +6,8 @@ var transport = require('../lib/mail');
 const path = require('path');
 const logger = require('../logger');
 const moment = require('moment');
+const XLSX = require('xlsx');
+const excel = require('exceljs');
 
 const email_templates = {
     notify_committee: [ new Email({
@@ -447,6 +449,17 @@ function get_committees_period(periodId, callback) {
                     item.committee.vocal.username = thesis.Reviewed[i].username;
                 }
             }
+            item.committee_html = '<ul>';
+            item.committee_html += '<li><b>President:</b> ' + item.committee.president.name + '(' + item.committee.president.institution + ')</li>';
+            item.committee_html += '<li><b>Secretary:</b> ' + item.committee.secretary.name + '(' + item.committee.secretary.institution + ')</li>';
+            item.committee_html += '<li><b>Vocal:</b> ' + item.committee.vocal.name + '(' + item.committee.vocal.institution + ')</li>';
+            item.committee_html += '</ul>';
+            item.committee_txt = '\t- President: ' + item.committee.president.name + '(' + item.committee.president.institution + ')\n';
+            item.committee_txt += '\t- Secretary: ' + item.committee.secretary.name + '(' + item.committee.secretary.institution + ')\n';
+            item.committee_txt += '\t- Vocal: ' + item.committee.vocal.name + '(' + item.committee.vocal.institution + ')';
+
+            item.advisors_html = '<ul>';
+            item.advisors_txt = '';
             item.advisors = [];
             for (i = 0; i < thesis.Advised.length; i++) {
                 var adv_item = {};
@@ -460,7 +473,10 @@ function get_committees_period(periodId, callback) {
                 adv_item.username = thesis.Advised[i].username;
                 adv_item.email = thesis.Advised[i].email;
                 item.advisors.push(adv_item);
+                item.advisors.html += '<li>' + adv_item.name + '(' + adv_item.institution + ')</li>';
+                item.advisors.txt += '\t- ' + adv_item.name + '(' + adv_item.institution + ')\n';
             }
+            item.advisors_html += '</ul>';
             return item;
         });
         callback(tdata);
@@ -539,6 +555,55 @@ router.get('/', function (req, res) {
                 res.render('communication', {page_name: 'communication', user: req.user, period: JSON.stringify(data), period_id: period_id});
             }, function(error) {
                 res.render('communication', {page_name: 'communication', user: req.user, message_error: error});
+            });
+        }
+    }
+});
+
+router.get('/export', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.redirect('/auth/signin');
+    } else {
+        if (!req.user.admin) {
+            res.status(401);
+            res.render('error', { message: 'Unauthorized access', error: {}});
+        } else {
+            get_active_period(function(data) {
+                let period_id = null;
+                if (data && data.length === 1) {
+                    period_id = data[0].id;
+                    get_committees_period(period_id, function(theses) {
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('Committees'); //creating worksheet
+
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Author', key: 'thesis_author_name', width: 15 },
+                            { header: 'Title', key: 'thesis_title', width: 30 },
+                            { header: 'Abstract', key: 'thesis_abstract', width: 30},
+                            { header: 'Advisors', key: 'advisors_txt', width: 15},
+                            { header: 'Committee', key: 'committee_txt', width: 15},
+                        ];
+
+                        // Add Array Rows
+                        worksheet.addRows(theses);
+
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + 'committees.xlsx');
+
+                        return workbook.xlsx.write(res)
+                              .then(function() {
+                                    res.status(200).end();
+                              });
+                    });
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ error: true, message: 'Multiple active periods' }, null, 3));
+                }
+
+            }, function(error) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: error }, null, 3));
             });
         }
     }
