@@ -96,11 +96,11 @@ function showMailContent(data) {
 }
 
 var lastScrollValue;
-function showNotificationTree(selected) {
+function showNotificationTree(period_id) {
 
     lastScrollValue = $(window).scrollTop();
 
-    $.get('/communication/notifications', {},  'json')
+    $.get('/communication/notifications/' + period_id, {},  'json')
     .done(function( data ) {
 
         $('#notifications_tree').treeview({data: getFullTreeData(data), showTags: true, levels: 3, color: "#428bca"});
@@ -113,10 +113,6 @@ function showNotificationTree(selected) {
         $('#notifications_tree').on('nodeUnselected', function(event, data) {
             $('#panel_notifications').empty();
         });
-
-        if(selected) {
-            $('#notifications_tree').treeview('selectNode', selected.nodeId);
-        }
 
     }).fail(function() {
         $.notify({
@@ -131,5 +127,33 @@ function showNotificationTree(selected) {
 }
 
 jQuery(document).ready(function() {
-    showNotificationTree();
+    $('#index_periodsTable').bootstrapTable({
+        data: active_periods
+    });
+    $('#index_periodsTable').on('check.bs.table', function (e, row, $element) {
+        showNotificationTree(row.id);
+    });
+    $("input[type='button']").click(function(e) {
+       $.get(this.dataset['href']).done(function() {
+               $.notify({
+                   title: '<strong>Informationr</strong>',
+                   message: 'Notification sent',
+                   newest_on_top: true
+               }, {
+                   type: 'info',
+                   element: '#tree_messages'
+               });
+           }
+       ).error(function() {
+           $.notify({
+                title: '<strong>Error</strong>',
+                message: 'Unexpected error sending the notification',
+                newest_on_top: true
+            },{
+                type: 'danger',
+                element: '#tree_messages'
+            });
+       })
+    });
+
 });

@@ -467,51 +467,84 @@ function get_committees_period(periodId, callback) {
     }).catch(logger.error);
 }
 
-function send_committee_notifications(type, user, callback, error) {
-    get_committees_period(1, function(data) {
-        Model.NotificationGroup.create({
-            type: type,
-            start: Date(),
-            states: 'pending',
-            fromUserUsername: user.username,
-            expectedNotifications: data.length
-        }).then(function(group) {
-            if (group) {
-                for(var i = 0; i<data.length; i++) {
-                    send_notifications(type, data[i], group,
-                        function(g) {
-                            updateGroupStatus(group);
-                        },function(err) {
-                            closeGroupWithError(group, err);
-                        });
+function get_active_period(callback, error) {
+    Model.Period.findAll({
+        attributes: ['id', 'title', 'locked', 'start', 'end', 'active', 'closed'],
+        where: {
+            $or: [
+                {
+                    end: null,
+                },
+                {
+                    end: {
+                        $lte: new Date()
+                    }
                 }
-                if(callback) {
-                    callback(group);
-                }
-            } else {
-                if(error) {
-                    error('Error creating the notification group');
-                }
+            ]
+        }
+    }).then(callback).catch(error)
+}
+
+function send_committee_notifications(period_id, type, user, callback, error) {
+    get_active_period(function(period_data) {
+        if(period_data) {
+            get_committees_period(period_id, function (data) {
+                Model.NotificationGroup.create({
+                    type: type,
+                    start: Date(),
+                    states: 'pending',
+                    fromUserUsername: user.username,
+                    expectedNotifications: data.length
+                }).then(function (group) {
+                    if (group) {
+                        for (var i = 0; i < data.length; i++) {
+                            send_notifications(type, data[i], group,
+                                function (g) {
+                                    updateGroupStatus(group);
+                                }, function (err) {
+                                    closeGroupWithError(group, err);
+                                });
+                        }
+                        if (callback) {
+                            callback(group);
+                        }
+                    } else {
+                        if (error) {
+                            error('Error creating the notification group');
+                        }
+                    }
+                }).catch(error);
+            });
+        } else {
+            if (error) {
+                error('No active periods');
             }
-        }).catch(error);
-    });
+        }
+    }, error);
 }
 
 router.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
-
         res.redirect('/auth/signin');
     } else {
         if (!req.user.admin) {
             res.status(401);
             res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            res.render('communication', {page_name: 'communication', user: req.user});
+            get_active_period(function(data) {
+                let period_id = null;
+                if (data && data.length === 1) {
+                    period_id = data[0].id;
+                }
+                res.render('communication', {page_name: 'communication', user: req.user, period: JSON.stringify(data), period_id: period_id});
+            }, function(error) {
+                res.render('communication', {page_name: 'communication', user: req.user, message_error: error});
+            });
         }
     }
 });
 
-router.get('/notify/committees', function (req, res) {
+router.get('/notify/committees/:periodId', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
@@ -519,7 +552,8 @@ router.get('/notify/committees', function (req, res) {
             res.status(401);
             res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            send_committee_notifications('notify_committee', req.user,
+            var periodId = req.params.periodId;
+            send_committee_notifications(periodId, 'notify_committee', req.user,
                 function(group) {
                     res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
                 }, function(err) {
@@ -529,7 +563,7 @@ router.get('/notify/committees', function (req, res) {
     }
 });
 
-router.get('/notify/advisors', function (req, res) {
+router.get('/notify/advisors/:periodId', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
@@ -537,7 +571,8 @@ router.get('/notify/advisors', function (req, res) {
             res.status(401);
             res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            send_committee_notifications('notify_advisor', req.user,
+            var periodId = req.params.periodId;
+            send_committee_notifications(periodId, 'notify_advisor', req.user,
                 function(group) {
                     res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
                 }, function(err) {
@@ -548,7 +583,7 @@ router.get('/notify/advisors', function (req, res) {
 });
 
 
-router.get('/notify/learners', function (req, res) {
+router.get('/notify/learners/:periodId', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
@@ -556,7 +591,8 @@ router.get('/notify/learners', function (req, res) {
             res.status(401);
             res.render('error', { message: 'Unauthorized access', error: {}});
         } else {
-            send_committee_notifications('notify_learner', req.user,
+            var periodId = req.params.periodId;
+            send_committee_notifications(periodId, 'notify_learner', req.user,
                 function(group) {
                     res.render('communication', {page_name: 'communication', user: req.user, message_ok: 'Notifications sent'});
                 }, function(err) {
@@ -566,7 +602,7 @@ router.get('/notify/learners', function (req, res) {
     }
 });
 
-router.get('/notifications', function (req, res) {
+router.get('/notifications/:periodId', function (req, res) {
     if (!req.isAuthenticated()) {
         res.setHeader('Content-Type', 'application/json');
         res.status(401);
@@ -577,6 +613,8 @@ router.get('/notifications', function (req, res) {
             res.status(401);
             res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
         } else {
+            // TODO: Filter by period
+            var periodId = req.params.periodId;
             Model.NotificationGroup.findAll({
                 attributes: ['id', 'type', 'start', 'end', 'states'],
                 where: {NotificationGroupId: null},
