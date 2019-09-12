@@ -489,11 +489,21 @@ function get_active_period(callback, error) {
         where: {
             $or: [
                 {
+                    start: null,
+                },
+                {
+                    start: {
+                        $lte: new Date()
+                    }
+                }
+            ],
+            $or: [
+                {
                     end: null,
                 },
                 {
                     end: {
-                        $lte: new Date()
+                        $gte: new Date()
                     }
                 }
             ]
