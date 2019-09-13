@@ -148,7 +148,7 @@
                 },
                 "data": {
                     "field": "data",
-                    "seqType": "Sequelize.STRING"
+                    "seqType": "Sequelize.TEXT"
                 },
                 "type": {
                     "field": "type",
@@ -620,5 +620,5 @@
             "indexes": []
         }
     },
-    "revision": 10
+    "revision": 11
 }
