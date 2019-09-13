@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
             unique: true,
             autoIncrement: true
         },
-        data: DataTypes.STRING,
+        data: DataTypes.TEXT,
         type: {
             type: DataTypes.ENUM,
             values: ['notify_committee', 'notify_advisor', 'notify_learner', 'notify_admin']

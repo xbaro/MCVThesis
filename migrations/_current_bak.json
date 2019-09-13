@@ -263,6 +263,17 @@
                     "field": "NotificationGroupId",
                     "seqType": "Sequelize.INTEGER"
                 },
+                "ThesisId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Theses",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "ThesisId",
+                    "seqType": "Sequelize.INTEGER"
+                },
                 "fromUserUsername": {
                     "allowNull": true,
                     "references": {
@@ -609,5 +620,5 @@
             "indexes": []
         }
     },
-    "revision": 9
+    "revision": 10
 }

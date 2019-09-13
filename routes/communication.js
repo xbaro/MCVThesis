@@ -207,6 +207,7 @@ function send_mail(type, member, group, data, callback, error) {
                 });
         }
     }).catch(function(err) {
+        logger.error(err);
         closeGroupWithError(group, err);
         if(error) {
             error(err);
