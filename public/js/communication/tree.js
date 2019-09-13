@@ -75,14 +75,40 @@ function getFullTreeData(data) {
 
 function showMailContent(data) {
     var id = data.data_object.id;
-
+    var html_header = '';
+    if (data.data_object.states === 'failed') {
+        html_header = '<div class="row"><input type="button" class="btn btn-primary" data-href="/communication/notification/' + id + '/send" value="Resend"></div>';
+    }
     $('#panel_notifications').html('');
     if(data.type === 'group') {
         return;
     }
     $.get('/communication/notification/' + id + '/render', {}, 'json')
         .done(function(result) {
-           $('#panel_notifications').html(result.html);
+           $('#panel_notifications').html(html_header + result.html);
+           $("input[type='button']").click(function(e) {
+               $.get(this.dataset['href']).done(function(data, status) {
+                   if (status === "success") {
+                       $.notify({
+                           title: '<strong>Informationr</strong>',
+                           message: 'Notification sent',
+                           newest_on_top: true
+                       }, {
+                           type: 'info',
+                           element: '#tree_messages'
+                       });
+                   } else {
+                       $.notify({
+                           title: '<strong>Error</strong>',
+                           message: 'Unexpected error sending the notification',
+                           newest_on_top: true
+                       }, {
+                           type: 'danger',
+                           element: '#tree_messages'
+                       });
+                   }
+               });
+           });
         }).fail(function() {
             $.notify({
                 title: '<strong>Error</strong>',
@@ -134,7 +160,8 @@ jQuery(document).ready(function() {
         showNotificationTree(row.id);
     });
     $("input[type='button']").click(function(e) {
-       $.get(this.dataset['href']).done(function() {
+       $.get(this.dataset['href']).done(function(data, status) {
+           if (status === "success") {
                $.notify({
                    title: '<strong>Informationr</strong>',
                    message: 'Notification sent',
@@ -143,17 +170,16 @@ jQuery(document).ready(function() {
                    type: 'info',
                    element: '#tree_messages'
                });
+           } else {
+               $.notify({
+                   title: '<strong>Error</strong>',
+                   message: 'Unexpected error sending the notification',
+                   newest_on_top: true
+               }, {
+                   type: 'danger',
+                   element: '#tree_messages'
+               });
            }
-       ).error(function() {
-           $.notify({
-                title: '<strong>Error</strong>',
-                message: 'Unexpected error sending the notification',
-                newest_on_top: true
-            },{
-                type: 'danger',
-                element: '#tree_messages'
-            });
-       })
+       });
     });
-
 });

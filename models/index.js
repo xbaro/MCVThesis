@@ -65,6 +65,7 @@ db.Notification.belongsTo(db.NotificationGroup, {onDelete: 'SET NULL'});
 
 
 db.NotificationGroup.hasOne(db.NotificationGroup, {onDelete: 'SET NULL', as: 'Parent'});
+db.NotificationGroup.belongsTo(db.Thesis, {onDelete: 'SET NULL'});
 db.NotificationGroup.hasMany(db.NotificationGroup, {as: 'Children'});
 db.NotificationGroup.belongsTo(db.User, {onDelete: 'SET NULL', as: 'from_user'});
 

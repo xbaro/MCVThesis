@@ -198,7 +198,7 @@
                     "field": "fromUserUsername",
                     "seqType": "Sequelize.STRING"
                 },
-                "GroupId": {
+                "NotificationGroupId": {
                     "allowNull": true,
                     "references": {
                         "model": "NotificationGroups",
@@ -206,7 +206,7 @@
                     },
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
-                    "field": "GroupId",
+                    "field": "NotificationGroupId",
                     "seqType": "Sequelize.INTEGER"
                 }
             },
@@ -609,5 +609,5 @@
             "indexes": []
         }
     },
-    "revision": 8
+    "revision": 9
 }
