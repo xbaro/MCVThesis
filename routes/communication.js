@@ -788,5 +788,64 @@ router.get('/notification/:id/render', function (req, res) {
     }
 });
 
+router.get('/notification/:id/send', function (req, res) {
+    if (!req.isAuthenticated()) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(401);
+        res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
+    } else {
+        if (!req.user.admin) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(401);
+            res.send(JSON.stringify({error: 'Unauthorized access'}, null, 3));
+        } else {
+            var notificationId = req.params.id;
+            Model.Notification.findAll({
+                attributes: ['id', 'type', 'start', 'end', 'states', 'data'],
+                include: [
+                    {
+                        model: Model.User,
+                        attributes: ['name', 'surname', 'full_name', 'email'],
+                        as: 'to_user'
+                    }
+                ],
+                where: {id: notificationId}
+            }).then(function(data) {
+                if(data && data.length === 1) {
+                    let mail_data = JSON.parse(data[0].data);
+                    email_templates[data[0].type][0]
+                        .send({
+                            template: email_templates[data[0].type][1],
+                            message: {
+                                to: `${data[0].to_user.full_name} <${data[0].to_user.email}>`,
+                            },
+                            locals: get_mail_locals(mail_data)
+                        })
+                        .then(function() {
+                                updateNotificationStatus(data[0], 'sent', function() {
+                                    //updateGroupStatus(group, callback, error)
+                                    res.setHeader('Content-Type', 'application/json');
+                                    res.send(JSON.stringify({error: false, message: 'Message sent'}, null, 3));
+                                }, function() {
+
+                                });
+                        }).catch(function(err) {
+                            updateNotificationStatus(notification, 'failed');
+                            //closeGroupWithError(group, err);
+                            res.setHeader('Content-Type', 'application/json');
+                            res.send(JSON.stringify({error: true, message: 'Failed sending mail'}, null, 3));
+                        });
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({error: true, message: 'Multiple notifications retrieved'}, null, 3));
+                }
+            }).catch(function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ error: true, message: 'Error recovering notifications' }, null, 3));
+            });
+        }
+    }
+});
+
 
 module.exports = router;
