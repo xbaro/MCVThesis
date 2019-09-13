@@ -38,12 +38,6 @@ mailer.verify(function(error, success) {
     logger.error(error);
   } else {
     logger.info("Mail system is working");
-    const test_message = {
-        from: 'xbaro@uoc.edu',
-        to: 'xavierbaro@gmail.com',
-        subject: 'Test MCV mail system',
-        html: '<h1>Test Message!</h1><p>This is a test message from MCV Theses manager system.</p>'
-    };
   }
 });
 

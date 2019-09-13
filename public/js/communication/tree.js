@@ -134,7 +134,8 @@ jQuery(document).ready(function() {
         showNotificationTree(row.id);
     });
     $("input[type='button']").click(function(e) {
-       $.get(this.dataset['href']).done(function() {
+       $.get(this.dataset['href']).done(function(data, status) {
+           if (status === "success") {
                $.notify({
                    title: '<strong>Informationr</strong>',
                    message: 'Notification sent',
@@ -143,17 +144,16 @@ jQuery(document).ready(function() {
                    type: 'info',
                    element: '#tree_messages'
                });
+           } else {
+               $.notify({
+                   title: '<strong>Error</strong>',
+                   message: 'Unexpected error sending the notification',
+                   newest_on_top: true
+               }, {
+                   type: 'danger',
+                   element: '#tree_messages'
+               });
            }
-       ).error(function() {
-           $.notify({
-                title: '<strong>Error</strong>',
-                message: 'Unexpected error sending the notification',
-                newest_on_top: true
-            },{
-                type: 'danger',
-                element: '#tree_messages'
-            });
-       })
+       });
     });
-
 });

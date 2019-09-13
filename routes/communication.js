@@ -171,6 +171,7 @@ function get_mail_locals(data) {
 }
 
 function send_mail(type, member, group, data, callback, error) {
+    logger.info("Sending mail => [" + type + "] fromUser(" + group.fromUserUsername + ") to " + `${member.full_name} <${member.email}>`)
     Model.Notification.create({
         type: type,
         data: JSON.stringify(data),
@@ -233,6 +234,7 @@ function send_notifications(type, data, group, callback, error) {
             NotificationGroupId: group.id,
             start: Date(),
             states: 'pending',
+            ThesisId: data.thesis_id,
             fromUserUsername: group.fromUserUsername,
             expectedNotifications: 3
         }).then(function (subgroup) {
@@ -515,41 +517,33 @@ function get_active_period(callback, error) {
 }
 
 function send_committee_notifications(period_id, type, user, callback, error) {
-    get_active_period(function(period_data) {
-        if(period_data) {
-            get_committees_period(period_id, function (data) {
-                Model.NotificationGroup.create({
-                    type: type,
-                    start: Date(),
-                    states: 'pending',
-                    fromUserUsername: user.username,
-                    expectedNotifications: data.length
-                }).then(function (group) {
-                    if (group) {
-                        for (var i = 0; i < data.length; i++) {
-                            send_notifications(type, data[i], group,
-                                function (g) {
-                                    updateGroupStatus(group);
-                                }, function (err) {
-                                    closeGroupWithError(group, err);
-                                });
-                        }
-                        if (callback) {
-                            callback(group);
-                        }
-                    } else {
-                        if (error) {
-                            error('Error creating the notification group');
-                        }
-                    }
-                }).catch(error);
-            });
-        } else {
-            if (error) {
-                error('No active periods');
+    get_committees_period(period_id, function (data) {
+        Model.NotificationGroup.create({
+            type: type,
+            start: Date(),
+            states: 'pending',
+            fromUserUsername: user.username,
+            expectedNotifications: data.length
+        }).then(function (group) {
+            if (group) {
+                for (var i = 0; i < data.length; i++) {
+                    send_notifications(type, data[i], group,
+                        function (g) {
+                            updateGroupStatus(group);
+                        }, function (err) {
+                            closeGroupWithError(group, err);
+                        });
+                }
+                if (callback) {
+                    callback(group);
+                }
+            } else {
+                if (error) {
+                    error('Error creating the notification group');
+                }
             }
-        }
-    }, error);
+        }).catch(error);
+    });
 }
 
 router.get('/', function (req, res) {
