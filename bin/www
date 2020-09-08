@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env node
+﻿
 var https = require('https'), fs=require('fs'), path = require('path');
 var models = require("../models");
 
