@@ -31,12 +31,10 @@ app.set('forceSSLOptions', {
 });
 
 models.sequelize.sync().then(function () {
-    /*var server = app.listen(app.get('port'), function() {
-        logger.info('Express server listening on port ' + server.address().port);
-    });*/
     logger.info('Database models synchronized');
-});
-
-var server = app.listen(app.get('port'), function() {
-    logger.info('Express server listening on port ' + server.address().port);
+    var server = app.listen(app.get('port'), function() {
+        logger.info('Express server listening on port ' + server.address().port);
+    });
+}).catch(err => {
+    logger.error(err);
 });
