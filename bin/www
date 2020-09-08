@@ -2,6 +2,9 @@
 var https = require('https'), fs=require('fs'), path = require('path');
 var models = require("../models");
 
+const Sentry = require('@sentry/node');
+Sentry.init({ dsn: 'https://d23e92d85c6746c2ad0964389b8f7e04@sentry.sunai.uoc.edu/8' });
+
 //require('monitor').start();
 //require('monitor-dashboard');
 var debug = require('debug')('MCVTheses');
