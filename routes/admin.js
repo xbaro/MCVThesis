@@ -49,10 +49,10 @@ router.get('/users', function (req, res) {
             if(req.query.search) {
                 query.where = {
                     $or: [
-                        Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(User.email) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(User.organization) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(Institution.acronym) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(\"User\".name || ' ' || \"User\".surname) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(\"User\".email) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(\"User\".organization) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(\"Institution\".acronym) like '%" + req.query.search.toLowerCase() + "%'" ),
                     ]
                 }
             }
