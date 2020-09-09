@@ -97,7 +97,7 @@ router.get('/students', function (req, res) {
                                 teacher: false,
                                 admin: false,
                             },
-                            Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query['term'].toLowerCase() + "%'" ),
+                            Model.Sequelize.literal("lower(concat_ws(' ', User.name, User.surname)) like '%" + req.query['term'].toLowerCase() + "%'" ),
                         ]
                     }
                 }).then(function (data) {
@@ -137,7 +137,7 @@ router.get('/teachers', function (req, res) {
                         {
                             teacher: true,
                         },
-                        Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query['term'].toLowerCase() + "%'"),
+                        Model.Sequelize.literal("lower(concat_ws(' ', User.name, User.surname)) like '%" + req.query['term'].toLowerCase() + "%'"),
                     ]
                 }
             }).then(function (data) {
@@ -359,8 +359,8 @@ router.get('/open', function (req, res) {
 
             let paginate = false;
             if (req.query.offset && req.query.limit) {
-                query.offset = req.query.offset;
-                query.limit = req.query.limit;
+                query.offset = Number.parseInt(req.query.offset);
+                query.limit = Number.parseInt(req.query.limit);
                 paginate = true;
             }
             if(req.query.sort) {
@@ -369,9 +369,9 @@ router.get('/open', function (req, res) {
             if(req.query.search) {
                 query.where = {
                     $or: [
-                        Model.Sequelize.literal("lower(User.name || ' ' || User.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(Advised.name || ' ' || Advised.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(Reviewed.name || ' ' || Reviewed.surname) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(concat_ws(' ', User.name, User.surname)) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(concat_ws(' ', Advised.name, Advised.surname)) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(concat_ws(' ', Reviewed.name, Reviewed.surname)) like '%" + req.query.search.toLowerCase() + "%'" ),
                         Model.Sequelize.literal("lower(Thesis.abstract) like '%" + req.query.search.toLowerCase() + "%'" ),
                         Model.Sequelize.literal("lower(Thesis.title) like '%" + req.query.search.toLowerCase() + "%'" ),
                     ]
