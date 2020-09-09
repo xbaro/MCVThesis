@@ -39,8 +39,8 @@ router.get('/users', function (req, res) {
                 };
             let paginate = false;
             if (req.query.offset && req.query.limit) {
-                query.offset = req.query.offset;
-                query.limit = req.query.limit;
+                query.offset = Number.parseInt(req.query.offset);
+                query.limit = Number.parseInt(req.query.limit);
                 paginate = true;
             }
             if(req.query.sort) {
@@ -49,10 +49,10 @@ router.get('/users', function (req, res) {
             if(req.query.search) {
                 query.where = {
                     $or: [
-                        Model.Sequelize.literal("lower(\"User\".name || ' ' || \"User\".surname) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(\"User\".email) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(\"User\".organization) like '%" + req.query.search.toLowerCase() + "%'" ),
-                        Model.Sequelize.literal("lower(\"Institution\".acronym) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(concat_ws(' ', User.name, User.surname)) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(User.email) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(User.organization) like '%" + req.query.search.toLowerCase() + "%'" ),
+                        Model.Sequelize.literal("lower(Institution.acronym) like '%" + req.query.search.toLowerCase() + "%'" ),
                     ]
                 }
             }
