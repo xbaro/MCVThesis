@@ -337,11 +337,13 @@ router.get('/open', function (req, res) {
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name'],
+                        required: true,
                     },
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                        as: "Advised"
+                        as: "Advised",
+                        required: false,
                     },
                     {
                         model: Model.User,
