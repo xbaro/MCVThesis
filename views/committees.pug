@@ -33,7 +33,8 @@ block content
                     th(data-field="thesis_title", data-sortable="true") Title
                     th(data-field="role", data-sortable="true") Role
                     th(data-field="place", data-sortable="true") Place
-                    th(data-field="room", data-sortable="true") Room
+                    th(data-field="room", data-sortable="true", data-formatter="roomFormatter") Room
+                    th(data-field="thesis_rubrics_folder", data-sortable="false", data-formatter="folderFormatter") Rubrics Folder
 
     +panel("Available Committees", "primary")
         div( id="msg_period_locked" class=["alert", "alert-warning"] style="display: none;")

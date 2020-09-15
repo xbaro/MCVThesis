@@ -17,7 +17,7 @@ router.get('/my', function (req, res) {
         res.send(JSON.stringify({ error: 'User not authenticated' }, null, 3));
     } else {
         Model.Thesis.findAll({
-            attributes: ['id', 'title', 'order'],
+            attributes: ['id', 'title', 'order', 'virtual_room', 'rubrics_folder'],
             include: [
                 {
                     model: Model.Slot,
@@ -65,6 +65,8 @@ router.get('/my', function (req, res) {
                 item.thesis_title = thesis.title;
                 item.thesis_author_name = thesis.User.full_name;
                 item.thesis_author_username = thesis.User.username;
+                item.thesis_virtual_room = thesis.virtual_room;
+                item.thesis_rubrics_folder = thesis.rubrics_folder;
                 item.date = thesis.Slot.start;
                 item.start = s_date.getHours() + ":" + ("0" + s_date.getMinutes()).slice(-2);
                 item.end = e_date.getHours() + ":" + ("0" + e_date.getMinutes()).slice(-2);

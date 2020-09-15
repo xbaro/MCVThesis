@@ -31,7 +31,7 @@ router.get('/config', function (req, res) {
 
 router.get('/calendar', function (req, res) {
     Model.Thesis.findAll({
-        attributes: ['id', 'title', 'order', 'abstract'],
+        attributes: ['id', 'title', 'order', 'abstract', 'nda', 'virtual_room'],
         include: [
             {
                 model: Model.Slot,
@@ -87,6 +87,8 @@ router.get('/calendar', function (req, res) {
             item.thesis_author_name = thesis.User.full_name;
             item.thesis_author_username = thesis.User.username;
             item.thesis_abstract = thesis.abstract;
+            item.thesis_virtual_room = thesis.virtual_room;
+            item.thesis_nda = thesis.nda;
             item.date = thesis.Slot.start;
             item.start = s_date.getHours() + ":" + ("0" + s_date.getMinutes()).slice(-2);
             item.end = e_date.getHours() + ":" + ("0" + e_date.getMinutes()).slice(-2);

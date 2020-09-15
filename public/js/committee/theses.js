@@ -1,3 +1,17 @@
+function roomFormatter(value, row) {
+    if(row.thesis_virtual_room) {
+        return value + '  <a href="' + row.thesis_virtual_room + '" target="_blank"><i class="glyphicon glyphicon-facetime-video"></i> Virtual Room';
+    }
+    return value;
+}
+
+function folderFormatter(value, row) {
+    if(value) {
+        return '<a href="' + value + '" target="_blank"><i class="glyphicon glyphicon-folder-open"></i>';
+    }
+    return '';
+}
+
 function addThesis(thesis, parent, locked) {
 
     var id = 'thesis_' + thesis['id'];

@@ -198,13 +198,17 @@
                                 '<li><strong><em>Secretary: </em></strong>' + (object.committee['secretary'].name ? object.committee['secretary'].name + ' (' + object.committee['secretary'].organization + ') &lt;' + object.committee['secretary'].email + '&gt;</li>' : "") +
                                 '<li><strong><em>Vocal: </em></strong>' + (object.committee['vocal'].name ? object.committee['vocal'].name + ' (' + object.committee['vocal'].organization + ') &lt;' + object.committee['vocal'].email + '&gt;</li>' : "") +
                             '</ul>';
+            var virtual_room = '';
+            if (object.thesis_virtual_room && !object.thesis_nda) {
+                virtual_room = '<a href="' + object.thesis_virtual_room + '" target="_blank"><i class="glyphicon glyphicon-facetime-video"></i> Virtual Room'
+            }
 
             return '<a href="#event_cell_' + id + '" class="btn btn-info btn-xs" data-toggle="collapse"><i class="glyphicon glyphicon-plus"></i></a> <strong>' + object.thesis_author_name + '</strong>' +
                     '<p><em>' + object.thesis_title + '</em></p>' +
                     '<div id="event_cell_' + id + '" class="collapse">' +
                         '<p><strong>Advisor/s: </strong>' + advisors + '</p>' +
                         '<p><strong>Abstract:</strong></p><p>' + object.thesis_abstract + '</p>' +
-                        '<p><strong>Committee:</strong></p>' + committee +
+                        '<p><strong>Committee:</strong></p>' + committee + virtual_room +
                     '</div>';
 
 
