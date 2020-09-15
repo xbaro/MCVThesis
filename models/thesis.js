@@ -9,7 +9,9 @@ module.exports = function(sequelize, DataTypes) {
         keywords: DataTypes.STRING,
         approved: DataTypes.BOOLEAN,
         order: DataTypes.INTEGER,
-        nda: DataTypes.BOOLEAN
+        nda: DataTypes.BOOLEAN,
+        virtual_room: DataTypes.STRING,
+        rubrics_folder: DataTypes.STRING
     });
 
     //Thesis.hasMany(models.User, {as: 'Advisors'})

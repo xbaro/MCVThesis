@@ -45,6 +45,14 @@ block content
                                     label.col-md-4.control-label(for="nda") This thesis requires to sign an NDA
                                     .col-md-6
                                         input#nda.form-control(type='checkbox', name="nda", placeholder='This thesis requires an NDA')
+                                .form-group
+                                    label.col-md-4.control-label(for="virtual_room") Virtual Room URL
+                                    .col-md-6
+                                        input#virtual_room.form-control(type='text', name="virtual_room", placeholder='Virtual Room URL')
+                                .form-group
+                                    label.col-md-4.control-label(for="rubrics_folder") Rubrics URL
+                                    .col-md-6
+                                        input#rubrics_folder.form-control(type='text', name="rubrics_folder", placeholder='Rubrics Folder')
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-dismiss="modal") Close
                     button#btnAcceptThesis.btn.btn-primary(type="button" data-action="none") Save changes

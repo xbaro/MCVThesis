@@ -166,7 +166,9 @@ function get_mail_locals(data) {
         room: data.room,
         start: data.start,
         end: data.end,
-        date: moment(data.date).format('ddd DD/MM/YYYY')
+        date: moment(data.date).format('ddd DD/MM/YYYY'),
+        virtual_room: data.thesis_virtual_room,
+        rubrics_folder: data.thesis_rubrics_folder
     }
 }
 
@@ -296,7 +298,7 @@ function send_notifications(type, data, group, callback, error) {
 
 function get_committees_period(periodId, callback) {
     Model.Thesis.findAll({
-        attributes: ['id', 'title', 'order', 'abstract'],
+        attributes: ['id', 'title', 'order', 'abstract', 'nda', 'virtual_room', 'rubrics_folder'],
         include: [
             {
                 model: Model.Slot,
@@ -382,6 +384,8 @@ function get_committees_period(periodId, callback) {
                 item.thesis_author_email = thesis.User.email;
             }
             item.thesis_abstract = thesis.abstract;
+            item.thesis_virtual_room = thesis.virtual_room;
+            item.thesis_rubrics_folder = thesis.rubrics_folder;
             if(thesis.Slot === null) {
                 item.date = null;
                 item.start = null;

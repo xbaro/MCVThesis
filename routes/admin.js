@@ -601,7 +601,7 @@ router.get('/tracks/:periodID', function (req, res) {
                         include: [
                             {
                                 model: Model.Slot,
-                                attributes: ['id', 'place', 'start', 'end', 'capacity', 'room'],
+                                attributes: ['id', 'place', 'start', 'end', 'capacity', 'room', 'duration'],
                                 include: [
                                     {
                                         model: Model.Thesis,

@@ -177,7 +177,9 @@ router.post('/:thesisID/update', function (req, res) {
             title: data.title,
             abstract: data.abstract,
             keywords: data.keywords,
-            nda: data.nda
+            nda: data.nda,
+            virtual_room: data.virtual_room,
+            rubrics_folder: data.rubrics_folder
         }, {
             where: { id: data.id }
         }).then(function(result) {
@@ -299,7 +301,9 @@ router.post('/new', function (req, res) {
             abstract: data.abstract,
             keywords: data.keywords,
             approved: false,
-            nda: data.nda
+            nda: data.nda,
+            rubrics_folder: data.rubrics_folder,
+            virtual_room: data.virtual_room
         }).then(function(thesis) {
             if(thesis) {
                 Model.User.findById(username).then(function(author) {

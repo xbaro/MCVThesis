@@ -419,6 +419,14 @@
                     "field": "nda",
                     "seqType": "Sequelize.BOOLEAN"
                 },
+                "virtual_room": {
+                    "field": "virtual_room",
+                    "seqType": "Sequelize.STRING"
+                },
+                "rubrics_folder": {
+                    "field": "rubrics_folder",
+                    "seqType": "Sequelize.STRING"
+                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -620,5 +628,5 @@
             "indexes": []
         }
     },
-    "revision": 11
+    "revision": 12
 }

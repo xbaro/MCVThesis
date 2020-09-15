@@ -174,6 +174,8 @@ jQuery(document).ready(function() {
 
                 $('#author').val(thesis.User.full_name);
                 $('#author_username').val(thesis.User.username);
+                $('#virtual_room').val(thesis.virtual_room);
+                $('#rubrics_folder').val(thesis.rubrics_folder);
 
                 // Check the status for the author field
                 if(current_user.teacher || current_user.admin) {
