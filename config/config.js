@@ -1,4 +1,5 @@
 require('dotenv').config();
+var logger = require('../logger');
 module.exports = {
     "development": {
         "dialect": "sqlite",
@@ -57,7 +58,7 @@ module.exports = {
         "database": process.env.DB_NAME,
         "host": process.env.DB_HOST,
         "dialect": "mysql",
-        "logging": console.log,
+        "logging": logger.debug,
         "dialectOptions": {
             connectTimeout: 60000
         },

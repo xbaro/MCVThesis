@@ -835,7 +835,7 @@ router.get('/notification/:id/send', function (req, res) {
 
                                 });
                         }).catch(function(err) {
-                            updateNotificationStatus(notification, 'failed');
+                            updateNotificationStatus(data[0], 'failed');
                             //closeGroupWithError(group, err);
                             res.setHeader('Content-Type', 'application/json');
                             res.send(JSON.stringify({error: true, message: 'Failed sending mail'}, null, 3));

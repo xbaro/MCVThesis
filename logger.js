@@ -36,8 +36,8 @@ var logger = new winston.createLogger({
             timestamp:true,
             filename: file_access,
             handleExceptions: true,
-            maxsize: process.env.LOG_ROTATE_MAX_BYTES,
-            maxFiles: process.env.LOG_ROTATE_BACKUP_COUNT,
+            maxsize: process.env.LOG_ROTATE_MAX_BYTES || 16384,
+            maxFiles: process.env.LOG_ROTATE_BACKUP_COUNT || 5,
             colorize: false
         }),
         new winston.transports.File({
@@ -46,12 +46,12 @@ var logger = new winston.createLogger({
             filename: file_error,
             handleExceptions: true,
             json: true,
-            maxsize: process.env.LOG_ROTATE_MAX_BYTES,
-            maxFiles: process.env.LOG_ROTATE_BACKUP_COUNT,
+            maxsize: process.env.LOG_ROTATE_MAX_BYTES || 16384,
+            maxFiles: process.env.LOG_ROTATE_BACKUP_COUNT || 5,
             colorize: false
         }),
         new winston.transports.Console({
-            level: 'debug',
+            level: 'warning',
             handleExceptions: true,
             json: false,
             colorize: true
