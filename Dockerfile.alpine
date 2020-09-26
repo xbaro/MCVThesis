@@ -1,4 +1,4 @@
-FROM node
+FROM node:alpine
 
 WORKDIR /code
 
@@ -7,11 +7,19 @@ RUN npm install -g gulp bower
 ADD package.json /code/package.json
 ADD bower.json /code/bower.json
 
+RUN apk --no-cache add --virtual builds-deps build-base python
+RUN npm config set python /usr/bin/python
+RUN npm i -g npm
+
 RUN npm install
+
+RUN npm rebuild bcrypt --build-from-source
+RUN apk del builds-deps
 
 # Downgrade pg package to fix bug.
 # RUN npm install pg@6.4.1
 
+RUN apk --no-cache add git
 RUN bower -v --allow-root install
 
 ADD . /code
