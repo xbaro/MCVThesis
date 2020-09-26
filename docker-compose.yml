@@ -7,16 +7,22 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./conf/traefik.toml:/etc/traefik/traefik.toml
-      - ./conf/acme.json:/acme.json
+      - traefik_data:/letsencrypt
     depends_on:
       - web
     networks:
       - front-end
-
+    labels:
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.email=xbaro@uoc.edu"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.httpchallenge.entrypoint=http"
   web:
     build: .
     depends_on:
@@ -47,16 +53,12 @@ services:
       - web_logs:/log
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=web"
-      - "traefik.docker.network=mcvthesis_front-end"
-      - "traefik.protocol=http"
-      - "traefik.frontend.entryPoints=https"
-      - "traefik.frontend.rule=Host:mcv.eimt.uoc.edu"
-      - "traefik.frontend.passHostHeader=true"
-      - "traefik.frontend.whiteList.useXForwardedFor=true"
-      - "traefik.port=80"
-
-  db:
+      - "traefik.http.routers.web.rule=Host(`mcv.eimt.uoc.edu`)"
+      - "traefik.http.routers.web.entrypoints=https"
+      - "traefik.http.routers.web.tls.certresolver=tesla-tlschallenge"
+      - "traefik.http.services.web-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.web.service=web-service"
+  db2:
     image: postgres
     restart: always
     networks:
@@ -67,6 +69,22 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:    
       - db_data:/var/lib/postgresql/data
+
+    # MySQL
+    db:
+      image: mariadb
+      restart: always
+      ports:
+        - 3306:3306
+      networks:
+        - back-end
+      environment:
+        MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+        MYSQL_DATABASE: ${DB_USER}
+        MYSQL_USER: ${DB_NAME}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
+      volumes:
+        - db_data:/var/lib/mysql
 
   adminer:
     image: adminer
@@ -79,7 +97,38 @@ services:
       - front-end
       - back-end
 
+  prometheus:
+    image: "prom/prometheus"
+    ports:
+      - "9090"
+    volumes:
+      - prom_data:/prometheus-data
+
+  grafana:
+    image: "grafana/grafana"
+    depends_on:
+      - prometheus
+    environment:
+      GF_ROOT_URL: https://mcv.eimt.uoc.edu/grafana
+      GF_SERVE_FROM_SUB_PATH: true
+    ports:
+      - "3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`mcv.eimt.uoc.edu`) && PathPrefix(`/grafana`)"
+      - "traefik.http.routers.web.entrypoints=https"
+      - "traefik.http.routers.web.tls.certresolver=tesla-tlschallenge"
+      - "traefik.http.services.web-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.web.service=web-service"
+
 volumes:
+  traefik_data:
+    driver_opts:
+      type: none
+      device: $PWD/data/traefik
+      o: bind
   db_data:
     driver_opts:
       type: none
@@ -94,6 +143,16 @@ volumes:
     driver_opts:
       type: none
       device: $PWD/data/logs
+      o: bind
+  prom_data:
+    driver_opts:
+      type: none
+      device: $PWD/data/prometheus
+      o: bind
+  grafana_data:
+    driver_opts:
+      type: none
+      device: $PWD/data/grafana
       o: bind
 networks:
   front-end:

@@ -14,8 +14,17 @@ router.get('/user_data', function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect('/auth/signin');
     } else {
-        Model.User.findOne({attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name'],
-            where: {username: req.user.username}})
+        Model.User.findOne({
+            attributes: ['username', 'name', 'organization', 'surname', 'email', 'webpage', 'teacher', 'admin', 'roles', 'keywords', 'full_name'],
+            where: {username: req.user.username},
+            include: [
+                {
+                    model: Model.Institution,
+                    attributes: ['acronym', 'name'],
+                    required: false
+                }
+            ]
+        })
         .then(function(data) {
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(data));

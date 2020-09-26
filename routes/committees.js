@@ -45,14 +45,28 @@ router.get('/my', function (req, res) {
                 },
                 {
                     model: Model.User,
-                    attributes: ['username', 'name', 'surname', 'full_name'],
+                    attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
                     where: {username: req.user.username},
                     as: "Reviewed",
-                    required: true
+                    required: true,
+                    include: [
+                        {
+                            model: Model.Institution,
+                            attributes: ['acronym', 'name'],
+                            required: false
+                        }
+                    ]
                 },
                 {
                     model: Model.User,
-                    attributes: ['username', 'name', 'surname', 'full_name']
+                    attributes: ['username', 'name', 'surname', 'full_name'],
+                    include: [
+                        {
+                            model: Model.Institution,
+                            attributes: ['acronym', 'name'],
+                            required: false
+                        }
+                    ]
                 }
             ]
         })
@@ -70,6 +84,8 @@ router.get('/my', function (req, res) {
                 item.date = thesis.Slot.start;
                 item.start = s_date.getHours() + ":" + ("0" + s_date.getMinutes()).slice(-2);
                 item.end = e_date.getHours() + ":" + ("0" + e_date.getMinutes()).slice(-2);
+                item.start_date = s_date;
+                item.end_date = e_date;
                 item.place = thesis.Slot.place;
                 item.room = thesis.Slot.room;
                 if(thesis.Reviewed && thesis.Reviewed.length>0) {
@@ -171,12 +187,26 @@ router.get('/theses/period', function (req, res) {
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                        as: "Advised"
+                        as: "Advised",
+                        include: [
+                            {
+                                model: Model.Institution,
+                                attributes: ['acronym', 'name'],
+                                required: false
+                            }
+                        ]
                     },
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                        as: "Reviewed"
+                        as: "Reviewed",
+                        include: [
+                            {
+                                model: Model.Institution,
+                                attributes: ['acronym', 'name'],
+                                required: false
+                            }
+                        ]
                     },
                     {
                         model: Model.Slot,
@@ -231,12 +261,26 @@ router.get('/theses/track', function (req, res) {
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                        as: "Advised"
+                        as: "Advised",
+                        include: [
+                            {
+                                model: Model.Institution,
+                                attributes: ['acronym', 'name'],
+                                required: false
+                            }
+                        ]
                     },
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                        as: "Reviewed"
+                        as: "Reviewed",
+                        include: [
+                            {
+                                model: Model.Institution,
+                                attributes: ['acronym', 'name'],
+                                required: false
+                            }
+                        ]
                     },
                     {
                         model: Model.Slot,
@@ -285,12 +329,26 @@ router.get('/theses/slot', function (req, res) {
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                        as: "Advised"
+                        as: "Advised",
+                        include: [
+                            {
+                                model: Model.Institution,
+                                attributes: ['acronym', 'name'],
+                                required: false
+                            }
+                        ]
                     },
                     {
                         model: Model.User,
                         attributes: ['username', 'name', 'surname', 'full_name', 'organization'],
-                        as: "Reviewed"
+                        as: "Reviewed",
+                        include: [
+                            {
+                                model: Model.Institution,
+                                attributes: ['acronym', 'name'],
+                                required: false
+                            }
+                        ]
                     },
                     {
                         model: Model.Slot,

@@ -193,10 +193,18 @@
                 if (a>0) advisors += ', ';
                 advisors += object.advisors[a].name + ' (' + object.advisors[a].organization + ')';
             }
+            var president_mail = "";
+            var secretary_mail = "";
+            var vocal_mail = "";
+            if (false) {
+                president_mail = '&lt;' + object.committee['president'].email + '&gt;';
+                secretary_mail = '&lt;' + object.committee['secretary'].email + '&gt;';
+                vocal_mail = '&lt;' + object.committee['vocal'].email + '&gt;';
+            }
             var committee = '<ul>' +
-                                '<li><strong><em>President: </em></strong>' + (object.committee['president'].name ? object.committee['president'].name + ' (' + object.committee['president'].organization + ') &lt;' + object.committee['president'].email + '&gt;</li>' : "") +
-                                '<li><strong><em>Secretary: </em></strong>' + (object.committee['secretary'].name ? object.committee['secretary'].name + ' (' + object.committee['secretary'].organization + ') &lt;' + object.committee['secretary'].email + '&gt;</li>' : "") +
-                                '<li><strong><em>Vocal: </em></strong>' + (object.committee['vocal'].name ? object.committee['vocal'].name + ' (' + object.committee['vocal'].organization + ') &lt;' + object.committee['vocal'].email + '&gt;</li>' : "") +
+                                '<li><strong><em>President: </em></strong>' + (object.committee['president'].name ? object.committee['president'].name + ' (' + object.committee['president'].organization + ') ' + president_mail + '</li>' : "") +
+                                '<li><strong><em>Secretary: </em></strong>' + (object.committee['secretary'].name ? object.committee['secretary'].name + ' (' + object.committee['secretary'].organization + ') ' + secretary_mail + '</li>' : "") +
+                                '<li><strong><em>Vocal: </em></strong>' + (object.committee['vocal'].name ? object.committee['vocal'].name + ' (' + object.committee['vocal'].organization + ') ' + vocal_mail + '</li>' : "") +
                             '</ul>';
             var virtual_room = '';
             if (object.thesis_virtual_room && !object.thesis_nda) {

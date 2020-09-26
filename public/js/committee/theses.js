@@ -12,6 +12,49 @@ function folderFormatter(value, row) {
     return '';
 }
 
+function is_available(thesis, user) {
+
+    var is_advisor = false;
+    $.each(thesis.Advised, function(i, adv) {
+        if (adv.username === user.username) {
+            is_advisor = true;
+        }
+    });
+
+    var institutions = {};
+    $.each(thesis.Reviewed, function(i, cm) {
+        if(cm.username===user.username) {
+            return false;
+        }
+        if (cm.Committee.president) {
+            if (institutions.hasOwnProperty(cm.Institution.acronym)) {
+                institutions[cm.Institution.acronym]++;
+            } else {
+                institutions[cm.Institution.acronym] = 1;
+            }
+        }
+        if (cm.Committee.secretary) {
+            if (institutions.hasOwnProperty(cm.Institution.acronym)) {
+                institutions[cm.Institution.acronym]++;
+            } else {
+                institutions[cm.Institution.acronym] = 1;
+            }
+        }
+        if (cm.Committee.vocal) {
+            if (institutions.hasOwnProperty(cm.Institution.acronym)) {
+                institutions[cm.Institution.acronym]++;
+            } else {
+                institutions[cm.Institution.acronym] = 1;
+            }
+        }
+    });
+    if (is_advisor || institutions.hasOwnProperty(user.Institution.acronym) && institutions[user.Institution.acronym] > 1) {
+         return false
+    }
+
+    return true;
+}
+
 function addThesis(thesis, parent, locked) {
 
     var id = 'thesis_' + thesis['id'];
@@ -94,11 +137,17 @@ function addThesis(thesis, parent, locked) {
         }
     });
 
+    var thesis_available = is_available(thesis, current_user);
+
     if(c_p.length===0) {
         if(isAssigned || locked) {
             var c_p_div = $('<div>');
         } else {
-            var c_p_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="president">Request</button>');
+            if (thesis_available) {
+                var c_p_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="president">Request</button>');
+            } else {
+                var c_p_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="president" disabled>Request</button>');
+            }
         }
         if(current_user.admin) {
             c_p_div.append('<button type="button" name="assign" class="btn btn-info assign_committee" data-thesis="' + thesis.id + '" data-role="president">Assign</button>');
@@ -126,7 +175,11 @@ function addThesis(thesis, parent, locked) {
         if(isAssigned || locked) {
             var c_s_div = $('<div>');
         } else {
-            var c_s_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="secretary">Request</button>');
+            if (thesis_available) {
+                var c_s_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="secretary">Request</button>');
+            } else {
+                var c_s_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="secretary" disabled>Request</button>');
+            }
         }
         if(current_user.admin) {
             c_s_div.append('<button type="button" name="assign" class="btn btn-info assign_committee" data-thesis="' + thesis.id + '" data-role="secretary">Assign</button>');
@@ -154,7 +207,11 @@ function addThesis(thesis, parent, locked) {
         if(isAssigned || locked) {
             var c_v_div = $('<div>');
         } else {
-            var c_v_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="vocal">Request</button>');
+            if (thesis_available) {
+                var c_v_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="vocal">Request</button>');
+            } else {
+                var c_v_div = $('<div>').append('<button type="button" name="request" class="btn btn-success request_committee" data-thesis="' + thesis.id + '" data-role="vocal" disabled>Request</button>');
+            }
         }
         if(current_user.admin) {
             c_v_div.append('<button type="button" name="assign" class="btn btn-info assign_committee" data-thesis="' + thesis.id + '" data-role="vocal">Assign</button>');

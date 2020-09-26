@@ -44,6 +44,8 @@ html
             link(rel="stylesheet" href="/bower_components/bootstrap-notify/css/bootstrap-notify.css")
         link(rel="stylesheet" href="/js/widgets/agenda/agenda.css")
         link(rel="stylesheet" href="/stylesheets/footer.css")
+        link(rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css")
+
     body
         nav.navbar.navbar-default.navbar-fixed-top
             .container-fluid
@@ -126,6 +128,9 @@ html
             //script( src='/bower_components/bootstrap-notify/js/bootstrap-notify.js')
 
         script( src='/dist/widgets/agenda/agenda.js')
+        script( src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js", data-cfasync="false")
+        script
+            include ../public/dist/cookies.js
 
         block scripts
         footer

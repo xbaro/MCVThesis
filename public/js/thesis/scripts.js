@@ -1,3 +1,12 @@
+/*var abstract_editor = $('#abstract').wysihtml5({
+            "events":      {
+                "load": function () {
+                    jQuery('.wysihtml5').addClass('nicehide');
+                }
+            }
+        });
+*/
+var abstract_editor;
 function getActionButtons(value, row, index) {
 
     var allow_edit = true;
@@ -58,6 +67,14 @@ function getCommitteeValue(value, row, index) {
 
 jQuery(document).ready(function() {
 
+    /*abstract_editor = $('#abstract').wysihtml5({
+            "events":      {
+                "load": function () {
+                    jQuery('.wysihtml5').addClass('nicehide');
+                }
+            }
+        });
+*/
     var current_user;
     var selected_advisors=[];
 
@@ -157,7 +174,12 @@ jQuery(document).ready(function() {
                 // Assign the values
                 $('#thesis_id').val(thesis.id);
                 $('#title').val(thesis.title);
-                $('#abstract').val(thesis.abstract);
+                //$('#abstract').val(thesis.abstract);
+                if ($("#abstract").data("wysihtml5")) {
+                    $("#abstract").data("wysihtml5").editor.setValue(thesis.abstract);
+                } else {
+                    $('#abstract').val(thesis.abstract);
+                }
                 $('#keywords').val(thesis.keywords);
                 if (thesis['nda'] == true) {
                     $('#nda').attr('checked', true);
@@ -402,7 +424,12 @@ jQuery(document).ready(function() {
     $('#btnNewThesis').on('click', function(e) {
         // Reset the form data
         $('#thesisFormModal').find('form').trigger("reset");
-        $('#abstract').val('');
+        //$('#abstract').val('');
+        if ($("#abstract").data("wysihtml5")) {
+            $("#abstract").data("wysihtml5").editor.setValue("");
+        } else {
+            $('#abstract').val('');
+        }
         selected_advisors=[];
 
         // Ensure that username is enabled for edit
@@ -499,6 +526,33 @@ jQuery(document).ready(function() {
 
 
     $('#thesesTable').on('load-success.bs.table',  function (data) {
+        $('.thesis_action').off().on('click', function (e) {
+            e.preventDefault();
+            var action = e.currentTarget.dataset.action;
+            var thesisId = e.currentTarget.dataset.thesis_id;
+            switch (action) {
+                case 'edit':
+                    editThesis(thesisId);
+                    break;
+                case 'delete':
+                    bootbox.confirm("You will remove the thesis and all the related information.",
+                        function (result) {
+                            if (result) {
+                                $.post("/thesis/" + thesisId + "/delete", 'json').done(function (data) {
+                                    showTheses();
+                                });
+                            }
+                        });
+                    break;
+                case 'accept':
+                    $.post("/thesis/" + thesisId + "/approve", 'json').done(function (data) {
+                        showTheses();
+                    });
+                    break;
+            }
+        });
+    });
+    $('#thesesTable').on('post-body.bs.table',  function (data) {
         $('.thesis_action').off().on('click', function (e) {
             e.preventDefault();
             var action = e.currentTarget.dataset.action;
