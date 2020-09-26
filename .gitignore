@@ -54,3 +54,4 @@ public/dist
 
 # Ignore data path
 data
+bin/www.js
