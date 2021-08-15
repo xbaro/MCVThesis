@@ -28,11 +28,18 @@ router.post('/signin', function (req, res, next) {
         if (!user) {
             return res.render('signin', { title: 'Sign In', errorMessage: info.message });
         }
-        return req.logIn(user, function (err) {
-            if (err) {
-                return res.render('signin', { title: 'Sign In', errorMessage: err.message });
+        return req.logIn(user, function (err2) {
+            if (err2) {
+                return res.render('signin', { title: 'Sign In', errorMessage: err2.message });
             } else {
-                return res.redirect('/');
+                Model.getUserConsent(user, false).then(function(result) {
+                    if (result['consent'] == null) {
+                        res.redirect('/consent');
+                    } else {
+                        res.redirect('/');
+                    }
+                    return res;
+                });
             }
         });
     })(req, res, next);
@@ -65,9 +72,18 @@ router.post('/signup',  function (req, res, next) {
             Model.User
                 .findOrCreate({where: {username: user.username, password: hash, name: user.name, surname: user.surname, email: user.email, webpage: user.webpage, organization: user.organization, InstitutionId: institution}})
                 .spread(function(user, created) {
-                    //res.render('signin', { title: 'Sign In' });
-                    passport.authenticate('local')(req, res, function () {
-                        res.redirect('/');
+                    Model.getUserConsent(user, created).then(function(result) {
+                        passport.authenticate('local')(req, res, function () {
+                            let prevSession = req.session;
+                            req.session.regenerate((err) => {
+                                Object.assign(req.session, prevSession);
+                                if (result['consent'] == null) {
+                                    res.redirect('/consent');
+                                } else {
+                                    res.redirect('/');
+                                }
+                            });
+                        });
                     });
                 });
         }

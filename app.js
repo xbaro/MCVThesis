@@ -13,6 +13,7 @@ var profile = require('./routes/profile');
 var committees = require('./routes/committees');
 var thesis = require('./routes/thesis');
 var communication = require('./routes/communication');
+var consent = require('./routes/consent');
 
 var compression = require('compression');
 
@@ -189,6 +190,7 @@ app.use('/profile', profile);
 app.use('/thesis', thesis);
 app.use('/committees', committees);
 app.use('/communication', communication);
+app.use('/consent', consent);
 
 app.use(ltiMiddleware({
   // You must use either the credentials option or the consumer_key and

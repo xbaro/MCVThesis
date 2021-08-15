@@ -50,6 +50,9 @@ block content
                                 .form-group
                                     label.sr-only(for="webpage") Webpage
                                     input#webpage.form-control(type='url', name="webpage", placeholder='Enter your webpage')
+                                .form-group
+                                    input#consent.form-control(type='checkbox', name="consent", required=true)
+                                    label(for="consent") I accept the <a href="/consent" target="_blank">terms and conditions</a>.
                                 .btn-group
                                     button.btn.btn-default(type='submit') Register
                                 .btn-group

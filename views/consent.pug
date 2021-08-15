@@ -1,0 +1,23 @@
+﻿extends layout
+
+block content
+    if (message_ok)
+        +alert("success") #{message_ok}
+
+    if (message_error)
+        +alert("danger") #{message_error}
+
+    .panel.panel-default.margin-bottom-40
+        .panel-heading
+            .panel-title
+                strong Terms and conditions
+        .panel-body
+            include ../consent/consent.html
+        .panel-footer
+            if user
+                if consent
+                    = `Accepted on ${consent.accepted}`
+                else
+                    form(role="form", action="/consent", method="post")
+                        .btn-group
+                            button.btn.btn-primary(type='submit', style = "margin-left:10px;") Accept

@@ -55,3 +55,4 @@ public/dist
 # Ignore data path
 data
 bin/www.js
+consent/consent_uoc.html
