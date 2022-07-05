@@ -11,7 +11,8 @@ module.exports = function(sequelize, DataTypes) {
         order: DataTypes.INTEGER,
         nda: DataTypes.BOOLEAN,
         virtual_room: DataTypes.STRING,
-        rubrics_folder: DataTypes.STRING
+        rubrics_folder: DataTypes.STRING,
+        report_url: DataTypes.STRING
     });
 
     //Thesis.hasMany(models.User, {as: 'Advisors'})

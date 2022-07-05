@@ -48,6 +48,10 @@ services:
       - SSL_PATH=/ssl
       - SSL_KEY
       - SSL_CRT
+      - TOKEN_HEADER_KEY
+      - JWT_SECRET_KEY
+      - MCV_WEB_CLIENT
+      - MCV_WEB_SECRET
     volumes:
       - web_certs:/ssl
       - web_logs:/log
@@ -70,21 +74,21 @@ services:
     volumes:    
       - db_data:/var/lib/postgresql/data
 
-    # MySQL
-    db:
-      image: mariadb
-      restart: always
-      ports:
-        - 3306:3306
-      networks:
-        - back-end
-      environment:
-        MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-        MYSQL_DATABASE: ${DB_USER}
-        MYSQL_USER: ${DB_NAME}
-        MYSQL_PASSWORD: ${DB_PASSWORD}
-      volumes:
-        - db_data:/var/lib/mysql
+  # MySQL
+  db:
+    image: mariadb
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      - back-end
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_USER}
+      MYSQL_USER: ${DB_NAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
 
   adminer:
     image: adminer

@@ -1,6 +1,20 @@
 ﻿var express = require('express');
 var router = express.Router();
 var Model = require('../models');
+const path = require("path");
+
+
+function get_user_search_expression(req) {
+    const env = process.env.NODE_ENV || 'development';
+    const config = require(path.resolve('./config', 'config.js'))[env];
+
+    let find_exp = "lower(concat_ws(' ', User.name, User.surname)) like '%" + req.query['term'].toLowerCase() + "%'" ;
+    if (config.dialect === "sqlite") {
+        find_exp = "lower(User.name || User.surname) like '%" + req.query['term'].toLowerCase() + "%'";
+    }
+
+    return find_exp;
+}
 
 router.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
@@ -106,7 +120,7 @@ router.get('/students', function (req, res) {
                                 teacher: false,
                                 admin: false,
                             },
-                            Model.Sequelize.literal("lower(concat_ws(' ', User.name, User.surname)) like '%" + req.query['term'].toLowerCase() + "%'" ),
+                            Model.Sequelize.literal(get_user_search_expression(req)),
                         ]
                     }
                 }).then(function (data) {
@@ -146,7 +160,7 @@ router.get('/teachers', function (req, res) {
                         {
                             teacher: true,
                         },
-                        Model.Sequelize.literal("lower(concat_ws(' ', User.name, User.surname)) like '%" + req.query['term'].toLowerCase() + "%'"),
+                        Model.Sequelize.literal(Model.Sequelize.literal(get_user_search_expression(req))),
                     ]
                 }
             }).then(function (data) {
@@ -188,7 +202,8 @@ router.post('/:thesisID/update', function (req, res) {
             keywords: data.keywords,
             nda: data.nda,
             virtual_room: data.virtual_room,
-            rubrics_folder: data.rubrics_folder
+            rubrics_folder: data.rubrics_folder,
+            report_url: data.report_url
         }, {
             where: { id: data.id }
         }).then(function(result) {
@@ -312,7 +327,8 @@ router.post('/new', function (req, res) {
             approved: false,
             nda: data.nda,
             rubrics_folder: data.rubrics_folder,
-            virtual_room: data.virtual_room
+            virtual_room: data.virtual_room,
+            report_url: data.report_url
         }).then(function(thesis) {
             if(thesis) {
                 Model.User.findById(username).then(function(author) {

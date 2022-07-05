@@ -16,3 +16,9 @@ SMTP_PASSWORD=
 
 # Number of threads to start on the web docker (-1 => Number of cores)
 NUM_THREADS=4
+
+# JWT configuration
+TOKEN_HEADER_KEY=JWT
+JWT_SECRET_KEY=
+MCV_WEB_CLIENT=
+MCV_WEB_SECRET=

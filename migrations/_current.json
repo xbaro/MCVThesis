@@ -100,6 +100,48 @@
             },
             "indexes": []
         },
+        "Consents": {
+            "tableName": "Consents",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "accepted": {
+                    "field": "accepted",
+                    "seqType": "Sequelize.DATE"
+                },
+                "hash": {
+                    "field": "hash",
+                    "seqType": "Sequelize.STRING"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "UserUsername": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "username"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "UserUsername",
+                    "seqType": "Sequelize.STRING"
+                }
+            },
+            "indexes": []
+        },
         "Institutions": {
             "tableName": "Institutions",
             "schema": {
@@ -427,6 +469,10 @@
                     "field": "rubrics_folder",
                     "seqType": "Sequelize.STRING"
                 },
+                "report_url": {
+                    "field": "report_url",
+                    "seqType": "Sequelize.STRING"
+                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -628,5 +674,5 @@
             "indexes": []
         }
     },
-    "revision": 12
+    "revision": 13
 }
