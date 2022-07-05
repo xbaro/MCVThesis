@@ -224,4 +224,33 @@ router.get('/theses', function (req, res) {
     }
 });
 
+/* POST theses. */
+router.post('/theses', async function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    if(!validate_request(req)) {
+        res.status(401);
+        res.send(JSON.stringify({
+            error: 'Invalid credentials'
+        }, null, 3));
+    } else {
+        const thesis = await  Model.Thesis.create({
+            title: req.body.title,
+            abstract: req.body.abstract,
+            keywords: req.body.keywords,
+            approved: true,
+            UserUsername: req.body.author,
+        });
+
+        req.body.advisors.forEach(async function(advisor) {
+            const advisor_user = await Model.User.findOne({where: {username: advisor.username}})
+            const new_Advisor = await thesis.addAdvised(advisor_user);
+            var a=4;
+        });
+
+        res.status(200);
+        res.send(JSON.stringify(thesis, null, 3));
+    }
+});
+
 module.exports = router;

@@ -29,7 +29,7 @@ Object.keys(db).forEach(modelName => {
 });
 
 db.User.belongsToMany(db.Thesis, { through: 'Advisors', as: 'Advisor'});
-db.Thesis.belongsToMany(db.User, { through: 'Advisors', as: 'Advised'});
+db.Advised = db.Thesis.belongsToMany(db.User, { through: 'Advisors', as: 'Advised'});
 
 db.User.belongsToMany(db.Thesis, { through: 'Committee', as:'Committee'});
 db.Thesis.belongsToMany(db.User, { through: 'Committee', as:'Reviewed'});
