@@ -58,11 +58,11 @@
     "xlsx": "^0.17.0"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-bower": "^0.0.12",
+    "gulp": "^4.0.2",
+    "gulp-bower": "^0.0.15",
     "gulp-minify": "^3.1.0",
     "gulp-notify": "^3.2.0",
-    "gulp-sass": "^5.0.0",
-    "main-bower-files": "^2.11.1"
+    "gulp-sass": "^4.1.0",
+    "main-bower-files": "^2.13.3"
   }
 }

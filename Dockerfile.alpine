@@ -25,6 +25,7 @@ RUN bower -v --allow-root install
 
 ADD . /code
 
+RUN gulp -v
 RUN gulp
 
 ENV NODE_ENV=docker
