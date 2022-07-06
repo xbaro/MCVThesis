@@ -7,6 +7,10 @@ RUN npm install -g gulp bower
 ADD package.json /code/package.json
 ADD bower.json /code/bower.json
 
+# This is required to be able to install SQLite3 package
+RUN npm install -g node-gyp
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
 RUN npm install
 
 # Downgrade pg package to fix bug.

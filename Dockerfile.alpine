@@ -1,7 +1,8 @@
-FROM node:alpine
+FROM node:14-alpine
 
 WORKDIR /code
 
+# RUN npm config set unsafe-perm true
 RUN npm install -g gulp bower
 
 ADD package.json /code/package.json

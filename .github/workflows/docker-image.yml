@@ -15,6 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: |
-        docker build . --file Dockerfile --tag xbaro/mcvthesis:latest      
-        docker build . --file Dockerfile.alpine --tag xbaro/mcvthesis:latest-alpine
+      run: docker build . --file Dockerfile.alpine --tag xbaro/mcvthesis:latest-alpine
