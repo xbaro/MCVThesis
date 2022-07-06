@@ -9,7 +9,7 @@ ADD package.json /code/package.json
 ADD bower.json /code/bower.json
 
 RUN apk --no-cache add --virtual builds-deps build-base python3
-RUN npm config set python /usr/bin/python
+RUN npm config set python /usr/bin/python3
 RUN npm i -g npm
 
 RUN npm install
