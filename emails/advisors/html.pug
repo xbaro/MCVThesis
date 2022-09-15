@@ -1,6 +1,6 @@
-p Dear Msc Advisor/s,
-p we remind you that one of your advised learners will defend his/her Master Thesis. Please fill the attached Evaluation Form and <b>send it to the president of the committee</b> before the defense.
-p The details of the defense are:
+p Dears,
+p <b>The details for the evaluation committee</b> of the Master Dissertation of
+    = ` ${learner_name} are the following,`
 ul
     li <strong>Author:</strong>
         = ` ${learner_name} <${learner_mail}>`
@@ -16,12 +16,13 @@ ul
                 = ` ${secretary}`
             li <strong>Vocal:</strong>
                 = ` ${vocal}`
-
     li <strong>Defense date:</strong>
         = ` ${date} from ${start} to ${end}`
-    li <strong>Virtual Room URL:</strong>
-        a(href=`${virtual_room}`)
-            = ` ${virtual_room}`
+    li <strong>Place:</strong>
+        = ` ${place} - ${room} `
+        | (<a href="https://goo.gl/maps/nULM4dmFgp2cqJBi7">map</a>)
+
+p <b>Before the viva</b>, the supervisors must fill the attached evaluation form (a single one for the case of more than one supervisor). Then it has to be sent <b>to the committee members and be uploaded at this <a href="https://uab-my.sharepoint.com/:f:/g/personal/1002248_uab_cat/Er7ik0TTmWxJt6m32PhPuR8BmED9SfeeblGz9UXhwmOb0Q?e=deOEyc">link</a></b> in the corresponding student folder.
 
 p Kind regards
 

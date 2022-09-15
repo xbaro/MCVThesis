@@ -1,7 +1,6 @@
 p
     = `Dear ${learner_name},`
-p We inform you that your Master Thesis Evaluation Committee has been decided.
-p The details of your defense are here:
+p The details of the evaluation committee for your Master Dissertation are the following:
 ul
     li <strong>Author:</strong>
         = ` ${learner_name} <${learner_mail}>`
@@ -17,19 +16,16 @@ ul
                 = ` ${secretary}`
             li <strong>Vocal:</strong>
                 = ` ${vocal}`
-
     li <strong>Defense date:</strong>
         = ` ${date} from ${start} to ${end}`
-    li <strong>Virtual Room URL:</strong>
-        a(href=`${virtual_room}`)
-            = ` ${virtual_room}`
+    li <strong>Place:</strong>
+        = ` ${place} - ${room} `
+        | (<a href="https://goo.gl/maps/nULM4dmFgp2cqJBi7">map</a>)
 
-p We kindly request you that once you have uploaded the last version of your Msc Dissertation report to the M9 moodle room, you must send it to all members of the committee.
-p Virtual Room will be accessible <b>15 minutes</b> before the presentation. Once in the room, someone of the committee will give grant you with presentation rights.
-p You must directly <b>send your Msc Dissertation report to the committee members</b>, the same version you have to <b>upload to the M9 moodle room</b>.
-p You must restrict the presentation of your work to a maximum of 20 minutes.
-p After the presentation, you will respond the questions of the evaluation committee.
-
+p You should have <b>sent your Msc Dissertation report to the committee members</b>, it must be the same version you <b>uploaded to the M9 moodle room</b>.
+p For your defence you must restrict the presentation of your work to <b>a maximum of 20 minutes</b>. After the presentation, you will have to respond the questions of the evaluation committee. Once compiled all the marks they will be published at the moodle room of the UAB Virtual Campus (cv.uab.cat), you will receive an e-mail when they are published.
+p After the master defences, <b>ACMCV will start at the Computer Vision Center</b>. Do not forget to register for ACMCV at <a href="http://acmcv.cat/">acmcv.cat</a>, where you can see the full program. We want to highlight that Dr. Antonio Torralba from MIT (USA) will join us virtually to give a <b>Plenary Talk</b> at 7pm, that we will follow from the CVC Garden. After the <b>Oral talks</b>, we will give the <b>Awards</b> to the Top5 best students of this year and to the best Master Dissertation.
+p If this project has been done in the frame of an Educational Agreement, please extend this invitation to the company members you consider that can attend the defence and register for the ACMCV.
 p Kind regards
 
 p MCV M9 Coordination
