@@ -16,7 +16,7 @@
   "dependencies": {
     "@sentry/node": "^5.24.2",
     "bcrypt": "^5.0.1",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.4",
     "cookieconsent": "^3.1.1",
@@ -24,7 +24,7 @@
     "dotenv": "^8.1.0",
     "email-templates": "^8.0.7",
     "exceljs": "^4.2.1",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "express-ims-lti": "^0.2.4",
     "express-prometheus-metrics": "^0.1.0",
     "express-sequelize-session": "^0.4.0",
