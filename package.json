@@ -24,7 +24,7 @@
     "dotenv": "^8.1.0",
     "email-templates": "^8.0.7",
     "exceljs": "^4.2.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-ims-lti": "^0.2.4",
     "express-prometheus-metrics": "^0.1.0",
     "express-sequelize-session": "^0.4.0",
