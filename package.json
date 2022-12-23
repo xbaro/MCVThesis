@@ -31,7 +31,7 @@
     "express-session": "^1.16.2",
     "fs-extra": "^8.1.0",
     "ims-lti": "^3.0.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mariadb": "^2.4.2",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
